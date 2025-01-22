@@ -12,7 +12,8 @@ local function forceResetToVoid()
     local savedPosition = character.HumanoidRootPart.CFrame
     local savedCameraSubject = camera.CameraSubject
     local savedCameraType = camera.CameraType
-    local savedCameraOffset = (camera.CFrame.Position - character.HumanoidRootPart.Position)
+	-- Use the fixed offset here
+    local savedCameraOffset = Vector3.new(0, -50000, 0)
     local savedCameraOrientation = camera.CFrame - camera.CFrame.Position  -- Capture the orientation part of the camera
 
     -- Freeze camera
