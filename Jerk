@@ -1,0 +1,8 @@
+local player = game.Players.LocalPlayer
+local humanoid = player.Character and player.Character:FindFirstChild("Humanoid")
+
+if humanoid and humanoid.RigType == Enum.HumanoidRigType.R6 then
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/yLKHnUCYHumlvOO54gctHpT7g/MyAdmin/refs/heads/main/Jerk.2"))()
+elseif humanoid and humanoid.RigType == Enum.HumanoidRigType.R15 then
+    loadstring(game:HttpGet("https://pastefy.app/YZoglOyJ/raw"))()
+end
