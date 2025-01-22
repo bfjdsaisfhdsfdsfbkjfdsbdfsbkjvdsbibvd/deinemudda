@@ -236,7 +236,7 @@ uiListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateCanva
 -- Modified loadCommands function
 local function loadCommands()
     -- Load existing commands
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/fjkdvbjkfvjkfbvjkfbvjkdfhdfjkhvuldfhv/deinemudda/main/allcmdss.luau"))()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/main/allcmdss.luau"))()
     
     task.wait(0.1)
     
@@ -249,6 +249,7 @@ local function loadCommands()
         {"!steal display name", "Steals the avatar of the specified display name."},
         {"!r6", "changes your avatar to R6."},
         {"!r15", "changes your avatar to R15."}
+        {"!ad", "advertises the Admin in the chat."}
     }
     
     -- Create array for all commands
