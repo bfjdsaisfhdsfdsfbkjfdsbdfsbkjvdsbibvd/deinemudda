@@ -2,8 +2,6 @@
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
-local TextService = game:GetService("TextService")
-local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 -- Player
 local localPlayer = Players.LocalPlayer
@@ -11,18 +9,18 @@ local mouse = localPlayer:GetMouse()
 
 -- Constants and Colors
 local COLORS = {
-	main = Color3.fromRGB(35, 40, 55),
-	secondary = Color3.fromRGB(45, 50, 65),
-	accent = Color3.fromRGB(65, 70, 85),
-	hover = Color3.fromRGB(75, 80, 95),
-	text = Color3.fromRGB(240, 240, 255),
-	textDim = Color3.fromRGB(180, 190, 210)
+    main = Color3.fromRGB(35, 40, 55),
+    secondary = Color3.fromRGB(45, 50, 65),
+    accent = Color3.fromRGB(65, 70, 85),
+    hover = Color3.fromRGB(75, 80, 95),
+    text = Color3.fromRGB(240, 240, 255),
+    textDim = Color3.fromRGB(180, 190, 210)
 }
 
 local TWEEN_INFO = {
-	fast = TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-	medium = TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
-	slow = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+    fast = TweenInfo.new(0.2, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+    medium = TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out),
+    slow = TweenInfo.new(0.5, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
 }
 
 -- GUI Setup
@@ -72,49 +70,49 @@ headerText.BackgroundTransparency = 1
 headerText.Parent = header
 
 local function createStyledButton(name, size, position, parent)
-	local button = Instance.new("TextButton")
-	button.Size = size
-	button.Position = position
-	button.BackgroundColor3 = COLORS.accent
-	button.BorderSizePixel = 0
-	button.Text = name
-	button.Font = Enum.Font.GothamBold
-	button.TextSize = 20
-	button.TextColor3 = COLORS.text
-	button.Parent = parent
-	button.AutoButtonColor = false
+    local button = Instance.new("TextButton")
+    button.Size = size
+    button.Position = position
+    button.BackgroundColor3 = COLORS.accent
+    button.BorderSizePixel = 0
+    button.Text = name
+    button.Font = Enum.Font.GothamBold
+    button.TextSize = 20
+    button.TextColor3 = COLORS.text
+    button.Parent = parent
+    button.AutoButtonColor = false
 
-	local corner = Instance.new("UICorner")
-	corner.CornerRadius = UDim.new(0, 4)
-	corner.Parent = button
+    local corner = Instance.new("UICorner")
+    corner.CornerRadius = UDim.new(0, 4)
+    corner.Parent = button
 
-	button.MouseEnter:Connect(function()
-		TweenService:Create(button, TWEEN_INFO.fast, {
-			BackgroundColor3 = COLORS.hover
-		}):Play()
-	end)
+    button.MouseEnter:Connect(function()
+        TweenService:Create(button, TWEEN_INFO.fast, {
+            BackgroundColor3 = COLORS.hover
+        }):Play()
+    end)
+    
+    button.MouseLeave:Connect(function()
+        TweenService:Create(button, TWEEN_INFO.fast, {
+            BackgroundColor3 = COLORS.accent
+        }):Play()
+    end)
 
-	button.MouseLeave:Connect(function()
-		TweenService:Create(button, TWEEN_INFO.fast, {
-			BackgroundColor3 = COLORS.accent
-		}):Play()
-	end)
+    button.MouseButton1Down:Connect(function()
+        TweenService:Create(button, TWEEN_INFO.fast, {
+            Size = size - UDim2.new(0, 2, 0, 2),
+            Position = position + UDim2.new(0, 1, 0, 1)
+        }):Play()
+    end)
 
-	button.MouseButton1Down:Connect(function()
-		TweenService:Create(button, TWEEN_INFO.fast, {
-			Size = size - UDim2.new(0, 2, 0, 2),
-			Position = position + UDim2.new(0, 1, 0, 1)
-		}):Play()
-	end)
+    button.MouseButton1Up:Connect(function()
+        TweenService:Create(button, TWEEN_INFO.fast, {
+            Size = size,
+            Position = position
+        }):Play()
+    end)
 
-	button.MouseButton1Up:Connect(function()
-		TweenService:Create(button, TWEEN_INFO.fast, {
-			Size = size,
-			Position = position
-		}):Play()
-	end)
-
-	return button
+    return button
 end
 
 local minimizeButton = createStyledButton("-", UDim2.new(0, 30, 0, 30), UDim2.new(1, -70, 0, 5), header)
@@ -194,9 +192,9 @@ local function createCommandButton(name, description)
     cmdDesc.TextWrapped = true
     cmdDesc.Parent = button
     cmdDesc.Text = description
-    
+
     local function updateSize()
-        local textSize = TextService:GetTextSize(
+        local textSize = game:GetService("TextService"):GetTextSize(
             description,
             cmdDesc.TextSize,
             cmdDesc.Font,
@@ -227,9 +225,9 @@ local function createCommandButton(name, description)
 end
 
 local function updateCanvasSize()
-	local contentHeight = uiListLayout.AbsoluteContentSize.Y
-	local padding = 10
-	scrollFrame.CanvasSize = UDim2.new(0, 0, 0, contentHeight + padding)
+    local contentHeight = uiListLayout.AbsoluteContentSize.Y
+    local padding = 10
+    scrollFrame.CanvasSize = UDim2.new(0, 0, 0, contentHeight + padding)
 end
 
 scrollFrame:GetPropertyChangedSignal("AbsoluteSize"):Connect(updateCanvasSize)
@@ -237,113 +235,85 @@ uiListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateCanva
 
 -- Modified loadCommands function
 local function loadCommands()
-	-- Load existing commands
-	local success, data = pcall(game.HttpGetAsync, "https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/main/allcmdss.luau")
-    if success then
-        if data then
-            local loadFunc = loadstring(data)
-            if loadFunc then
-                loadFunc()
-            else
-                warn("Failed to load commands from string: ", data)
-            end
-        else
-            warn("HTTP request returned no data.")
+    -- Load existing commands
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/main/allcmdss.luau"))()
+    
+    task.wait(0.1)
+    
+    -- Additional targeted commands
+    local targetedCommands = {
+        {"!copy <target>", "Copies the avatar of the specified target (MIC UP)."},
+        {"!to <target>", "Teleports to the specified player's display name."},
+        {"!stand <target>", "Makes you a JoJo stand for the specified target."},
+        {"!invistroll <target>", "Makes you invisible and follows the specified target (MIC UP)."},
+        {"!steal display name", "Steals the avatar of the specified display name."},
+        {"!r6", "changes your avatar to R6."},
+        {"!r15", "changes your avatar to R15."}
+    }
+    
+    -- Create array for all commands
+    local cmdArray = {}
+    
+    -- Add existing commands if available
+    if _G.cmds then
+        for cmd, url in pairs(_G.cmds) do
+            table.insert(cmdArray, {cmd = cmd, url = url, isTargeted = false})
         end
-    else
-        warn("Error loading commands from URL: ", data)
     end
-	task.wait(0.1)
-
-	-- Additional targeted commands
-	local targetedCommands = {
-		{"!copy <target>", "Copies the avatar of the specified target (MIC UP)."},
-		{"!to <target>", "Teleports to the specified player's display name."},
-		{"!stand <target>", "Makes you a JoJo stand for the specified target."},
-		{"!invistroll <target>", "Makes you invisible and follows the specified target (MIC UP)."},
-		{"!steal display name", "Steals the avatar of the specified display name."},
-		{"!r6", "changes your avatar to R6."},
-		{"!r15", "changes your avatar to R15."},
-        {"!ad", "advertises the Admin in the chat."}
-	}
-
-	-- Create array for all commands
-	local cmdArray = {}
-
-	-- Add existing commands if available
-	if _G.cmds then
-		for cmd, url in pairs(_G.cmds) do
-			table.insert(cmdArray, {cmd = cmd, url = url, isTargeted = false})
-		end
-	end
-
-	-- Add new targeted commands
-	for _, cmdData in ipairs(targetedCommands) do
-		table.insert(cmdArray, {
-			cmd = cmdData[1],
-			description = cmdData[2],
-			isTargeted = true
-		})
-	end
-
-	-- Sort array in reverse order
-	table.sort(cmdArray, function(a, b) return a.cmd > b.cmd end)
-
-	-- Create buttons for all commands
-	for _, cmdData in ipairs(cmdArray) do
-		local button = createCommandButton(
-			cmdData.cmd,
-			cmdData.isTargeted and cmdData.description or "Click to execute command"
-		)
-
-		button.MouseButton1Click:Connect(function()
-			if cmdData.isTargeted then
-				-- For targeted commands, show input dialog
-				local targetInput = Instance.new("TextBox")
-				targetInput.Size = UDim2.new(1, -20, 0, 30)
-				targetInput.Position = UDim2.new(0, 10, 0, -40)
-				targetInput.PlaceholderText = "Enter target player name..."
-				targetInput.Text = ""
-				targetInput.Font = Enum.Font.Gotham
-				targetInput.TextSize = 14
-				targetInput.TextColor3 = COLORS.text
+    
+    -- Add new targeted commands
+    for _, cmdData in ipairs(targetedCommands) do
+        table.insert(cmdArray, {
+            cmd = cmdData[1],
+            description = cmdData[2],
+            isTargeted = true
+        })
+    end
+    
+    -- Sort array in reverse order
+    table.sort(cmdArray, function(a, b) return a.cmd > b.cmd end)
+    
+    -- Create buttons for all commands
+    for _, cmdData in ipairs(cmdArray) do
+        local button = createCommandButton(
+            cmdData.cmd,
+            cmdData.isTargeted and cmdData.description or "Click to execute command"
+        )
+        
+        button.MouseButton1Click:Connect(function()
+            if cmdData.isTargeted then
+                -- For targeted commands, show input dialog
+                local targetInput = Instance.new("TextBox")
+                targetInput.Size = UDim2.new(1, -20, 0, 30)
+                targetInput.Position = UDim2.new(0, 10, 0, -40)
+                targetInput.PlaceholderText = "Enter target player name..."
+                targetInput.Text = ""
+                targetInput.Font = Enum.Font.Gotham
+                targetInput.TextSize = 14
+                targetInput.TextColor3 = COLORS.text
                 targetInput.BackgroundColor3 = COLORS.secondary
-				targetInput.BorderSizePixel = 0
-				targetInput.Parent = button
-
-				local corner = Instance.new("UICorner")
-				corner.CornerRadius = UDim.new(0, 4)
-				corner.Parent = targetInput
-
-				targetInput.FocusLost:Connect(function(enterPressed)
-					if enterPressed then
-						local command = cmdData.cmd:gsub("<target>", targetInput.Text)
-						ReplicatedStorage:WaitForChild("DefaultChatSystemChatEvents").SayMessageRequest:FireServer(command, "All")
-					end
-					targetInput:Destroy()
-				end)
-
-				targetInput:CaptureFocus()
-			else
-				-- For regular commands, use existing URL execution
-				local success, data = pcall(game.HttpGetAsync, cmdData.url)
-                if success then
-                    if data then
-                        local loadFunc = loadstring(data)
-                        if loadFunc then
-                            loadFunc()
-                        else
-                            warn("Failed to execute command from string: ", data)
-                        end
-                    else
-                        warn("Command URL request returned no data.")
+                targetInput.BorderSizePixel = 0
+                targetInput.Parent = button
+                
+                local corner = Instance.new("UICorner")
+                corner.CornerRadius = UDim.new(0, 4)
+                corner.Parent = targetInput
+                
+                targetInput.FocusLost:Connect(function(enterPressed)
+                    if enterPressed then
+                        local command = cmdData.cmd:gsub("<target>", targetInput.Text)
+                        game:GetService("ReplicatedStorage"):WaitForChild("DefaultChatSystemChatEvents").SayMessageRequest:FireServer(command, "All")
                     end
-                else
-                     warn("Error executing command from URL: ", data)
-                end
-			end
-		end)
-	end
+                    targetInput:Destroy()
+                end)
+                
+                targetInput:CaptureFocus()
+            else
+                -- For regular commands, use existing URL execution
+                loadstring(game:HttpGet(cmdData.url))()
+            end
+        end)
+    end
 end
 
 -- Drag functionality
@@ -351,101 +321,101 @@ local dragging, dragStart, startPos
 local dragInput
 
 local function updateDrag(input)
-	local delta = input.Position - dragStart
-	local position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X,
-							  startPos.Y.Scale, startPos.Y.Offset + delta.Y)
-	TweenService:Create(frame, TWEEN_INFO.fast, {Position = position}):Play()
+    local delta = input.Position - dragStart
+    local position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X,
+                              startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+    TweenService:Create(frame, TWEEN_INFO.fast, {Position = position}):Play()
 end
 
 header.InputBegan:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
-		dragging = true
-		dragStart = input.Position
-		startPos = frame.Position
-
-		input.Changed:Connect(function()
-			if input.UserInputState == Enum.UserInputState.End then
-				dragging = false
-			end
-		end)
-	end
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = frame.Position
+        
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
 end)
 
 UserInputService.InputChanged:Connect(function(input)
-	if input == dragInput and dragging then
-		updateDrag(input)
-	end
+    if input == dragInput and dragging then
+        updateDrag(input)
+    end
 end)
 
 header.InputChanged:Connect(function(input)
-	if input.UserInputType == Enum.UserInputType.MouseMovement or
-	   input.UserInputType == Enum.UserInputType.Touch then
-		dragInput = input
-	end
+    if input.UserInputType == Enum.UserInputType.MouseMovement or
+       input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
+    end
 end)
 
 -- Search functionality
 searchBox:GetPropertyChangedSignal("Text"):Connect(function()
-	local searchText = searchBox.Text:lower()
-	for _, button in ipairs(scrollFrame:GetChildren()) do
-		if button:IsA("TextButton") then
-			local shouldShow = button.Name:lower():find(searchText, 1, true) ~= nil
-
-			TweenService:Create(button, TWEEN_INFO.fast, {
+    local searchText = searchBox.Text:lower()
+    for _, button in ipairs(scrollFrame:GetChildren()) do
+        if button:IsA("TextButton") then
+            local shouldShow = button.Name:lower():find(searchText, 1, true) ~= nil
+            
+            TweenService:Create(button, TWEEN_INFO.fast, {
                 BackgroundTransparency = shouldShow and 0 or 1,
                 TextTransparency = shouldShow and 0 or 1
             }):Play()
-
+            
             task.delay(shouldShow and 0 or 0.2, function()
                 button.Visible = shouldShow
             end)
-		end
-	end
-	updateCanvasSize()
+        end
+    end
+    updateCanvasSize()
 end)
 
 -- Minimize/Maximize functionality
 local minimized = false
 minimizeButton.MouseButton1Click:Connect(function()
-	minimized = not minimized
-	local targetSize = minimized and UDim2.new(0, 300, 0, 40) or UDim2.new(0, 300, 0, 400)
-
-	TweenService:Create(frame, TWEEN_INFO.medium, {
-		Size = targetSize
-	}):Play()
-
-	local transparency = minimized and 1 or 0
-	local contentItems = {searchContainer, scrollFrame}
-
-	for _, item in ipairs(contentItems) do
-		TweenService:Create(item, TWEEN_INFO.fast, {
-			BackgroundTransparency = transparency
-		}):Play()
-
-		task.delay(minimized and 0 or 0.2, function()
-			item.Visible = not minimized
-		end)
-	end
+    minimized = not minimized
+    local targetSize = minimized and UDim2.new(0, 300, 0, 40) or UDim2.new(0, 300, 0, 400)
+    
+    TweenService:Create(frame, TWEEN_INFO.medium, {
+        Size = targetSize
+    }):Play()
+    
+    local transparency = minimized and 1 or 0
+    local contentItems = {searchContainer, scrollFrame}
+    
+    for _, item in ipairs(contentItems) do
+        TweenService:Create(item, TWEEN_INFO.fast, {
+            BackgroundTransparency = transparency
+        }):Play()
+        
+        task.delay(minimized and 0 or 0.2, function()
+            item.Visible = not minimized
+        end)
+    end
 end)
 
 -- Close functionality
 closeButton.MouseButton1Click:Connect(function()
-	local fadeOut = TweenService:Create(frame, TWEEN_INFO.medium, {
-		BackgroundTransparency = 1,
-		Size = UDim2.new(0, 0, 0, 0),
-		Position = UDim2.new(frame.Position.X.Scale, frame.Position.X.Offset + 150,
-							frame.Position.Y.Scale, frame.Position.Y.Offset + 200)
-	})
-
-	TweenService:Create(shadow, TWEEN_INFO.medium, {
-		ImageTransparency = 1
-	}):Play()
-
-	fadeOut.Completed:Connect(function()
-		screenGui:Destroy()
-	end)
-
-	fadeOut:Play()
+    local fadeOut = TweenService:Create(frame, TWEEN_INFO.medium, {
+        BackgroundTransparency = 1,
+        Size = UDim2.new(0, 0, 0, 0),
+        Position = UDim2.new(frame.Position.X.Scale, frame.Position.X.Offset + 150,
+                            frame.Position.Y.Scale, frame.Position.Y.Offset + 200)
+    })
+    
+    TweenService:Create(shadow, TWEEN_INFO.medium, {
+        ImageTransparency = 1
+    }):Play()
+    
+    fadeOut.Completed:Connect(function()
+        screenGui:Destroy()
+    end)
+    
+    fadeOut:Play()
 end)
 
 -- Initialize
@@ -459,19 +429,19 @@ searchContainer.BackgroundTransparency = 1
 scrollFrame.BackgroundTransparency = 1
 
 task.delay(0.1, function()
-	TweenService:Create(frame, TWEEN_INFO.medium, {
-		BackgroundTransparency = 0
-	}):Play()
-
-	TweenService:Create(shadow, TWEEN_INFO.medium, {
-		ImageTransparency = 0.6
-	}):Play()
-
-	for _, container in ipairs({searchContainer, scrollFrame}) do
-		TweenService:Create(container, TWEEN_INFO.medium, {
-			BackgroundTransparency = 0
-		}):Play()
-	end
+    TweenService:Create(frame, TWEEN_INFO.medium, {
+        BackgroundTransparency = 0
+    }):Play()
+    
+    TweenService:Create(shadow, TWEEN_INFO.medium, {
+        ImageTransparency = 0.6
+    }):Play()
+    
+    for _, container in ipairs({searchContainer, scrollFrame}) do
+        TweenService:Create(container, TWEEN_INFO.medium, {
+            BackgroundTransparency = 0
+        }):Play()
+    end
 end)
 
 return screenGui
