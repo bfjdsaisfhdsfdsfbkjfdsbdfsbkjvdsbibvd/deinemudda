@@ -113,7 +113,9 @@ for cmdname,link in pairs(_G.cmds) do
 
 elseif command == "!ad" then
 loadstring(game:HttpGet("https://raw.githubusercontent.com/vqmpjayZ/More-Scripts/refs/heads/main/Anthony's%20ACL"))()
+
 wait(1)
+
 local StarterGui = game:GetService("StarterGui")
 local Players = game:GetService("Players")
 local player = Players.LocalPlayer
@@ -138,7 +140,7 @@ local function chatMessage(str)
             if generalChannel then
                 generalChannel:SendAsync(str)
             else
-               warn("RBXGeneral channel not found!") 
+                warn("RBXGeneral channel not found!") 
             end
         else
             warn("TextChannels not found!")
@@ -146,14 +148,14 @@ local function chatMessage(str)
     else
         local chatEvents = ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents")
         if chatEvents then
-             local chatEvent = chatEvents:FindFirstChild("SayMessageRequest")
-             if chatEvent then
-               chatEvent:FireServer(str, "All")
-             else
-               warn("SayMessageRequest event not found!")
+            local chatEvent = chatEvents:FindFirstChild("SayMessageRequest")
+            if chatEvent then
+                chatEvent:FireServer(str, "All")
+            else
+                warn("SayMessageRequest event not found!")
             end
         else
-             warn("DefaultChatSystemChatEvents not found!")
+            warn("DefaultChatSystemChatEvents not found!")
         end
     end
 end
@@ -166,8 +168,8 @@ local asciiMessage = blob .. "\r" ..
     "       _/       _//   _//  " .. blob .. "\r" ..
     "     _/ //     _//  _//   " .. blob .. "\r" ..
     "    _/  _//    _// _//    " .. blob .. "\r" ..
-    "   _/    _//   _/ _/      " .. blob .. "\r" ..
-    "  _////// _//  _//  _//   " .. blob .. "\r" ..
+    "   _/    _//   _/  _/      " .. blob .. "\r" ..
+    "  _////// _//  _//  _// " .. blob .. "\r" ..
     " _//       _// _//   _//  " .. blob .. "\r" ..
     "_//         _//_//     _//"
 
@@ -178,27 +180,47 @@ local newMessage = blob .. "\r" ..
 "--------------" .. blob .. "\r" ..
 "Pụṛc̣ḥạṣẹ Ḷịf̣ẹṭiṃẹ!" .. blob .. "\r" ..
 "---------------" .. blob .. "\r" ..
-"Or use poins for free!" .. blob .. "\r" ..
+"Or use points for free!" .. blob .. "\r" ..
 "---------------" .. blob .. "\r" ..
 "👉 ḍịṣcọrḍ.gg/gJgRuwC3MP 👈" 
 
 -- New message for the old chat system (without ASCII art)
-local oldMessage = "🔥 AK ADMIN 🔥  Pụṛc̣ḥạṣẹ Ḷịf̣ẹṭiṃẹ! Oṛ ụṣẹ Pọịṇṭṣ foṛ fṛẹẹ! 👉 ḍịṣc̣ọ̣ṛḍ̣.g̣g̣/g̣J̣g̣ṚụẉC̣3̣ṂP̣ 👈"
+local oldMessage = "🔥 AK ADMIN 🔥  Pụṛc̣ḥạṣẹ Ḷịf̣ẹṭiṃẹ! Or use points for free! 👉 ḍịṣcọrḍ.gg/gJgRuwC3MP 👈"
 
 -- Send the ASCII art message only for the new chat system
 if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
     chatMessage(asciiMessage)
 end
+
 wait(0.3)
+
 -- Send the appropriate message based on the chat system
-if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
-    -- New chat system
-    chatMessage(newMessage)
-else
-    -- Old chat system
-    chatMessage(oldMessage)
+local function sendMessage()
+    if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+        -- New chat system
+        chatMessage(newMessage)
+    else
+        -- Old chat system
+        chatMessage(oldMessage)
+    end
 end
 
+-- Retry mechanism in case the message fails to send
+local retries = 3
+while retries > 0 do
+    local success, err = pcall(sendMessage)
+    if success then
+        break
+    else
+        warn("Failed to send message: " .. err)
+        retries = retries - 1
+        wait(1) -- Wait before retrying
+    end
+end
+
+if retries == 0 then
+    warn("Failed to send message after multiple attempts.")
+end
 
 elseif command == "!rj" then
 local Players = game:GetService("Players")
