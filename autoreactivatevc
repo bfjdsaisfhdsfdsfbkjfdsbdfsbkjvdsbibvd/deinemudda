@@ -1,0 +1,11 @@
+while wait() do
+    local frame = game:GetService("CoreGui").TopBarApp.UnibarLeftFrame.UnibarMenu["2"]["3"]
+    if frame then
+        if not frame:FindFirstChild("toggle_mic_mute") then
+            task.wait(3)  -- Use task.wait for more accurate timing
+            game:GetService("VoiceChatService"):joinVoice()
+        end
+    else
+    task.wait(3) -- wait before checking again
+end
+end
