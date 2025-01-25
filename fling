@@ -160,8 +160,6 @@ local UI = createEnhancedUI()
 -- Player List Population Function
 local function updatePlayerList()
 	local playersProcessed = {}
-    local playerList = Players:GetPlayers()
-    local totalHeight = 0
 
     for _, child in ipairs(UI.PlayerScrollFrame:GetChildren()) do
         if child:IsA("Frame") then
@@ -169,11 +167,13 @@ local function updatePlayerList()
         end
     end
 
-
-    for i, player in ipairs(playerList) do
-		if not playersProcessed[player] and player ~= LocalPlayer then
-			playersProcessed[player] = true
-			
+    local totalHeight = 0 -- Track the total height of the player entries
+    local playerList = Players:GetPlayers()
+    
+    for _, player in ipairs(playerList) do
+         if player and player ~= LocalPlayer and not playersProcessed[player] then
+            playersProcessed[player] = true
+            
             local PlayerFrame = Instance.new("Frame")
             PlayerFrame.Size = UDim2.new(1, 0, 0, 30)
             PlayerFrame.BackgroundColor3 = Colors.Primary
@@ -255,7 +255,7 @@ local function updatePlayerList()
             end)
             
             totalHeight = totalHeight + 30 + UI.PlayerListLayout.Padding.Offset
-		end
+        end
     end
     
     local frameHeight = UI.PlayerScrollFrame.AbsoluteSize.Y
@@ -484,6 +484,14 @@ end)
 UI.TargetButton.MouseButton1Click:Connect(function()
     UI.PlayerListFrame.Visible = not UI.PlayerListFrame.Visible
     updatePlayerList()
+end)
+
+Players.PlayerAdded:Connect(function()
+    updatePlayerList()
+end)
+
+Players.PlayerRemoving:Connect(function()
+   updatePlayerList() 
 end)
 
 -- Initialize
