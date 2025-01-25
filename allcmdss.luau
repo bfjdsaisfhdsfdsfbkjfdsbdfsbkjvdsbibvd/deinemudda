@@ -99,5 +99,6 @@ _G.cmds = {
     ["!voidoof"] = "https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/refs/heads/main/voidoof",
     ["!walkonair"] = "https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/refs/heads/main/Walkonair",
     ["!walkonvoid"] = "https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/main/Walkonvoid",
-    ["!walkonwalls"] = "https://raw.githubusercontent.com/sinret/rbxscript.com-scripts-reuploads-/main/WalkOnWalls"
+    ["!walkonwalls"] = "https://raw.githubusercontent.com/sinret/rbxscript.com-scripts-reuploads-/main/WalkOnWalls",
+    ["!adbot"] = "https://raw.githubusercontent.com/bloxi123/Roblox-Scripts/refs/heads/main/qtp%20roblox%20ad%20bot.luau"
 }
