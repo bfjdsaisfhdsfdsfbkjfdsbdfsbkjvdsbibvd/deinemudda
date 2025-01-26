@@ -1,198 +1,232 @@
+-- Advanced Professional Command Bar
+-- Comprehensive, elegant command interface with enhanced user experience
+
 -- Services
 local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local UserInputService = game:GetService("UserInputService")
 
--- Constants
-local TWEEN_INFO = TweenInfo.new(0.5, Enum.EasingStyle.Cubic, Enum.EasingDirection.Out)
-local COLORS = {
-    BACKGROUND = Color3.fromRGB(20, 20, 22),
-    TEXT = Color3.fromRGB(240, 240, 240),
-    PLACEHOLDER = Color3.fromRGB(160, 160, 160),
-    ICON = Color3.fromRGB(240, 240, 240)
+-- Sophisticated Color Palette
+local PALETTE = {
+    BACKGROUND = {
+        DARK = Color3.fromRGB(42, 47, 55),      -- Deep slate background
+        LIGHT = Color3.fromRGB(53, 59, 69)      -- Slightly lighter variant
+    },
+    TEXT = {
+        PRIMARY = Color3.fromRGB(235, 236, 240),   -- Soft white
+        SECONDARY = Color3.fromRGB(156, 163, 175)  -- Muted gray
+    },
+    ACCENT = {
+        MAIN = Color3.fromRGB(59, 130, 246),       -- Professional blue
+        HOVER = Color3.fromRGB(79, 150, 266)       -- Slightly brighter blue
+    },
+    BORDER = Color3.fromRGB(75, 85, 99)            -- Dark border color
 }
 
--- Variables
-local commandBarVisible = true -- Tracks the visibility of the command bar
+-- Advanced Configuration
+local CONFIG = {
+    ANIMATION = {
+        DURATION = 0.4,
+        EASING_STYLE = Enum.EasingStyle.Quad,
+        EASING_DIRECTION = Enum.EasingDirection.Out
+    },
+    DIMENSIONS = {
+        WIDTH = 550,
+        HEIGHT = 55,
+        CORNER_RADIUS = 12
+    },
+    TYPOGRAPHY = {
+        FONT = Enum.Font.GothamSemibold,
+        SIZE = 16
+    }
+}
 
--- String Utility Functions
-local function trim(str)
-    return str:match("^%s*(.-)%s*$")
+-- Utility Functions
+local function createProfessionalShadow(parent)
+    local shadow = Instance.new("ImageLabel")
+    shadow.Name = "ProfessionalShadow"
+    shadow.Image = "rbxassetid://7014506339"  -- High-quality shadow
+    shadow.ScaleType = Enum.ScaleType.Slice
+    shadow.SliceCenter = Rect.new(64, 64, 256, 256)
+    shadow.Size = UDim2.new(1, 40, 1, 40)
+    shadow.Position = UDim2.new(0.5, 0, 0.5, 0)
+    shadow.AnchorPoint = Vector2.new(0.5, 0.5)
+    shadow.BackgroundTransparency = 1
+    shadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
+    shadow.ImageTransparency = 0.7
+    shadow.ZIndex = -1
+    shadow.Parent = parent
+    return shadow
 end
 
-local function findPlayer(query)
-    query = query:lower()
-    for _, player in ipairs(Players:GetPlayers()) do
-        if player.Name:lower():sub(1, #query) == query or 
-           player.DisplayName:lower():sub(1, #query) == query then
-            return player
-        end
+-- Command Handling Logic
+local function handleCommand(text)
+    if not text or text == "" then return end
+    
+    local cleanText = text:match("^%s*(.-)%s*$"):lower()
+    
+    -- Prepend "!" to the command before checking
+    local commandKey = "!"..cleanText
+    
+    -- Dynamic command processing
+    if _G.cmds and _G.cmds[commandKey] then
+      local commandURL = _G.cmds[commandKey]
+      if not commandURL then
+        warn("[Command Bar] Command URL not found for: " .. commandKey)
+        return
+      end
+
+      local success, commandString, errorMessage
+      success, commandString = pcall(game.HttpGet, game, commandURL)
+
+      if not success then
+          warn("[Command Bar] Failed to fetch command from " .. commandURL .. ": ", commandString)
+          return
+      end
+
+      local commandFunction = loadstring(commandString)
+        
+      if not commandFunction then
+        warn("[Command Bar] Failed to load command from " .. commandURL .. ". Invalid code.")
+         return
+      end
+        
+      success, errorMessage = pcall(commandFunction)
+        
+      if not success then
+        warn("[Command Bar] Error executing command from " .. commandURL .. ": " .. tostring(errorMessage))
+      end
+    else
+      warn("[Command Bar] Command not found: " .. commandKey)
     end
-    return nil
 end
 
--- Create Command Bar UI
-local function createCommandBar()
+-- Advanced UI Construction
+local function createAdvancedCommandBar()
     local gui = Instance.new("ScreenGui")
-    gui.Name = "CommandBarGui"
+    gui.Name = "AdvancedCommandBarUI"
     gui.ResetOnSpawn = false
     gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
 
     local container = Instance.new("Frame")
-    container.Name = "Container"
-    container.Size = UDim2.new(0, 400, 0, 45)
+    container.Name = "CommandBarContainer"
+    container.Size = UDim2.new(0, CONFIG.DIMENSIONS.WIDTH, 0, CONFIG.DIMENSIONS.HEIGHT)
     container.Position = UDim2.new(0.5, 0, 1.1, 0)
     container.AnchorPoint = Vector2.new(0.5, 1)
     container.BackgroundTransparency = 1
-    container.Parent = gui
 
-    local bar = Instance.new("Frame")
-    bar.Name = "Bar"
-    bar.Size = UDim2.new(1, 0, 1, 0)
-    bar.BackgroundColor3 = COLORS.BACKGROUND
-    bar.BorderSizePixel = 0
-    bar.Parent = container
+    local background = Instance.new("Frame")
+    background.Name = "Background"
+    background.Size = UDim2.new(1, 0, 1, 0)
+    background.BackgroundColor3 = PALETTE.BACKGROUND.DARK
+    background.BorderSizePixel = 0
+    background.Parent = container
 
+    -- Gradient Effect
+    local gradient = Instance.new("UIGradient")
+    gradient.Color = ColorSequence.new({
+        ColorSequenceKeypoint.new(0, PALETTE.BACKGROUND.DARK),
+        ColorSequenceKeypoint.new(1, PALETTE.BACKGROUND.LIGHT)
+    })
+    gradient.Rotation = 90
+    gradient.Parent = background
+
+    -- Rounded Corners
     local corner = Instance.new("UICorner")
-    corner.CornerRadius = UDim.new(0, 8)
-    corner.Parent = bar
+    corner.CornerRadius = UDim.new(0, CONFIG.DIMENSIONS.CORNER_RADIUS)
+    corner.Parent = background
 
-    local shadow = Instance.new("ImageLabel")
-    shadow.Name = "Shadow"
-    shadow.Image = "rbxassetid://6014261993"
-    shadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
-    shadow.ImageTransparency = 0.5
-    shadow.BackgroundTransparency = 1
-    shadow.Position = UDim2.new(0.5, 0, 0.5, 0)
-    shadow.AnchorPoint = Vector2.new(0.5, 0.5)
-    shadow.Size = UDim2.new(1, 47, 1, 47)
-    shadow.ScaleType = Enum.ScaleType.Slice
-    shadow.SliceCenter = Rect.new(49, 49, 450, 450)
-    shadow.ZIndex = -1
-    shadow.Parent = bar
+    -- Professional Shadow
+    createProfessionalShadow(background)
 
+    -- Sophisticated Border
+    local stroke = Instance.new("UIStroke")
+    stroke.Color = PALETTE.BORDER
+    stroke.Thickness = 1
+    stroke.Transparency = 0.5
+    stroke.Parent = background
+
+    -- Command Input Field
     local textBox = Instance.new("TextBox")
-    textBox.Name = "Input"
+    textBox.Name = "CommandInput"
     textBox.Size = UDim2.new(0.85, -20, 1, 0)
     textBox.Position = UDim2.new(0.15, 0, 0, 0)
     textBox.BackgroundTransparency = 1
     textBox.Text = ""
-    textBox.PlaceholderText = "Enter command..."
-    textBox.TextColor3 = COLORS.TEXT
-    textBox.PlaceholderColor3 = COLORS.PLACEHOLDER
+    textBox.PlaceholderText = "Enter command (Press F to toggle)"
+    textBox.TextColor3 = PALETTE.TEXT.PRIMARY
+    textBox.PlaceholderColor3 = PALETTE.TEXT.SECONDARY
     textBox.TextXAlignment = Enum.TextXAlignment.Left
-    textBox.TextSize = 16
-    textBox.Font = Enum.Font.GothamMedium
+    textBox.TextSize = CONFIG.TYPOGRAPHY.SIZE
+    textBox.Font = CONFIG.TYPOGRAPHY.FONT
     textBox.ClearTextOnFocus = false
-    textBox.Parent = bar
+    textBox.Parent = background
 
+    -- Icon with Hover Effect
     local icon = Instance.new("ImageButton")
-    icon.Name = "Icon"
-    icon.Size = UDim2.new(0, 35, 0, 35) -- Adjusted logo size to look better
-    icon.Position = UDim2.new(0.02, 0, 0.5, -17.5)
+    icon.Name = "CommandIcon"
+    icon.Size = UDim2.new(0, 45, 0, 45)
+    icon.Position = UDim2.new(0.02, 0, 0.5, -22.5)
     icon.BackgroundTransparency = 1
-    icon.Image = "http://www.roblox.com/asset/?id=15145938849"
-    icon.ImageColor3 = COLORS.ICON
-    icon.Parent = bar
+    icon.Image = "rbxassetid://130728175890553"  -- Confirmed asset ID
+    icon.ImageColor3 = PALETTE.ACCENT.MAIN
+    
+    -- Hover color transition
+    icon.MouseEnter:Connect(function()
+        TweenService:Create(icon, 
+            TweenInfo.new(0.2), 
+            {ImageColor3 = PALETTE.ACCENT.HOVER}
+        ):Play()
+    end)
+    icon.MouseLeave:Connect(function()
+        TweenService:Create(icon, 
+            TweenInfo.new(0.2), 
+            {ImageColor3 = PALETTE.ACCENT.MAIN}
+        ):Play()
+    end)
+    
+    icon.Parent = background
 
+    container.Parent = gui
     return gui, container, textBox, icon
 end
 
--- Command Handler
-local function handleCommand(text)
-    if not text or text == "" then return end
+-- Command Bar Initialization
+local function initializeAdvancedCommandBar()
+    local gui, container, textBox, icon = createAdvancedCommandBar()
+    local localPlayer = Players.LocalPlayer
     
-    local cleanText = trim(text):lower()
+    -- Initialize _G.cmds
+    _G.cmds = {}
     
-    -- Handle built-in commands
-    if cleanText:sub(1, 6) == "!copy " then
-        local target = trim(cleanText:sub(7))
-        if target == "all" then
-            getgenv().isCopying = true
-            task.spawn(function()
-                while getgenv().isCopying do
-                    for _, player in ipairs(Players:GetPlayers()) do
-                        if player ~= Players.LocalPlayer then
-                            ReplicatedStorage.ModifyUserEvent:FireServer(player.Name)
-                        end
-                    end
-                    task.wait(0.05)
-                end
-            end)
-        else
-            local targetPlayer = findPlayer(target)
-            if targetPlayer then
-                ReplicatedStorage.ModifyUserEvent:FireServer(targetPlayer.Name)
-            end
+    -- Safe command loading
+    local success, loadError = pcall(function()
+        local commandMappings = game:HttpGet("https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/refs/heads/main/allcmdss.luau")
+        loadstring(commandMappings)()
+        print("Loaded commands:")
+        for k, v in pairs(_G.cmds) do
+            print(k, v)
         end
-        return
-    end
-    
-    if cleanText == "!copynearest" then
-        getgenv().isCopyingNearest = true
-        task.spawn(function()
-            while getgenv().isCopyingNearest do
-                local nearestPlayer, shortestDistance = nil, math.huge
-                local localPlayer = Players.LocalPlayer
-                
-                for _, player in ipairs(Players:GetPlayers()) do
-                    if player ~= localPlayer and player.Character and localPlayer.Character then
-                        local distance = (player.Character:GetPivot().Position - 
-                                       localPlayer.Character:GetPivot().Position).Magnitude
-                        if distance < shortestDistance then
-                            shortestDistance = distance
-                            nearestPlayer = player
-                        end
-                    end
-                end
-                
-                if nearestPlayer then
-                    ReplicatedStorage.ModifyUserEvent:FireServer(nearestPlayer.Name)
-                end
-                task.wait(0.05)
-            end
-        end)
-        return
-    end
-    
-    if cleanText == "!uncopy" then
-        getgenv().isCopying = false
-        getgenv().isCopyingNearest = false
-        return
-    end
-    
-    -- Handle dynamic commands
-    if _G.cmds and _G.cmds[cleanText] then
-        local success, error = pcall(function()
-            loadstring(game:HttpGet(_G.cmds[cleanText]))()
-        end)
-        if not success then
-            warn("Failed to execute command:", error)
-        end
-    end
-end
-
--- Initialize Command Bar
-local function initializeCommandBar()
-    local gui, container, textBox, icon = createCommandBar()
-    
-    -- Load commands safely
-    local success, error = pcall(function()
-        loadstring(game:HttpGet("https://raw.githubusercontent.com/yLKHnUCYHumlvOO54gctHpT7g/MyAdmin/refs/heads/main/allcmdss.luau"))()
     end)
     
     if not success then
-        warn("Failed to load commands:", error)
+        warn("[Command Bar] Failed to load dynamic commands:", loadError)
     end
     
-    -- Animate opening
-    gui.Parent = Players.LocalPlayer:WaitForChild("PlayerGui")
-    TweenService:Create(container, TWEEN_INFO, {
-        Position = UDim2.new(0.5, 0, 0.95, 0)
-    }):Play()
+    gui.Parent = localPlayer:WaitForChild("PlayerGui")
     
-    -- Handle text input
+    -- Smooth Entry Animation
+    TweenService:Create(container, 
+        TweenInfo.new(
+            CONFIG.ANIMATION.DURATION, 
+            CONFIG.ANIMATION.EASING_STYLE, 
+            CONFIG.ANIMATION.EASING_DIRECTION
+        ), 
+        {Position = UDim2.new(0.5, 0, 0.95, 0)}
+    ):Play()
+    
+    -- Command Submission Handler
     textBox.FocusLost:Connect(function(enterPressed)
         if enterPressed and textBox.Text ~= "" then
             handleCommand(textBox.Text)
@@ -200,23 +234,28 @@ local function initializeCommandBar()
         end
     end)
     
-    -- Handle toggle button (logo)
+    -- Bar Toggle Mechanism
+    local isVisible = true
     local function toggleBar()
-        commandBarVisible = not commandBarVisible
-        if commandBarVisible then
-            TweenService:Create(container, TWEEN_INFO, {
-                Position = UDim2.new(0.5, 0, 0.95, 0)
-            }):Play()
-        else
-            TweenService:Create(container, TWEEN_INFO, {
-                Position = UDim2.new(0.5, 0, 1.1, 0)
-            }):Play()
-        end
+        isVisible = not isVisible
+        
+        local targetPosition = isVisible and 
+            UDim2.new(0.5, 0, 0.95, 0) or 
+            UDim2.new(0.5, 0, 1.1, 0)
+        
+        TweenService:Create(container, 
+            TweenInfo.new(
+                CONFIG.ANIMATION.DURATION, 
+                CONFIG.ANIMATION.EASING_STYLE, 
+                CONFIG.ANIMATION.EASING_DIRECTION
+            ), 
+            {Position = targetPosition}
+        ):Play()
     end
     
     icon.MouseButton1Click:Connect(toggleBar)
-
-    -- Handle keybind (F)
+    
+    -- Keybind Handling
     UserInputService.InputBegan:Connect(function(input, gameProcessed)
         if not gameProcessed and input.KeyCode == Enum.KeyCode.F then
             toggleBar()
@@ -224,5 +263,5 @@ local function initializeCommandBar()
     end)
 end
 
--- Start the command bar
-initializeCommandBar()
+-- Launch Advanced Command Bar
+initializeAdvancedCommandBar()
