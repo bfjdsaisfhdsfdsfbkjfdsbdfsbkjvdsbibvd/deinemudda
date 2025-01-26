@@ -176,13 +176,13 @@ local asciiMessage = blob .. "\r" ..
 -- Formatted message (common for both systems)
 wait(0.1)
 local newMessage = blob .. "\r" ..
-"🔥 AK ADMIN 🔥" .. blob .. "\r" ..
-"--------------" .. blob .. "\r" ..
-"Pụṛc̣ḥạṣẹ Ḷịf̣ẹṭiṃẹ!" .. blob .. "\r" ..
-"---------------" .. blob .. "\r" ..
-"Or use points for free!" .. blob .. "\r" ..
-"---------------" .. blob .. "\r" ..
-"👉 ḍịṣcọrḍ.gg/gJgRuwC3MP 👈" 
+        "🔥 AK ADMIN 🔥" .. blob .. "\r" ..
+        "--------------" .. blob .. "\r" ..
+        "Pụṛc̣ḥaṣẹ Ḷịf̣ẹtiṃẹ!" .. blob .. "\r" ..
+        "---------------" .. blob .. "\r" ..
+        "Oṛ use points for frẹẹ!" .. blob .. "\r" ..
+        "---------------" .. blob .. "\r" ..
+        "👉 ḍịṣcọrḍ.gg/gJgRuwC3MP 👈" 
 
 -- New message for the old chat system (without ASCII art)
 local oldMessage = "🔥 AK ADMIN 🔥  Pụṛc̣ḥạṣẹ Ḷịf̣ẹṭiṃẹ! Or use points for free! 👉 ḍịṣcọrḍ.gg/gJgRuwC3MP 👈"
