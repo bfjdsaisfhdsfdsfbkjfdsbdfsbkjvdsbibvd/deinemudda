@@ -24,7 +24,7 @@ local function createNotification(title, text, duration, suggestion, suggestionC
     end
 
     local notification = Instance.new("Frame")
-    notification.Size = UDim2.new(0, 250, 0, 100)
+    notification.Size = UDim2.new(0, 300, 0, 120) -- Increased Size
     notification.Position = UDim2.new(1, 50, 0.02, 0)
     notification.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
     notification.BackgroundTransparency = 0
@@ -60,18 +60,18 @@ local function createNotification(title, text, duration, suggestion, suggestionC
     titleLabel.BackgroundTransparency = 1
     titleLabel.Font = Enum.Font.GothamBold
     titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    titleLabel.TextSize = 14
+    titleLabel.TextSize = 16 -- Increased text size
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.Text = title
     titleLabel.Parent = notification
 
     local messageLabel = Instance.new("TextLabel")
-    messageLabel.Size = UDim2.new(1, -20, 0, 40)
-    messageLabel.Position = UDim2.new(0, 10, 0, 30)
+    messageLabel.Size = UDim2.new(1, -20, 0, 60) -- Increased size to fit more text
+    messageLabel.Position = UDim2.new(0, 10, 0, 30) -- Adjusted position
     messageLabel.BackgroundTransparency = 1
     messageLabel.Font = Enum.Font.Gotham
     messageLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-    messageLabel.TextSize = 13
+    messageLabel.TextSize = 14 -- Increased text size
     messageLabel.TextWrapped = true
     messageLabel.TextXAlignment = Enum.TextXAlignment.Left
     messageLabel.Text = text
@@ -164,7 +164,7 @@ local function createNotification(title, text, duration, suggestion, suggestionC
 
     local slideTween = TweenService:Create(notification,
         TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
-        {Position = UDim2.new(1, -270, 0.02, 0)}
+        {Position = UDim2.new(1, -320, 0.02, 0)} -- Adjusted position
     )
     slideTween:Play()
 
@@ -319,12 +319,29 @@ local function executeCommand(command)
     end
 end
 
+
+local function loadCommandBar()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/refs/heads/main/Cmdsbar"))()
+    createNotification(
+        "Success",
+        "Command bar loaded.",
+        3,
+        false
+    )
+end
+
+
 task.wait(1)
 createNotification(
     "AK ADMIN",
-    "Welcome to AK ADMIN! Type !cmds to see the available commands.",
-    8,
-    false
+    "Welcome to AK ADMIN! Would you like to load the command bar?",
+    10,
+	true,
+    function(accepted)
+		if accepted then
+			loadCommandBar()
+		end
+	end
 )
 
 local lastInput = ""
