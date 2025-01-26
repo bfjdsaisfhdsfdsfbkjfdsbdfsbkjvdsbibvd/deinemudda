@@ -76,7 +76,7 @@ local function createEnhancedUI()
     ToggleButton.TextSize = 12
     ToggleButton.Parent = ToggleTargetFrame
     
-      local ToggleButtonCorner = Instance.new("UICorner")
+    local ToggleButtonCorner = Instance.new("UICorner")
     ToggleButtonCorner.CornerRadius = UDim.new(0, 8)
     ToggleButtonCorner.Parent = ToggleButton
     
@@ -157,109 +157,127 @@ end
 
 local UI = createEnhancedUI()
 
--- Player List Population Function
-local function updatePlayerList()
-	local playersProcessed = {}
+-- Player Entry Creation Function
+local function createPlayerEntry(player)
+    local PlayerFrame = Instance.new("Frame")
+    PlayerFrame.Size = UDim2.new(1, 0, 0, 30)
+    PlayerFrame.BackgroundColor3 = Colors.Primary
+    PlayerFrame.Parent = UI.PlayerScrollFrame
 
-    for _, child in ipairs(UI.PlayerScrollFrame:GetChildren()) do
-        if child:IsA("Frame") then
-            child:Destroy()
-        end
-    end
+    local PlayerFrameCorner = Instance.new("UICorner")
+    PlayerFrameCorner.CornerRadius = UDim.new(0, 6)
+    PlayerFrameCorner.Parent = PlayerFrame
 
-    local totalHeight = 0 -- Track the total height of the player entries
-    local playerList = Players:GetPlayers()
-    
-    for _, player in ipairs(playerList) do
-         if player and player ~= LocalPlayer and not playersProcessed[player] then
-            playersProcessed[player] = true
-            
-            local PlayerFrame = Instance.new("Frame")
-            PlayerFrame.Size = UDim2.new(1, 0, 0, 30)
-            PlayerFrame.BackgroundColor3 = Colors.Primary
-            PlayerFrame.Parent = UI.PlayerScrollFrame
-            
-             local PlayerFrameCorner = Instance.new("UICorner")
-            PlayerFrameCorner.CornerRadius = UDim.new(0, 6)
-            PlayerFrameCorner.Parent = PlayerFrame
+    local PlayerButton = Instance.new("TextButton")
+    PlayerButton.Size = UDim2.new(0.7, 0, 1, 0)
+    PlayerButton.Position = UDim2.new(0.05,0,0,0)
+    PlayerButton.BackgroundColor3 = Colors.Primary
+    PlayerButton.Text = ""
+    PlayerButton.TextColor3 = Colors.Text
+    PlayerButton.Font = Enum.Font.GothamMedium
+    PlayerButton.TextSize = 10
+    PlayerButton.TextXAlignment = Enum.TextXAlignment.Left
+    PlayerButton.Parent = PlayerFrame
 
-            local PlayerButton = Instance.new("TextButton")
-            PlayerButton.Size = UDim2.new(0.7, 0, 1, 0)
-			PlayerButton.Position = UDim2.new(0.05,0,0,0)
+    local PlayerButtonCorner = Instance.new("UICorner")
+    PlayerButtonCorner.CornerRadius = UDim.new(0, 6)
+    PlayerButtonCorner.Parent = PlayerButton
+
+    local PlayerThumbnail = Instance.new("ImageLabel")
+    PlayerThumbnail.Size = UDim2.new(0, 20, 0, 20)
+    PlayerThumbnail.Position = UDim2.new(0, 5, 0.5, -10)
+    PlayerThumbnail.BackgroundTransparency = 1
+    PlayerThumbnail.Image = Players:GetUserThumbnailAsync(player.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48)
+    PlayerThumbnail.Parent = PlayerButton
+
+    local PlayerNameLabel = Instance.new("TextLabel")
+    PlayerNameLabel.Size = UDim2.new(1, -40, 1, 0)
+    PlayerNameLabel.Position = UDim2.new(0, 30, 0, 0)
+    PlayerNameLabel.BackgroundTransparency = 1
+    PlayerNameLabel.TextColor3 = Colors.Text
+    PlayerNameLabel.Font = Enum.Font.GothamMedium
+    PlayerNameLabel.TextSize = 10
+    PlayerNameLabel.TextXAlignment = Enum.TextXAlignment.Left
+    PlayerNameLabel.Text = player.Name
+    PlayerNameLabel.Parent = PlayerButton
+
+    local ViewButton = Instance.new("TextButton")
+    ViewButton.Size = UDim2.new(0.3, 0, 1, 0)
+    ViewButton.Position = UDim2.new(0.7, 0, 0, 0)
+    ViewButton.BackgroundColor3 = Colors.Primary
+    ViewButton.Text = "👁️"
+    ViewButton.TextColor3 = Colors.Text
+    ViewButton.Font = Enum.Font.GothamBold
+    ViewButton.TextSize = 10
+    ViewButton.Parent = PlayerFrame
+
+    local ViewButtonCorner = Instance.new("UICorner")
+    ViewButtonCorner.CornerRadius = UDim.new(0, 6)
+    ViewButtonCorner.Parent = ViewButton
+
+     PlayerButton.MouseButton1Click:Connect(function()
+        if table.find(targetPlayers, player) then
+            table.remove(targetPlayers, table.find(targetPlayers, player))
             PlayerButton.BackgroundColor3 = Colors.Primary
-            PlayerButton.Text = ""
-            PlayerButton.TextColor3 = Colors.Text
-            PlayerButton.Font = Enum.Font.GothamMedium
-            PlayerButton.TextSize = 10
-            PlayerButton.TextXAlignment = Enum.TextXAlignment.Left
-            PlayerButton.Parent = PlayerFrame
-            
-             local PlayerButtonCorner = Instance.new("UICorner")
-            PlayerButtonCorner.CornerRadius = UDim.new(0, 6)
-            PlayerButtonCorner.Parent = PlayerButton
+        else
+            table.insert(targetPlayers, player)
+            PlayerButton.BackgroundColor3 = Colors.Highlight
+        end
+    end)
 
-            local PlayerThumbnail = Instance.new("ImageLabel")
-            PlayerThumbnail.Size = UDim2.new(0, 20, 0, 20)
-            PlayerThumbnail.Position = UDim2.new(0, 5, 0.5, -10)
-            PlayerThumbnail.BackgroundTransparency = 1
-            PlayerThumbnail.Image = Players:GetUserThumbnailAsync(player.UserId, Enum.ThumbnailType.HeadShot, Enum.ThumbnailSize.Size48x48)
-            PlayerThumbnail.Parent = PlayerButton
+    ViewButton.MouseButton1Click:Connect(function()
+        if table.find(viewingPlayers, player) then
+           table.remove(viewingPlayers, table.find(viewingPlayers, player))
+           ViewButton.BackgroundColor3 = Colors.Primary
+           if workspace.CurrentCamera.CameraSubject == player.Character:FindFirstChild("Head") then
+              workspace.CurrentCamera.CameraSubject = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
+           end
+       else
+           table.insert(viewingPlayers, player)
+           ViewButton.BackgroundColor3 = Colors.Highlight
+       end
+   end)
 
-            local PlayerNameLabel = Instance.new("TextLabel")
-            PlayerNameLabel.Size = UDim2.new(1, -40, 1, 0)
-            PlayerNameLabel.Position = UDim2.new(0, 30, 0, 0) -- Move the username a bit to the right
-            PlayerNameLabel.BackgroundTransparency = 1
-            PlayerNameLabel.TextColor3 = Colors.Text
-            PlayerNameLabel.Font = Enum.Font.GothamMedium
-            PlayerNameLabel.TextSize = 10
-            PlayerNameLabel.TextXAlignment = Enum.TextXAlignment.Left
-            PlayerNameLabel.Text = player.Name
-            PlayerNameLabel.Parent = PlayerButton
+    return PlayerFrame
+end
 
-            local ViewButton = Instance.new("TextButton")
-            ViewButton.Size = UDim2.new(0.3, 0, 1, 0)
-			ViewButton.Position = UDim2.new(0.7, 0, 0, 0)
-			ViewButton.BackgroundColor3 = Colors.Primary
-			ViewButton.Text = "👁️"
-			ViewButton.TextColor3 = Colors.Text
-			ViewButton.Font = Enum.Font.GothamBold
-			ViewButton.TextSize = 10
-			ViewButton.Parent = PlayerFrame
+-- Player List Management
+local playerEntries = {}
+local function updatePlayerList()
+    local players = Players:GetPlayers()
+    local totalHeight = 0
 
-            local ViewButtonCorner = Instance.new("UICorner")
-            ViewButtonCorner.CornerRadius = UDim.new(0, 6)
-            ViewButtonCorner.Parent = ViewButton
-            
-             PlayerButton.MouseButton1Click:Connect(function()
-				if table.find(targetPlayers, player) then
-					table.remove(targetPlayers, table.find(targetPlayers, player))
-					PlayerButton.BackgroundColor3 = Colors.Primary
-				else
-					table.insert(targetPlayers, player)
-					PlayerButton.BackgroundColor3 = Colors.Highlight
-				end
-			end)
+    -- Add new players
+    for _, player in ipairs(players) do
+        if player ~= LocalPlayer and not playerEntries[player] then
+            local playerEntry = createPlayerEntry(player)
+            playerEntries[player] = playerEntry
+        end
+    end
 
-
-           ViewButton.MouseButton1Click:Connect(function()
-                 if table.find(viewingPlayers, player) then
-                    table.remove(viewingPlayers, table.find(viewingPlayers, player))
-                    ViewButton.BackgroundColor3 = Colors.Primary
-                     if workspace.CurrentCamera.CameraSubject == player.Character:FindFirstChild("Head") then
-                        workspace.CurrentCamera.CameraSubject = LocalPlayer.Character:FindFirstChildOfClass("Humanoid")
-                    end
-                else
-                     table.insert(viewingPlayers, player)
-                    ViewButton.BackgroundColor3 = Colors.Highlight
-                end
-            end)
-            
-            totalHeight = totalHeight + 30 + UI.PlayerListLayout.Padding.Offset
+     -- Remove old players
+    for player, entry in pairs(playerEntries) do
+        local found = false
+        for _, p in ipairs(players) do
+            if p == player then
+                found = true
+                break
+            end
+        end
+        if not found then
+           entry:Destroy()
+           playerEntries[player] = nil
         end
     end
     
-    local frameHeight = UI.PlayerScrollFrame.AbsoluteSize.Y
-    if totalHeight > frameHeight then
+     for _, entry in pairs(UI.PlayerScrollFrame:GetChildren()) do
+        if entry:IsA("Frame") then
+             totalHeight = totalHeight + entry.AbsoluteSize.Y + UI.PlayerListLayout.Padding.Offset
+         end
+     end
+
+  local frameHeight = UI.PlayerScrollFrame.AbsoluteSize.Y
+  if totalHeight > frameHeight then
         UI.PlayerScrollFrame.CanvasSize = UDim2.new(0,0,0, totalHeight) -- makes it scrollable
     else
         UI.PlayerScrollFrame.CanvasSize = UDim2.new(0,0,0,0) -- if not many players make not scrollable
@@ -486,12 +504,20 @@ UI.TargetButton.MouseButton1Click:Connect(function()
     updatePlayerList()
 end)
 
-Players.PlayerAdded:Connect(function()
-    updatePlayerList()
+Players.PlayerAdded:Connect(function(player)
+    if player ~= LocalPlayer then
+      local playerEntry = createPlayerEntry(player)
+      playerEntries[player] = playerEntry
+        updatePlayerList()
+    end
 end)
 
-Players.PlayerRemoving:Connect(function()
-   updatePlayerList() 
+Players.PlayerRemoving:Connect(function(player)
+    if playerEntries[player] then
+        playerEntries[player]:Destroy()
+        playerEntries[player] = nil
+    end
+     updatePlayerList()
 end)
 
 -- Initialize
