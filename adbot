@@ -316,7 +316,7 @@ end)
 local queueteleport = (syn and syn.queue_on_teleport) or queue_on_teleport or (fluxus and fluxus.queue_on_teleport)
 if queueteleport then
     local teleportScript = [[
-        loadstring(game:HttpGet('https://raw.githubusercontent.com/LOLkeeptrying/AKADMIN/refs/heads/main/Congratslol'))()
+        loadstring(game:HttpGet('https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/refs/heads/main/adbot'))()
     ]]
     queueteleport(teleportScript)
     print("Script queued for execution upon teleport.")
