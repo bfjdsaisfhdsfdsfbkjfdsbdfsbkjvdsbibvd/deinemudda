@@ -16,16 +16,11 @@ NotificationGui.Name = "AKAdminNotifications"
 NotificationGui.ResetOnSpawn = false
 NotificationGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 
-local function createNotification(title, text, duration, suggestion, suggestionCallback)
-    for _, child in pairs(NotificationGui:GetChildren()) do
-        if child:IsA("Frame") then
-            child:Destroy()
-        end
-    end
 
+local function createNotification(title, text, duration, suggestion, suggestionCallback, offset)
     local notification = Instance.new("Frame")
-    notification.Size = UDim2.new(0, 300, 0, 120) -- Increased Size
-    notification.Position = UDim2.new(1, 50, 0.02, 0)
+    notification.Size = UDim2.new(0, 300, 0, 120) -- Increased size
+    notification.Position = UDim2.new(1, 50, 0.02 + (offset or 0), 0)
     notification.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
     notification.BackgroundTransparency = 0
     notification.BorderSizePixel = 0
@@ -60,7 +55,7 @@ local function createNotification(title, text, duration, suggestion, suggestionC
     titleLabel.BackgroundTransparency = 1
     titleLabel.Font = Enum.Font.GothamBold
     titleLabel.TextColor3 = Color3.fromRGB(255, 255, 255)
-    titleLabel.TextSize = 16 -- Increased text size
+    titleLabel.TextSize = 16
     titleLabel.TextXAlignment = Enum.TextXAlignment.Left
     titleLabel.Text = title
     titleLabel.Parent = notification
@@ -164,7 +159,7 @@ local function createNotification(title, text, duration, suggestion, suggestionC
 
     local slideTween = TweenService:Create(notification,
         TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.Out),
-        {Position = UDim2.new(1, -320, 0.02, 0)} -- Adjusted position
+        {Position = UDim2.new(1, -320, 0.02 + (offset or 0), 0)}
     )
     slideTween:Play()
 
@@ -177,7 +172,7 @@ local function createNotification(title, text, duration, suggestion, suggestionC
     task.delay(duration, function()
         local slideOutTween = TweenService:Create(notification,
             TweenInfo.new(0.7, Enum.EasingStyle.Back, Enum.EasingDirection.In),
-            {Position = UDim2.new(1, 50, 0.02, 0)}
+           {Position = UDim2.new(1, 50, 0.02 + (offset or 0), 0)}
         )
         slideOutTween:Play()
         
@@ -280,7 +275,9 @@ local function executeCommand(command)
             "Success",
             "Executed command: " .. command,
             3,
-            false
+            false,
+            nil,
+            0
         )
     else
         local suggestion = suggestClosestCommand(command)
@@ -301,19 +298,24 @@ local function executeCommand(command)
                                     "Success",
                                     "Executed command: " .. suggestion,
                                     3,
-                                    false
+                                    false,
+                                    nil,
+                                    0
                                 )
                             else
                                 createNotification(
                                     "Error",
                                     "Failed to execute command: " .. suggestion,
                                     5,
-                                    false
+                                    false,
+                                    nil,
+                                    0
                                 )
                             end
                         end
                     end
-                end
+                end,
+                0
             )
         end
     end
@@ -326,23 +328,50 @@ local function loadCommandBar()
         "Success",
         "Command bar loaded.",
         3,
-        false
+        false,
+        nil,
+        0
     )
 end
 
 
 task.wait(1)
-createNotification(
-    "AK ADMIN",
-    "Welcome to AK ADMIN! Would you like to load the command bar?",
-    10,
-	true,
-    function(accepted)
-		if accepted then
-			loadCommandBar()
-		end
-	end
-)
+
+local function showNotificationsSequentially()
+    local welcomeNotification = function()
+        createNotification(
+            "AK ADMIN",
+            "Welcome to AK ADMIN! Type !cmds to see the available commands.",
+            8,
+            false,
+            nil,
+            0
+        )
+    end
+
+    local commandBarPrompt = function()
+        createNotification(
+            "AK ADMIN",
+            "Would you like to load the command bar?",
+            10,
+            true,
+            function(accepted)
+                if accepted then
+                    loadCommandBar()
+                end
+            end,
+            0.15
+        )
+    end
+    
+    welcomeNotification()
+    task.wait(1)
+    commandBarPrompt()
+
+end
+
+showNotificationsSequentially()
+
 
 local lastInput = ""
 
@@ -359,12 +388,11 @@ local function updateSuggestion(input)
     if input == "" then return end
     local suggestion = suggestClosestCommand("!" .. input)
     if suggestion then
-        for _, child in pairs(NotificationGui:GetChildren()) do
+         for _, child in pairs(NotificationGui:GetChildren()) do
             if child:IsA("Frame") and child.Name ~= "ProgressBar" then
                 child:Destroy()
             end
         end
-        
         createNotification(
             "Command Suggestion",
             "Did you mean: " .. suggestion .. "?",
@@ -381,19 +409,24 @@ local function updateSuggestion(input)
                                 "Success",
                                 "Executed command: " .. suggestion,
                                 3,
-                                false
+                                false,
+                                nil,
+                                0
                             )
                         else
                             createNotification(
                                 "Error",
                                 "Failed to execute command: " .. suggestion,
                                 5,
-                                false
+                                false,
+                                nil,
+                                0
                             )
                         end
                     end
                 end
-            end
+            end,
+             0
         )
     else
         for _, child in pairs(NotificationGui:GetChildren()) do
