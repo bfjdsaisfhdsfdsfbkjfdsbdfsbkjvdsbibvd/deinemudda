@@ -324,54 +324,29 @@ end
 
 local function loadCommandBar()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/refs/heads/main/Cmdsbar"))()
-    createNotification(
-        "Success",
-        "Command bar loaded.",
-        3,
-        false,
-        nil,
-        0
-    )
+    
 end
 
 
 task.wait(1)
 
 local function showNotificationsSequentially()
-    local welcomeNotification = function()
+	local welcomeMessage = function()
         createNotification(
             "AK ADMIN",
-            "Welcome to AK ADMIN! Type !cmds to see the available commands.",
-            8,
+            "Welcome to AK ADMIN! Type !cmds to see available commands. The toggle for the command bar is F",
+            10,
             false,
             nil,
             0
         )
     end
-
-    local commandBarPrompt = function()
-        createNotification(
-            "AK ADMIN",
-            "Would you like to load the command bar?",
-            10,
-            true,
-            function(accepted)
-                if accepted then
-                    loadCommandBar()
-                end
-            end,
-            0.15
-        )
-    end
     
-    welcomeNotification()
-    task.wait(1)
-    commandBarPrompt()
-
+    welcomeMessage()
+	loadCommandBar()
 end
 
 showNotificationsSequentially()
-
 
 local lastInput = ""
 
