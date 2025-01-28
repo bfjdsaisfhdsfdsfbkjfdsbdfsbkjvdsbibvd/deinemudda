@@ -40,10 +40,11 @@ local function createCommandBar()
 	gui.ResetOnSpawn = false
 
 	local mainFrame = Instance.new("Frame")
-	mainFrame.BackgroundColor3 = THEME.COLORS.PRIMARY
-	mainFrame.Size = THEME.SIZES.BUTTON
-	mainFrame.Position = UDim2.new(1, -80, 0, 60)
-	mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
+    mainFrame.BackgroundColor3 = THEME.COLORS.PRIMARY
+    mainFrame.Size = THEME.SIZES.BUTTON
+    -- Updated position to be more to the left
+    mainFrame.Position = UDim2.new(1, -172, 0, -29)
+    mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
 
 	local corner = Instance.new("UICorner")
 	corner.CornerRadius = UDim.new(1, 0)
