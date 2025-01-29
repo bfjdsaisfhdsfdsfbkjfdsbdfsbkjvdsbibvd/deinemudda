@@ -1,11 +1,15 @@
-local TweenService = game:GetService("TweenService")
 local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
 local LocalPlayer = Players.LocalPlayer
 
-if not _G.cmds then
-    _G.cmds = {}
-end
+_G.cmds = {}
 
+-- Load commands
+pcall(function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/refs/heads/main/allcmdss.luau"))()
+end)
+
+-- Notification System Setup
 local existingGui = LocalPlayer:WaitForChild("PlayerGui"):FindFirstChild("AKAdminNotifications")
 if existingGui then
     existingGui:Destroy()
@@ -16,10 +20,10 @@ NotificationGui.Name = "AKAdminNotifications"
 NotificationGui.ResetOnSpawn = false
 NotificationGui.Parent = LocalPlayer:WaitForChild("PlayerGui")
 
-
+-- Notification Creation Function
 local function createNotification(title, text, duration, suggestion, suggestionCallback, offset)
     local notification = Instance.new("Frame")
-    notification.Size = UDim2.new(0, 300, 0, 120) -- Increased size
+    notification.Size = UDim2.new(0, 300, 0, 120)
     notification.Position = UDim2.new(1, 50, 0.02 + (offset or 0), 0)
     notification.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
     notification.BackgroundTransparency = 0
@@ -61,12 +65,12 @@ local function createNotification(title, text, duration, suggestion, suggestionC
     titleLabel.Parent = notification
 
     local messageLabel = Instance.new("TextLabel")
-    messageLabel.Size = UDim2.new(1, -20, 0, 60) -- Increased size to fit more text
-    messageLabel.Position = UDim2.new(0, 10, 0, 30) -- Adjusted position
+    messageLabel.Size = UDim2.new(1, -20, 0, 60)
+    messageLabel.Position = UDim2.new(0, 10, 0, 30)
     messageLabel.BackgroundTransparency = 1
     messageLabel.Font = Enum.Font.Gotham
     messageLabel.TextColor3 = Color3.fromRGB(200, 200, 200)
-    messageLabel.TextSize = 14 -- Increased text size
+    messageLabel.TextSize = 14
     messageLabel.TextWrapped = true
     messageLabel.TextXAlignment = Enum.TextXAlignment.Left
     messageLabel.Text = text
@@ -181,6 +185,7 @@ local function createNotification(title, text, duration, suggestion, suggestionC
     end)
 end
 
+-- Improved Suggest Command Function (with Levenshtein distance)
 local function suggestClosestCommand(input)
     if not input then return nil end
     local closestCommand = nil
@@ -269,69 +274,62 @@ local function suggestClosestCommand(input)
     return highestScore > 10 and closestCommand or nil
 end
 
+-- Execute Command Function
 local function executeCommand(command)
-    if _G.cmds[command] then
-        createNotification(
-            "Success",
-            "Executed command: " .. command,
-            3,
-            false,
-            nil,
+     local function attemptCommandExecution(cmd)
+        if _G.cmds[cmd] then
+            local success, errorMessage = pcall(function()
+                loadstring(game:HttpGet(_G.cmds[cmd]))()
+            end)
+            if success then
+                createNotification(
+                    "Success",
+                    "Executed command: " .. cmd,
+                    3,
+                    false,
+                    nil,
+                    0
+                )
+            else
+                 createNotification(
+                    "Error",
+                    "Failed to execute command: " .. cmd,
+                     5,
+                    false,
+                    nil,
+                    0
+                )
+            end
+             return true
+        end
+        return false
+    end
+    
+    if attemptCommandExecution(command) then return end
+    local suggestion = suggestClosestCommand(command)
+    if suggestion then
+       createNotification(
+            "Command Suggestion",
+            "Did you mean: " .. suggestion .. "?",
+            10,
+            true,
+            function(accepted)
+                if accepted then
+                   attemptCommandExecution(suggestion)
+                end
+            end,
             0
         )
-    else
-        local suggestion = suggestClosestCommand(command)
-        if suggestion then
-            createNotification(
-                "Command Suggestion",
-                "Did you mean: " .. suggestion .. "?",
-                10,
-                true,
-                function(accepted)
-                    if accepted then
-                        if _G.cmds[suggestion] then
-                            local success, errorMessage = pcall(function()
-                                loadstring(game:HttpGet(_G.cmds[suggestion]))()
-                            end)
-                            if success then
-                                createNotification(
-                                    "Success",
-                                    "Executed command: " .. suggestion,
-                                    3,
-                                    false,
-                                    nil,
-                                    0
-                                )
-                            else
-                                createNotification(
-                                    "Error",
-                                    "Failed to execute command: " .. suggestion,
-                                    5,
-                                    false,
-                                    nil,
-                                    0
-                                )
-                            end
-                        end
-                    end
-                end,
-                0
-            )
-        end
     end
 end
-
-
+-- Load Command Bar (same as before)
 local function loadCommandBar()
     loadstring(game:HttpGet("https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/refs/heads/main/Cmdsbar"))()
-    
 end
-
-
 task.wait(1)
-
+-- Initial Notifications & Setup
 local function showNotificationsSequentially()
-	local welcomeMessage = function()
+    local welcomeMessage = function()
         createNotification(
             "AK ADMIN",
             "Welcome to AK ADMIN! Type !cmds to see available commands. The toggle for the command bar is F",
@@ -343,68 +341,22 @@ local function showNotificationsSequentially()
     end
     
     welcomeMessage()
-	loadCommandBar()
+    loadCommandBar()
 end
 
 showNotificationsSequentially()
 
-local lastInput = ""
-
-LocalPlayer.Chatted:Connect(function(msg)
-    if msg:sub(1, 1) == "!" then
-        local command = msg:sub(2):lower():gsub("^%s*", ""):gsub("%s*$", "")
-        executeCommand("!" .. command)
-        lastInput = command
-        return
-    end
-end)
-
-local function updateSuggestion(input)
-    if input == "" then return end
-    local suggestion = suggestClosestCommand("!" .. input)
-    if suggestion then
-         for _, child in pairs(NotificationGui:GetChildren()) do
-            if child:IsA("Frame") and child.Name ~= "ProgressBar" then
-                child:Destroy()
-            end
+-- Chat Command Handling
+local function updateSuggestion(textBox)
+    local currentText = textBox.Text
+    if currentText:sub(1,1) == "!" then
+        local input = currentText:sub(2):lower()
+        local suggestion = suggestClosestCommand("!" .. input)
+        if suggestion then
+             textBox.Text = suggestion
+             textBox.CursorPosition = #textBox.Text + 1
         end
-        createNotification(
-            "Command Suggestion",
-            "Did you mean: " .. suggestion .. "?",
-            10,
-            true,
-            function(accepted)
-                if accepted then
-                    if _G.cmds[suggestion] then
-                        local success, errorMessage = pcall(function()
-                            loadstring(game:HttpGet(_G.cmds[suggestion]))()
-                        end)
-                        if success then
-                            createNotification(
-                                "Success",
-                                "Executed command: " .. suggestion,
-                                3,
-                                false,
-                                nil,
-                                0
-                            )
-                        else
-                            createNotification(
-                                "Error",
-                                "Failed to execute command: " .. suggestion,
-                                5,
-                                false,
-                                nil,
-                                0
-                            )
-                        end
-                    end
-                end
-            end,
-             0
-        )
-    else
-        for _, child in pairs(NotificationGui:GetChildren()) do
+          for _, child in pairs(NotificationGui:GetChildren()) do
             if child:IsA("Frame") and child.Name ~= "ProgressBar" then
                 child:Destroy()
             end
@@ -412,18 +364,28 @@ local function updateSuggestion(input)
     end
 end
 
-LocalPlayer.CharacterAdded:Connect(function(character)
-    if not character then return end
-    local chatBox = LocalPlayer.PlayerGui:WaitForChild("Chat"):WaitForChild("Frame"):WaitForChild("ChatBar")
-    local textBox = chatBox:WaitForChild("Box")
-    textBox:GetPropertyChangedSignal("Text"):Connect(function()
-        local currentText = textBox.Text
-        if currentText:sub(1,1) == "!" then
-            local input = currentText:sub(2):lower()
-            if input ~= lastInput then
-                updateSuggestion(input)
-                lastInput = input
+if game.TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+ChatInputTextBox = game:GetService("CoreGui").ExperienceChat.appLayout.chatInputBar.Background.Container.TextContainer.TextBoxContainer.TextBox
+else
+ChatInputTextBox = game:GetService("Players").LocalPlayer.PlayerGui.Chat.Frame.ChatBarParentFrame.Frame.BoxFrame.Frame.ChatBar
+end
+    ChatInputTextBox.FocusLost:Connect(function(enterPressed)
+        if enterPressed then
+            local currentText = ChatInputTextBox.Text
+            if currentText ~= "" then
+                local cmd = currentText:match("^!") and currentText:lower() or "!" .. currentText:lower()
+                cmd = cmd:match("^%s*(.-)%s*$")
+                
+                if _G.cmds[cmd] then
+                    pcall(function()
+                        loadstring(game:HttpGet(_G.cmds[cmd]))()
+                    end)
+                else
+                    -- Send command to script 2 for suggestion handling
+                    executeCommand(cmd)
+                end
             end
+            ChatInputTextBox.Text = ""
         end
+    --    animateCommandBarClose() -- Assuming this function exists and is for closing the command bar
     end)
-end)
