@@ -164,21 +164,35 @@ end
 local blob = ""
 
 -- ASCII art message (only for new chat system)
+local asciiMessage = blob .. "\r" ..
+    "       _/       _//   _//  " .. blob .. "\r" ..
+    "     _/ //     _//  _//   " .. blob .. "\r" ..
+    "    _/  _//    _// _//    " .. blob .. "\r" ..
+    "   _/    _//   _/  _/      " .. blob .. "\r" ..
+    "  _////// _//  _//  _// " .. blob .. "\r" ..
+    " _//       _// _//   _//  " .. blob .. "\r" ..
+    "_//         _//_//     _//"
+
 -- Formatted message (common for both systems)
 wait(0.1)
 local newMessage = blob .. "\r" ..
-        "🔥 AK  ADMIN 🔥" .. blob .. "\r" ..
-        "-------------" .. blob .. "\r" ..
-        "Pụṛc̣ḥaṣẹ Ḷịf̣ẹtịṃẹ!" .. blob .. "\r" ..
-        "-------------" .. blob .. "\r" ..
-        "Oṛ ụse ṗọịṇṭṣ for frẹẹ!" .. blob .. "\r" ..
-        "-------------" .. blob .. "\r" ..
-        "👉 ḍịṣcọrḍ.gg/gJgRuwC3MP 👈" 
+        "🔥 AK 🔥" .. blob .. "\r" ..
+        "--------------" .. blob .. "\r" ..
+        "Pụṛc̣ḥaṣẹ Ḷif̣etiṃe!" .. blob .. "\r" ..
+        "---------------" .. blob .. "\r" ..
+        "ọṛ ụse pọints fọr frẹẹ!" .. blob .. "\r" ..
+        "---------------" .. blob .. "\r" ..
+        "👉 ḍịṣcọrḍ.ḡḡ/ḡJḡRụẉC3MP 👈" 
 
 -- New message for the old chat system (without ASCII art)
-local oldMessage = "🔥 AK ADMIN 🔥  Pụṛc̣ḥạṣẹ Ḷịf̣ẹṭiṃẹ! Or use points for free! 👉 ḍịṣcọrḍ.gg/gJgRuwC3MP 👈"
+local oldMessage = "🔥 AK ADMIN 🔥  Pụṛc̣ḥạṣẹ Ḷịf̣ẹṭiṃẹ! Or use points for free! 👉 ḍịṣcọrḍ.ḡḡ/gJgRuwC3MP 👈"
 
--- Send the ASCII art message only for the new chat syst
+-- Send the ASCII art message only for the new chat system
+if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
+    chatMessage(asciiMessage)
+end
+
+wait(0.3)
 
 -- Send the appropriate message based on the chat system
 local function sendMessage()
