@@ -45,7 +45,7 @@ local function createCommandBar()
     -- Updated position to be more to the left
     mainFrame.Position = UDim2.new(1, -172, 0, -29)
     mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-mainFrame.Transparency = 0.3
+	mainFrame.Transparency = 0.3
 
 	local corner = Instance.new("UICorner")
 	corner.CornerRadius = UDim.new(1, 0)
@@ -300,7 +300,7 @@ local function initializePremiumCommandBar()
            end
         end
 
-        if input.KeyCode == Enum.KeyCode.F then
+        if input.KeyCode == Enum.KeyCode.F6 then -- Changed keybind to F6
             if not isOpen and not isAnimating then
                 animateCommandBarOpen()
             end
