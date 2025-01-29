@@ -313,7 +313,8 @@ local function initializePremiumCommandBar()
         originalPosition = ui.mainFrame.Position
     end
 
-    local function toggleCommandBar()
+     -- Modified toggleCommandBar function to accept a boolean parameter.
+    local function toggleCommandBar(isFromTouch)
         if not isOpen and not isAnimating then
             animateCommandBarOpen()
         end
@@ -324,12 +325,13 @@ local function initializePremiumCommandBar()
     end)
 
     UserInputService.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+         if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
             local pos = input.Position
             if ui.icon.AbsolutePosition.X <= pos.X and pos.X <= ui.icon.AbsolutePosition.X + ui.icon.AbsoluteSize.X and 
                ui.icon.AbsolutePosition.Y <= pos.Y and pos.Y <= ui.icon.AbsolutePosition.Y + ui.icon.AbsoluteSize.Y then
                startDrag(input)
-               input.Handled = true
+               -- We dont handle the input, so the icon MouseButton1Up still has a chance to fire
+              -- input.Handled = true
             end
         end
 
@@ -363,13 +365,13 @@ local function initializePremiumCommandBar()
 
     ui.icon.MouseButton1Up:Connect(function()
         if not dragging then
-            toggleCommandBar()
+            toggleCommandBar() -- PC click
         end
     end)
 
     ui.icon.TouchTap:Connect(function()
-        if not dragging then
-            toggleCommandBar()
+         if not dragging then
+            toggleCommandBar(true) -- Touch click
         end
     end)
 
