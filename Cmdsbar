@@ -45,7 +45,7 @@ local function createCommandBar()
     mainFrame.Size = THEME.SIZES.BUTTON
     mainFrame.Position = UDim2.new(1, -172, 0, -32)
     mainFrame.AnchorPoint = Vector2.new(0.5, 0.5)
-    mainFrame.Transparency = 0.3
+    mainFrame.Transparency = 0.2
 
     local corner = Instance.new("UICorner")
     corner.CornerRadius = UDim.new(0, 12)
