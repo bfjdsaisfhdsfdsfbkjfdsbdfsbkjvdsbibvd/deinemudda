@@ -1,4 +1,4 @@
--- Check if script is already running
+-- Global variable to prevent multiple instances
 if _G.AKAdminLoaded then
     game:GetService("StarterGui"):SetCore("SendNotification", {
         Title = "AK ADMIN",
@@ -9,66 +9,158 @@ if _G.AKAdminLoaded then
 end
 _G.AKAdminLoaded = true
 
+-- Proper module loading with safety checks
+local function getPlayerModule()
+    local Players = game:GetService("Players")
+    local player = Players.LocalPlayer
+    if not player then
+        warn("LocalPlayer not found")
+        return nil
+    end
+    
+    -- Wait for PlayerScripts to load
+    local PlayerScripts = player:WaitForChild("PlayerScripts", 10)
+    if not PlayerScripts then
+        warn("PlayerScripts not found")
+        return nil
+    end
+    
+    -- Properly access the PlayerModule
+    local success, PlayerModule = pcall(function()
+        return PlayerScripts:WaitForChild("PlayerModule", 10)
+    end)
+    
+    if not success or not PlayerModule then
+        warn("Failed to load PlayerModule")
+        return nil
+    end
+    
+    return PlayerModule
+end
+
 -- Function to remove atmosphere and set fog
 local function RemoveAtmosphereAndSetFog()
-    local Lighting = game:GetService("Lighting")
-    Lighting.FogEnd = 100000
-    for _, v in pairs(Lighting:GetDescendants()) do
-        if v:IsA("Atmosphere") then
-            v:Destroy()
+    local success, error = pcall(function()
+        local Lighting = game:GetService("Lighting")
+        Lighting.FogEnd = 100000
+        for _, v in pairs(Lighting:GetDescendants()) do
+            if v:IsA("Atmosphere") then
+                v:Destroy()
+            end
         end
+    end)
+    if not success then
+        warn("Failed to modify atmosphere:", error)
     end
 end
-RemoveAtmosphereAndSetFog()
 
--- Queue teleport execution
-local queueteleport = (syn and syn.queue_on_teleport) or queue_on_teleport or (fluxus and fluxus.queue_on_teleport)
-if queueteleport then
-    local teleportScript = [[
-        loadstring(game:HttpGet('https://raw.githubusercontent.com/LOLkeeptrying/AKADMIN/refs/heads/main/Congratslol'))()
-    ]]
-    queueteleport(teleportScript)
-    print("Script queued for execution upon teleport.")
-else
-    warn("Queue on teleport is not supported on this executor.")
+-- Safe HTTP request function
+local function safeHttpGet(url)
+    local success, result = pcall(function()
+        return game:HttpGet(url)
+    end)
+    if not success then
+        warn("Failed to fetch URL:", url)
+        return nil
+    end
+    return result
 end
 
--- Executor compatibility checks
-local setclipboard = setclipboard or toclipboard or set_clipboard
-local writefile = writefile or function() warn("writefile not supported") end
-local readfile = readfile or function() warn("readfile not supported") end
-
--- Additional script loading
-local scripts = {
-    "https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/refs/heads/main/loadplayertagss.luau",
-    "https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/refs/heads/main/loadownercmdss.luau",
-    "https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/refs/heads/main/betterchatdtcsyss.luau",
-    "https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/refs/heads/main/akactivee.luau"
-}
-
-for _, url in ipairs(scripts) do
-    loadstring(game:HttpGet(url))()
+-- Queue teleport with error handling
+local function setupQueueTeleport()
+    local queueteleport = (syn and syn.queue_on_teleport) or queue_on_teleport or (fluxus and fluxus.queue_on_teleport)
+    if queueteleport then
+        local teleportScript = [[
+            pcall(function()
+                loadstring(game:HttpGet('https://raw.githubusercontent.com/LOLkeeptrying/AKADMIN/refs/heads/main/Congratslol'))()
+            end)
+        ]]
+        queueteleport(teleportScript)
+        print("Script queued for execution upon teleport.")
+    else
+        warn("Queue on teleport is not supported on this executor.")
+    end
 end
 
--- Bubble chat adjustment
+-- Safer bubble chat adjustment
 local function AdjustBubbleChat()
-    local player = game.Players.LocalPlayer
-    local chatBubble = game:GetService("CoreGui"):FindFirstChild("ExperienceChat")
-    if chatBubble and chatBubble:FindFirstChild("bubbleChat") then
-        local bubble = chatBubble.bubbleChat:FindFirstChild("BubbleChat_" .. player.UserId)
-        if bubble then
-            bubble.StudsOffset = Vector3.new(0, 1, 0)
-        else
-            print("Bubble not found for player: " .. player.Name)
+    local success, error = pcall(function()
+        local player = game.Players.LocalPlayer
+        local chatBubble = game:GetService("CoreGui"):FindFirstChild("ExperienceChat")
+        if chatBubble and chatBubble:FindFirstChild("bubbleChat") then
+            local bubble = chatBubble.bubbleChat:FindFirstChild("BubbleChat_" .. player.UserId)
+            if bubble then
+                bubble.StudsOffset = Vector3.new(0, 1, 0)
+            end
         end
+    end)
+    if not success then
+        warn("Failed to adjust bubble chat:", error)
     end
 end
 
--- Continuous adjustment loop
-spawn(function()
-    while wait() do
-        AdjustBubbleChat()
-    end
-end)
+-- Initialize executor compatibility
+local function initializeExecutorCompat()
+    _G.setclipboard = setclipboard or toclipboard or set_clipboard or function() warn("Clipboard functionality not supported") end
+    _G.writefile = writefile or function() warn("Write file not supported") end
+    _G.readfile = readfile or function() warn("Read file not supported") end
+end
 
-print("AK ADMIN loaded successfully!")
+-- Main initialization
+local function Initialize()
+    -- Set up error handlers
+    game:GetService("ScriptContext").Error:Connect(function(message, trace)
+        warn("Script Error:", message, trace)
+    end)
+
+    -- Wait for game to fully load
+    if not game:IsLoaded() then
+        game.Loaded:Wait()
+    end
+
+    -- Wait for player to load
+    local Players = game:GetService("Players")
+    if not Players.LocalPlayer then
+        Players:WaitForChild("LocalPlayer", 10)
+    end
+
+    -- Load PlayerModule first
+    local PlayerModule = getPlayerModule()
+    if not PlayerModule then
+        warn("Could not load PlayerModule, some features may not work")
+    end
+
+    -- Initialize components
+    RemoveAtmosphereAndSetFog()
+    setupQueueTeleport()
+    initializeExecutorCompat()
+
+    -- Load additional scripts with error handling
+    local scripts = {
+        "https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/refs/heads/main/loadplayertagss.luau",
+        "https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/refs/heads/main/loadownercmdss.luau",
+        "https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/refs/heads/main/betterchatdtcsyss.luau",
+        "https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/refs/heads/main/akactivee.luau"
+    }
+
+    for _, url in ipairs(scripts) do
+        local content = safeHttpGet(url)
+        if content then
+            pcall(function()
+                loadstring(content)()
+            end)
+        end
+    end
+
+    -- Start bubble chat adjustment loop
+    spawn(function()
+        while wait(1) do
+            AdjustBubbleChat()
+        end
+    end)
+
+    print("AK ADMIN loaded successfully!")
+end
+
+-- Start the script with error handling
+pcall(Initialize)
