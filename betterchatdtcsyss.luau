@@ -176,13 +176,18 @@ local asciiMessage = blob .. "\r" ..
 -- Formatted message (common for both systems)
 wait(0.1)
 local newMessage = blob .. "\r" ..
-        "🔥 AK 🔥" .. blob .. "\r" ..
-        "--------------" .. blob .. "\r" ..
-        "Pụṛc̣ḥaṣẹ Ḷif̣etiṃe!" .. blob .. "\r" ..
-        "---------------" .. blob .. "\r" ..
-        "ọṛ ụse pọints fọr frẹẹ!" .. blob .. "\r" ..
-        "---------------" .. blob .. "\r" ..
-        "👉 ḍịṣcọrḍ.ḡḡ/ḡJḡRụẉC3MP 👈" 
+        "🔥 AK ADMIN 🔥" .. blob .. "\r" ..
+        "  -------------------------------  " .. blob .. "\r" ..
+blob .. "\r" ..
+blob .. "\r" ..
+        " Pụŕçħaṣẹ Lifetime!" .. blob .. "\r" ..
+blob .. "\r" ..
+blob .. "\r" ..
+        "or Whitelist urself for frȇȇ!  " .. blob .. "\r" ..
+blob .. "\r" ..
+blob .. "\r" ..
+        "  --------------------------------  " .. blob .. "\r" ..
+        "👉 .gg/gJgRuwC3MP 👈" 
 
 -- New message for the old chat system (without ASCII art)
 local oldMessage = "🔥 AK ADMIN 🔥  Pụṛc̣ḥạṣẹ Ḷịf̣ẹṭiṃẹ! Or use points for free! 👉 ḍịṣcọrḍ.ḡḡ/gJgRuwC3MP 👈"
