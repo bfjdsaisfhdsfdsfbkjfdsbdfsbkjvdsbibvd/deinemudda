@@ -180,10 +180,10 @@ local newMessage = blob .. "\r" ..
         "  -------------------------------  " .. blob .. "\r" ..
 blob .. "\r" ..
 blob .. "\r" ..
-        " Pụŕçħaṣẹ Lifetime!" .. blob .. "\r" ..
+        " Pụŕçħase Lifetime!" .. blob .. "\r" ..
 blob .. "\r" ..
 blob .. "\r" ..
-        "or Whitelist urself for frȇȇ!  " .. blob .. "\r" ..
+        "or Whitelist urself for free!  " .. blob .. "\r" ..
 blob .. "\r" ..
 blob .. "\r" ..
         "  --------------------------------  " .. blob .. "\r" ..
