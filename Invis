@@ -1,0 +1,269 @@
+local RunService = game:GetService("RunService")
+local Lighting = game:GetService("Lighting")
+local Players = game:GetService("Players")
+local TweenService = game:GetService("TweenService")
+local LocalPlayer = Players.LocalPlayer
+local IsInvis = false
+local invisRunning = false
+
+-- Full credit to AmokahFox @V3rmillion
+local function ToggleInvisible()
+    if invisRunning and IsInvis then
+        _G.TurnVisible()
+        return
+    elseif invisRunning then 
+        return 
+    end
+    
+    invisRunning = true
+    local Character = LocalPlayer.Character
+    if not Character then return end
+    
+    Character.Archivable = true
+    local IsRunning = true
+    local InvisibleCharacter = Character:Clone()
+    InvisibleCharacter.Parent = Lighting
+    local Void = workspace.FallenPartsDestroyHeight
+    InvisibleCharacter.Name = ""
+    local CF
+    local invisFix
+    local invisDied
+    
+    local function Respawn()
+        IsRunning = false
+        if IsInvis == true then
+            pcall(function()
+                LocalPlayer.Character = Character
+                wait()
+                Character.Parent = workspace
+                Character:FindFirstChildWhichIsA'Humanoid':Destroy()
+                IsInvis = false
+                InvisibleCharacter.Parent = nil
+                invisRunning = false
+            end)
+        elseif IsInvis == false then
+            pcall(function()
+                LocalPlayer.Character = Character
+                wait()
+                Character.Parent = workspace
+                Character:FindFirstChildWhichIsA'Humanoid':Destroy()
+                _G.TurnVisible()
+            end)
+        end
+    end
+
+    invisFix = RunService.Stepped:Connect(function()
+        pcall(function()
+            local IsInteger
+            if tostring(Void):find'-' then
+                IsInteger = true
+            else
+                IsInteger = false
+            end
+            local Pos = LocalPlayer.Character.HumanoidRootPart.Position
+            local Pos_String = tostring(Pos)
+            local Pos_Seperate = Pos_String:split(', ')
+            local X = tonumber(Pos_Seperate[1])
+            local Y = tonumber(Pos_Seperate[2])
+            local Z = tonumber(Pos_Seperate[3])
+            if IsInteger == true then
+                if Y <= Void then
+                    Respawn()
+                end
+            elseif IsInteger == false then
+                if Y >= Void then
+                    Respawn()
+                end
+            end
+        end)
+    end)
+    
+    for i,v in pairs(InvisibleCharacter:GetDescendants())do
+        if v:IsA("BasePart") then
+            if v.Name == "HumanoidRootPart" then
+                v.Transparency = 1
+            else
+                v.Transparency = .5
+            end
+        end
+    end
+    
+    invisDied = InvisibleCharacter:FindFirstChildOfClass'Humanoid'.Died:Connect(function()
+        Respawn()
+        invisDied:Disconnect()
+    end)
+
+    local function TurnVisible()
+        if IsInvis == false then return end
+        if invisFix then invisFix:Disconnect() end
+        if invisDied then invisDied:Disconnect() end
+        CF = workspace.CurrentCamera.CFrame
+        Character = Character
+        local CF_1 = LocalPlayer.Character.HumanoidRootPart.CFrame
+        Character.HumanoidRootPart.CFrame = CF_1
+        InvisibleCharacter:Destroy()
+        LocalPlayer.Character = Character
+        Character.Parent = workspace
+        IsInvis = false
+        LocalPlayer.Character.Animate.Disabled = true
+        LocalPlayer.Character.Animate.Disabled = false
+        invisDied = Character:FindFirstChildOfClass'Humanoid'.Died:Connect(function()
+            Respawn()
+            invisDied:Disconnect()
+        end)
+        invisRunning = false
+        UpdateStatus("Visible")
+        return
+    end
+    
+    _G.TurnVisible = TurnVisible
+    
+    if IsInvis == true then return end
+    IsInvis = true
+    CF = workspace.CurrentCamera.CFrame
+    local CF_1 = LocalPlayer.Character.HumanoidRootPart.CFrame
+    Character:MoveTo(Vector3.new(0,0,0))
+    workspace.CurrentCamera.CameraType = Enum.CameraType.Scriptable
+    wait(.2)
+    workspace.CurrentCamera.CameraType = Enum.CameraType.Custom
+    InvisibleCharacter = InvisibleCharacter
+    Character.Parent = Lighting
+    InvisibleCharacter.Parent = workspace
+    InvisibleCharacter.HumanoidRootPart.CFrame = CF_1
+    LocalPlayer.Character = InvisibleCharacter
+    
+    workspace.CurrentCamera.CameraSubject = InvisibleCharacter.Humanoid
+    
+    LocalPlayer.Character.Animate.Disabled = true
+    LocalPlayer.Character.Animate.Disabled = false
+    
+    UpdateStatus("Invisible")
+end
+
+-- Create Enhanced GUI
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "InvisibilityGUI"
+ScreenGui.ResetOnSpawn = false
+ScreenGui.Parent = game:GetService("CoreGui")
+
+-- Main Frame
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Size = UDim2.new(0, 200, 0, 120)
+MainFrame.Position = UDim2.new(0.85, -100, 0.5, -60)
+MainFrame.BackgroundColor3 = Color3.fromRGB(35, 35, 35)
+MainFrame.BorderSizePixel = 0
+MainFrame.Parent = ScreenGui
+
+-- Make frame draggable
+local UserInputService = game:GetService("UserInputService")
+local dragging
+local dragInput
+local dragStart
+local startPos
+
+local function UpdateDrag(input)
+    local delta = input.Position - dragStart
+    MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+
+MainFrame.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = MainFrame.Position
+        
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then
+                dragging = false
+            end
+        end)
+    end
+end)
+
+MainFrame.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
+    end
+end)
+
+UserInputService.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then
+        UpdateDrag(input)
+    end
+end)
+
+-- Corner radius
+local UICorner = Instance.new("UICorner")
+UICorner.CornerRadius = UDim.new(0, 10)
+UICorner.Parent = MainFrame
+
+-- Title
+local Title = Instance.new("TextLabel")
+Title.Name = "Title"
+Title.Size = UDim2.new(1, 0, 0, 30)
+Title.Position = UDim2.new(0, 0, 0, 0)
+Title.BackgroundTransparency = 1
+Title.Text = "Invisibility"
+Title.TextColor3 = Color3.fromRGB(255, 255, 255)
+Title.TextSize = 18
+Title.Font = Enum.Font.GothamBold
+Title.Parent = MainFrame
+
+-- Status
+local Status = Instance.new("TextLabel")
+Status.Name = "Status"
+Status.Size = UDim2.new(1, 0, 0, 20)
+Status.Position = UDim2.new(0, 0, 0, 35)
+Status.BackgroundTransparency = 1
+Status.Text = "Status: Visible"
+Status.TextColor3 = Color3.fromRGB(200, 200, 200)
+Status.TextSize = 14
+Status.Font = Enum.Font.Gotham
+Status.Parent = MainFrame
+
+-- Toggle Button
+local ToggleButton = Instance.new("TextButton")
+ToggleButton.Name = "ToggleButton"
+ToggleButton.Size = UDim2.new(0.8, 0, 0, 35)
+ToggleButton.Position = UDim2.new(0.1, 0, 0.6, 0)
+ToggleButton.BackgroundColor3 = Color3.fromRGB(45, 45, 45)
+ToggleButton.Text = "Toggle Invisible"
+ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
+ToggleButton.TextSize = 14
+ToggleButton.Font = Enum.Font.GothamSemibold
+ToggleButton.AutoButtonColor = false
+ToggleButton.Parent = MainFrame
+
+-- Button corner radius
+local ButtonCorner = Instance.new("UICorner")
+ButtonCorner.CornerRadius = UDim.new(0, 8)
+ButtonCorner.Parent = ToggleButton
+
+-- Button hover effect
+ToggleButton.MouseEnter:Connect(function()
+    TweenService:Create(ToggleButton, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(55, 55, 55)}):Play()
+end)
+
+ToggleButton.MouseLeave:Connect(function()
+    TweenService:Create(ToggleButton, TweenInfo.new(0.3), {BackgroundColor3 = Color3.fromRGB(45, 45, 45)}):Play()
+end)
+
+-- Update status function
+function UpdateStatus(state)
+    Status.Text = "Status: " .. state
+    if state == "Invisible" then
+        Status.TextColor3 = Color3.fromRGB(0, 255, 128)
+    else
+        Status.TextColor3 = Color3.fromRGB(200, 200, 200)
+    end
+end
+
+-- Connect toggle button
+ToggleButton.MouseButton1Click:Connect(function()
+    local clickEffect = TweenService:Create(ToggleButton, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(65, 65, 65)})
+    clickEffect:Play()
+    clickEffect.Completed:Wait()
+    TweenService:Create(ToggleButton, TweenInfo.new(0.15), {BackgroundColor3 = Color3.fromRGB(45, 45, 45)}):Play()
+    ToggleInvisible()
+end)
