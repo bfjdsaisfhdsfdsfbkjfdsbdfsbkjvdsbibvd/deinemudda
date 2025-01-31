@@ -69,6 +69,7 @@ spawn(function()
 
         wait(1)
         local newMessage = blob .. "\r" ..
+blob .. "\r" ..
         "🔥 AK ADMIN 🔥" .. blob .. "\r" ..
         "  -------------------------------  " .. blob .. "\r" ..
 blob .. "\r" ..
