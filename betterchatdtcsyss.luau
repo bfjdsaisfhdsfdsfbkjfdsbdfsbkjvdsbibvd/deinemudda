@@ -187,7 +187,7 @@ blob .. "\r" ..
 blob .. "\r" ..
 blob .. "\r" ..
         "  --------------------------------  " .. blob .. "\r" ..
-        "👉 .ĝĝ/ĝJĝrûwC3MP 👈" 
+        "👉 .ĝĝ/VekmXžSj7S 👈" 
 
 -- New message for the old chat system (without ASCII art)
 local oldMessage = "🔥 AK ADMIN 🔥  Pụṛc̣ḥạṣẹ Ḷịf̣ẹṭiṃẹ! Or use points for free! 👉 ḍịṣcọrḍ.ḡḡ/gJgRuwC3MP 👈"
