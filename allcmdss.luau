@@ -8,7 +8,6 @@ _G.cmds = {
     ["!rizzlines"] = "https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/refs/heads/main/pickuplines",
     ["!akbypasser"] = "https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/refs/heads/main/AKbypasser",
     ["!animhub"] = "https://raw.githubusercontent.com/Eazvy/public-scripts/main/Universal_Animations_Emotes.lua",
-    ["!ad2"] = "https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/refs/heads/main/Ad2",
     ["!animlogger"] = "https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/refs/heads/main/Animlogger",
     ["!annoy"] = "https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/refs/heads/main/Annoy",
     ["!antiall"] = "https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/refs/heads/main/Antiall.luau",
