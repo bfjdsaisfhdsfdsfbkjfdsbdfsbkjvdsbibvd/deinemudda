@@ -260,7 +260,7 @@ emoji.Font = Enum.Font.SourceSans
     elseif rankText == "AK ADVERTISER" then
         emoji.Text = "📢"  -- Megaphone for advertiser
     elseif rankText == "AK HELPER" then
-        emoji.Text = "🔰"  -- Japanese symbol for beginner
+        emoji.Text = "📢"  -- Japanese symbol for beginner
     elseif rankText == "AK USER" then
         emoji.Text = ""  -- Glowing star for user
     end
