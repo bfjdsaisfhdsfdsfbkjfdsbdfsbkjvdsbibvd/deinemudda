@@ -1,6 +1,70 @@
-loadstring(game:HttpGet("https://raw.githubusercontent.com/vqmpjayZ/More-Scripts/refs/heads/main/Anthony's%20ACL"))()
--- Professional Compact Chat Interface
--- Optimized for all devices with enhanced features
+-- Primary replacement table.
+-- Each letter’s replacement has the extra character appended at the end.
+local letters_primary = {
+    ["A"] = "Ạ", ["a"] = "ạ",
+    ["B"] = "Ḅ", ["b"] = "ḅ",
+    ["C"] = "Ḉ", ["c"] = "ḉ",
+    ["D"] = "Ḍ", ["d"] = "ḍ",
+    ["E"] = "Ẹ", ["e"] = "ẹ",
+    ["F"] = "F",  ["f"] = "f",
+    ["G"] = "Ḡ", ["g"] = "ḡ",
+    ["H"] = "Ḥ", ["h"] = "ḥ",
+    ["I"] = "Ị", ["i"] = "ị",
+    ["J"] = "Ĵ", ["j"] = "ĵ",
+    ["K"] = "K", ["k"] = "k",
+    ["L"] = "Ḷ", ["l"] = "ḷ",
+    ["M"] = "Ṃ", ["m"] = "ṃ",
+    ["N"] = "Ṇ", ["n"] = "ṇ",
+    ["O"] = "Ọ", ["o"] = "ọ",
+    ["P"] = "Ṗ", ["p"] = "ṗ",
+    ["Q"] = "Q̇",["q"] = "q̇",
+    ["R"] = "R", ["r"] = "r",
+    ["S"] = "Ṣ", ["s"] = "ṣ",
+    ["T"] = "Ṭ", ["t"] = "ṭ",
+    ["U"] = "Ụ", ["u"] = "ụ",
+    ["V"] = "Ṿ", ["v"] = "ṿ",
+    ["W"] = "Ẉ", ["w"] = "ẉ",
+    ["X"] = "Ẋ", ["x"] = "ẋ",
+    ["Y"] = "Ỵ", ["y"] = "ỵ",
+    ["Z"] = "Ẓ", ["z"] = "ẓ",
+    [" "] = "  "  -- (Space remains two spaces; add the extra character if desired.)
+}
+
+-- Secondary replacement table.
+-- These replacements are used if the message becomes tagged.
+-- The provided letter pairs are interpreted as:
+--    Uppercase: replacement from the left element
+--    Lowercase: replacement from the right element
+local letters_secondary = {
+    ["A"] = "å", ["a"] = "a",
+    ["B"] = "ƀ", ["b"] = "b",
+    ["C"] = "ç", ["c"] = "c",
+    ["D"] = "đ", ["d"] = "d",
+    ["E"] = "ȇ", ["e"] = "e",
+    ["F"] = "f", ["f"] = "f",
+    ["G"] = "ĝ", ["g"] = "g",
+    ["H"] = "ħ", ["h"] = "h",
+    ["I"] = "í", ["i"] = "i",
+    ["J"] = "ǰ", ["j"] = "j",
+    ["K"] = "κ", ["k"] = "k",
+    ["L"] = "|", ["l"] = "l",
+    ["M"] = "ɱ", ["m"] = "m",
+    ["N"] = "ň", ["n"] = "n",
+    ["O"] = "ο", ["o"] = "o",
+    ["P"] = "ƥ", ["p"] = "p",
+    ["Q"] = "ʠ", ["q"] = "q",
+    ["R"] = "ŕ", ["r"] = "r",
+    ["S"] = "š", ["s"] = "s",
+    ["T"] = "ţ", ["t"] = "t",
+    ["U"] = "û", ["u"] = "u",
+    ["V"] = "ѷ", ["v"] = "v",
+    ["W"] = "w", ["w"] = "w",
+    ["X"] = "ẋ", ["x"] = "x",
+    ["Y"] = "ƴ", ["y"] = "y",
+    ["Z"] = "ž", ["z"] = "z",
+    [" "] = "  "  -- (Space remains the same; modify if needed.)
+}
+
 
 local NotificationHolder = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Module.Lua"))()
 local Notification = loadstring(game:HttpGet("https://raw.githubusercontent.com/BocusLuke/UI/main/STX/Client.Lua"))()
@@ -157,31 +221,20 @@ local StatusCorner = Instance.new("UICorner")
 StatusCorner.CornerRadius = UDim.new(1, 0)
 StatusCorner.Parent = StatusIndicator
 
--- Character conversion table
-local letters = {
-    ["A"] = "Ạ", ["a"] = "ạ", ["B"] = "Ḅ", ["b"] = "ḅ", ["C"] = "Ḉ", ["c"] = "ḉ",
-    ["D"] = "Ḍ", ["d"] = "ḍ", ["E"] = "Ẹ", ["e"] = "ẹ", ["F"] = "F", ["f"] = "f",
-    ["G"] = "Ḡ", ["g"] = "ḡ", ["H"] = "Ḥ", ["h"] = "ḥ", ["I"] = "Ị", ["i"] = "ị",
-    ["J"] = "Ĵ", ["j"] = "ĵ", ["K"] = "K", ["k"] = "k", ["L"] = "Ḷ", ["l"] = "ḷ",
-    ["M"] = "Ṃ", ["m"] = "ṃ", ["N"] = "Ṇ", ["n"] = "ṇ", ["O"] = "Ọ", ["o"] = "ọ",
-    ["P"] = "Ṗ", ["p"] = "ṗ", ["Q"] = "Q̇", ["q"] = "q̇", ["R"] = "R", ["r"] = "r",
-    ["S"] = "Ṣ", ["s"] = "ṣ", ["T"] = "Ṭ", ["t"] = "ṭ", ["U"] = "Ụ", ["u"] = "ụ",
-    ["V"] = "Ṿ", ["v"] = "ṿ", ["W"] = "Ẉ", ["w"] = "ẉ", ["X"] = "Ẋ", ["x"] = "ẋ",
-    ["Y"] = "Ỵ", ["y"] = "ỵ", ["Z"] = "Ẓ", ["z"] = "ẓ", [" "] = "  "
-}
-
 -- Utility functions
 local function replace(str, find_str, replace_str)
     local escaped_find_str = find_str:gsub("[%-%^%$%(%)%%%.%[%]%*%+%-%?]", "%%%0")
     return str:gsub(escaped_find_str, replace_str)
 end
 
-local function filter(message)
-    for search, replacement in pairs(letters) do
-        message = replace(message, search, replacement)
+local function filter(message, tableToUse)
+    for search, replacement in pairs(tableToUse) do
+       local escapedSearch = search:gsub("([%^%$%(%)%%%.%[%]%*%+%-%?])", "%%%1")
+        message = message:gsub(escapedSearch, replacement)
     end
     return message
 end
+
 
 local function showNotification(title, text)
     Notification:Notify(
@@ -192,28 +245,29 @@ end
 
 -- Chat functions
 local function sendChat(msg)
-    local filteredMessage = game:GetService("Chat"):FilterStringForBroadcast(msg, LocalPlayer)
-    local tagged = filteredMessage ~= msg
+    local converted = filter(msg, letters_primary)
+    local filteredMessage = game:GetService("Chat"):FilterStringForBroadcast(converted, LocalPlayer)
+    local tagged = filteredMessage ~= converted
     
     if tagged then
-        showNotification("Message Tagged", "Message filtered.")
-        InputBox.Text = ""
-    else
-        if TextChatService.ChatVersion == Enum.ChatVersion.LegacyChatService then
-            ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents").SayMessageRequest:FireServer(msg, "All")
-        else
-            TextChatService.ChatInputBarConfiguration.TargetTextChannel:SendAsync(msg)
-        end
-        InputBox.Text = ""
+        converted = filter(msg, letters_secondary)
+        showNotification("Message Tagged", "Message filtered; using backup replacements.")
     end
+
+    if TextChatService.ChatVersion == Enum.ChatVersion.LegacyChatService then
+        ReplicatedStorage:FindFirstChild("DefaultChatSystemChatEvents").SayMessageRequest:FireServer(converted, "All")
+    else
+        TextChatService.ChatInputBarConfiguration.TargetTextChannel:SendAsync(converted)
+    end
+    InputBox.Text = ""
+
 end
 
 -- UI Interactions
 local function processText()
     local inputText = InputBox.Text
     if inputText ~= "" then
-        local convertedText = filter(inputText)
-        sendChat(convertedText)
+       sendChat(inputText)
     end
 end
 
