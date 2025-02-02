@@ -38,7 +38,7 @@ local RankColors = {
         primary = Color3.fromRGB(20, 20, 20),
         accent = Color3.fromRGB(255, 69, 0)
     },
-    ["AK TRIAL"] = {
+    ["AK HELPER"] = {
         primary = Color3.fromRGB(20, 20, 20),
         accent = Color3.fromRGB(169, 169, 169)
     },
@@ -259,7 +259,7 @@ emoji.Font = Enum.Font.SourceSans
         emoji.Text = "🔰"  -- Star for staff
     elseif rankText == "AK ADVERTISER" then
         emoji.Text = "📢"  -- Megaphone for advertiser
-    elseif rankText == "AK TRIAL" then
+    elseif rankText == "AK HELPER" then
         emoji.Text = "🔰"  -- Japanese symbol for beginner
     elseif rankText == "AK USER" then
         emoji.Text = ""  -- Glowing star for user
@@ -429,7 +429,7 @@ local function createTag(player, rankText, showPrompt)
 end
 
 local Advertisers = {"Vlafz195", "6736_45", "goekaycool", "goekayball", "goekayball2"}
-local FreeTrial = {}
+local Helper = {"newbornfromthedark"}
 local Scripters = {"GYATT_DAMN1", "328ml", "29Kyooo", "BloxiAstra", "ImOn_ValveIndex","BasedLion25"}
 local Owners = {"Xeni_he07", "AliKhammas1234", "AliKhammas", "I_LOVEYOU12210", "AK_ADMEN1", "YournothimbuddyXD", "AK_ADMEN2", "Akksosdmdokdkddmkd"}
 local Supporter = {"Robloxian74630436", "MyLittlePonySEDE"}
@@ -448,8 +448,8 @@ local function applyPlayerTag(player)
             createTag(player, "AK STAFF", showPrompt)
         elseif table.find(Advertisers, player.Name) then
             createTag(player, "AK ADVERTISER", showPrompt)
-        elseif table.find(FreeTrial, player.Name) then
-            createTag(player, "AK TRIAL", showPrompt)
+        elseif table.find(Helper, player.Name) then
+            createTag(player, "AK HELPER", showPrompt)
         elseif isWhitelisted(player) then
             createTag(player, "AK USER", showPrompt)
         end
