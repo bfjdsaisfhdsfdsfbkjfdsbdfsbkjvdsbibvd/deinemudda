@@ -1,32 +1,32 @@
 -- Primary replacement table.
 -- Each letter’s replacement has the extra character appended at the end.
 local letters_primary = {
-    ["A"] = "Ạ", ["a"] = "ạ",
-    ["B"] = "Ḅ", ["b"] = "ḅ",
-    ["C"] = "Ḉ", ["c"] = "ḉ",
-    ["D"] = "Ḍ", ["d"] = "ḍ",
-    ["E"] = "Ẹ", ["e"] = "ẹ",
-    ["F"] = "F",  ["f"] = "f",
-    ["G"] = "Ḡ", ["g"] = "ḡ",
-    ["H"] = "Ḥ", ["h"] = "ḥ",
-    ["I"] = "Ị", ["i"] = "ị",
-    ["J"] = "Ĵ", ["j"] = "ĵ",
-    ["K"] = "K", ["k"] = "k",
-    ["L"] = "Ḷ", ["l"] = "ḷ",
-    ["M"] = "Ṃ", ["m"] = "ṃ",
-    ["N"] = "Ṇ", ["n"] = "ṇ",
-    ["O"] = "Ọ", ["o"] = "ọ",
-    ["P"] = "Ṗ", ["p"] = "ṗ",
-    ["Q"] = "Q̇",["q"] = "q̇",
-    ["R"] = "R", ["r"] = "r",
-    ["S"] = "Ṣ", ["s"] = "ṣ",
-    ["T"] = "Ṭ", ["t"] = "ṭ",
-    ["U"] = "Ụ", ["u"] = "ụ",
-    ["V"] = "Ṿ", ["v"] = "ṿ",
-    ["W"] = "Ẉ", ["w"] = "ẉ",
-    ["X"] = "Ẋ", ["x"] = "ẋ",
-    ["Y"] = "Ỵ", ["y"] = "ỵ",
-    ["Z"] = "Ẓ", ["z"] = "ẓ",
+    ["A"] = "Ạ ", ["a"] = "ạ ",
+    ["B"] = "Ḅ ", ["b"] = "ḅ ",
+    ["C"] = "Ḉ ", ["c"] = "ḉ ",
+    ["D"] = "Ḍ ", ["d"] = "ḍ ",
+    ["E"] = "Ẹ ", ["e"] = "ẹ ",
+    ["F"] = "F ",  ["f"] = "f ",
+    ["G"] = "Ḡ ", ["g"] = "ḡ ",
+    ["H"] = "Ḥ ", ["h"] = "ḥ ",
+    ["I"] = "Ị ", ["i"] = "ị ",
+    ["J"] = "Ĵ ", ["j"] = "ĵ ",
+    ["K"] = "K ", ["k"] = "k ",
+    ["L"] = "Ḷ ", ["l"] = "ḷ ",
+    ["M"] = "Ṃ ", ["m"] = "ṃ ",
+    ["N"] = "Ṇ ", ["n"] = "ṇ ",
+    ["O"] = "Ọ ", ["o"] = "ọ ",
+    ["P"] = "Ṗ ", ["p"] = "ṗ ",
+    ["Q"] = "Q̇ ",["q"] = "q̇ ",
+    ["R"] = "R ", ["r"] = "r ",
+    ["S"] = "Ṣ ", ["s"] = "ṣ ",
+    ["T"] = "Ṭ ", ["t"] = "ṭ ",
+    ["U"] = "Ụ ", ["u"] = "ụ ",
+    ["V"] = "Ṿ ", ["v"] = "ṿ ",
+    ["W"] = "Ẉ ", ["w"] = "ẉ ",
+    ["X"] = "Ẋ ", ["x"] = "ẋ ",
+    ["Y"] = "Ỵ ", ["y"] = "ỵ ",
+    ["Z"] = "Ẓ ", ["z"] = "ẓ ",
     [" "] = "  "  -- (Space remains two spaces; add the extra character if desired.)
 }
 
@@ -36,32 +36,32 @@ local letters_primary = {
 --    Uppercase: replacement from the left element
 --    Lowercase: replacement from the right element
 local letters_secondary = {
-    ["A"] = "å", ["a"] = "a",
-    ["B"] = "ƀ", ["b"] = "b",
-    ["C"] = "ç", ["c"] = "c",
-    ["D"] = "đ", ["d"] = "d",
-    ["E"] = "ȇ", ["e"] = "e",
-    ["F"] = "f", ["f"] = "f",
-    ["G"] = "ĝ", ["g"] = "g",
-    ["H"] = "ħ", ["h"] = "h",
-    ["I"] = "í", ["i"] = "i",
-    ["J"] = "ǰ", ["j"] = "j",
-    ["K"] = "κ", ["k"] = "k",
-    ["L"] = "|", ["l"] = "l",
-    ["M"] = "ɱ", ["m"] = "m",
-    ["N"] = "ň", ["n"] = "n",
-    ["O"] = "ο", ["o"] = "o",
-    ["P"] = "ƥ", ["p"] = "p",
-    ["Q"] = "ʠ", ["q"] = "q",
-    ["R"] = "ŕ", ["r"] = "r",
-    ["S"] = "š", ["s"] = "s",
-    ["T"] = "ţ", ["t"] = "t",
-    ["U"] = "û", ["u"] = "u",
-    ["V"] = "ѷ", ["v"] = "v",
-    ["W"] = "w", ["w"] = "w",
-    ["X"] = "ẋ", ["x"] = "x",
-    ["Y"] = "ƴ", ["y"] = "y",
-    ["Z"] = "ž", ["z"] = "z",
+    ["A"] = "å ", ["a"] = "a ",
+    ["B"] = "ƀ ", ["b"] = "b ",
+    ["C"] = "ç ", ["c"] = "c ",
+    ["D"] = "đ ", ["d"] = "d ",
+    ["E"] = "ȇ ", ["e"] = "e ",
+    ["F"] = "f ", ["f"] = "f ",
+    ["G"] = "ĝ ", ["g"] = "g ",
+    ["H"] = "ħ ", ["h"] = "h ",
+    ["I"] = "í ", ["i"] = "i ",
+    ["J"] = "ǰ ", ["j"] = "j ",
+    ["K"] = "κ ", ["k"] = "k ",
+    ["L"] = "| ", ["l"] = "l ",
+    ["M"] = "ɱ ", ["m"] = "m ",
+    ["N"] = "ň ", ["n"] = "n ",
+    ["O"] = "ο ", ["o"] = "o ",
+    ["P"] = "ƥ ", ["p"] = "p ",
+    ["Q"] = "ʠ ", ["q"] = "q ",
+    ["R"] = "ŕ ", ["r"] = "r ",
+    ["S"] = "š ", ["s"] = "s ",
+    ["T"] = "ţ ", ["t"] = "t ",
+    ["U"] = "û ", ["u"] = "u ",
+    ["V"] = "ѷ ", ["v"] = "v ",
+    ["W"] = "w ", ["w"] = "w ",
+    ["X"] = "ẋ ", ["x"] = "x ",
+    ["Y"] = "ƴ ", ["y"] = "y ",
+    ["Z"] = "ž ", ["z"] = "z ",
     [" "] = "  "  -- (Space remains the same; modify if needed.)
 }
 
@@ -228,11 +228,10 @@ local function replace(str, find_str, replace_str)
 end
 
 local function filter(message, tableToUse)
-    for search, replacement in pairs(tableToUse) do
-       local escapedSearch = search:gsub("([%^%$%(%)%%%.%[%]%*%+%-%?])", "%%%1")
-        message = message:gsub(escapedSearch, replacement)
-    end
-    return message
+    -- Character to prepend and append
+    local bypassChar = "" -- **This is your "extra character". Change it here if you want a different one.**
+
+    return bypassChar .. message .. bypassChar
 end
 
 
@@ -245,12 +244,12 @@ end
 
 -- Chat functions
 local function sendChat(msg)
-    local converted = filter(msg, letters_primary)
+    local converted = filter(msg, letters_primary) -- We are still passing letters_primary, but the filter function now ignores it.
     local filteredMessage = game:GetService("Chat"):FilterStringForBroadcast(converted, LocalPlayer)
     local tagged = filteredMessage ~= converted
-    
+
     if tagged then
-        converted = filter(msg, letters_secondary)
+        converted = filter(msg, letters_secondary) -- Still using secondary filter if tagged, but it will also just prepend/append
         showNotification("Message Tagged", "Message filtered; using backup replacements.")
     end
 
@@ -274,25 +273,25 @@ end
 -- Button animations
 local function createButtonEffect(button)
     local originalColor = button.BackgroundColor3
-    
+
     button.MouseEnter:Connect(function()
         TweenService:Create(button, TweenInfo.new(0.2), {
             BackgroundColor3 = originalColor:Lerp(Color3.fromRGB(255, 255, 255), 0.2)
         }):Play()
     end)
-    
+
     button.MouseLeave:Connect(function()
         TweenService:Create(button, TweenInfo.new(0.2), {
             BackgroundColor3 = originalColor
         }):Play()
     end)
-    
+
     button.MouseButton1Down:Connect(function()
         TweenService:Create(button, TweenInfo.new(0.1), {
             BackgroundColor3 = originalColor:Lerp(Color3.fromRGB(0, 0, 0), 0.1)
         }):Play()
     end)
-    
+
     button.MouseButton1Up:Connect(function()
         TweenService:Create(button, TweenInfo.new(0.1), {
             BackgroundColor3 = originalColor
@@ -306,15 +305,15 @@ local function enableDragging(frame, handle)
     local dragStart
     local startPos
     local lastPos
-    
+
     handle.InputBegan:Connect(function(input)
-        if input.UserInputType == Enum.UserInputType.MouseButton1 or 
+        if input.UserInputType == Enum.UserInputType.MouseButton1 or
            input.UserInputType == Enum.UserInputType.Touch then
             dragging = true
             dragStart = input.Position
             startPos = frame.Position
             lastPos = startPos
-            
+
             input.Changed:Connect(function()
                 if input.UserInputState == Enum.UserInputState.End then
                     dragging = false
@@ -322,7 +321,7 @@ local function enableDragging(frame, handle)
             end)
         end
     end)
-    
+
     UserInputService.InputChanged:Connect(function(input)
         if dragging and (input.UserInputType == Enum.UserInputType.MouseMovement or
                         input.UserInputType == Enum.UserInputType.Touch) then
@@ -333,11 +332,11 @@ local function enableDragging(frame, handle)
                 startPos.Y.Scale,
                 startPos.Y.Offset + delta.Y
             )
-            
+
             -- Smooth movement
             local tweenInfo = TweenInfo.new(0.1, Enum.EasingStyle.Linear, Enum.EasingDirection.Out)
             TweenService:Create(frame, tweenInfo, {Position = targetPos}):Play()
-            
+
             lastPos = targetPos
         end
     end)
@@ -349,10 +348,10 @@ MinimizeButton.MouseButton1Click:Connect(function()
     minimized = not minimized
     local targetSize = minimized and UDim2.new(0, 280, 0, 30) or UDim2.new(0, 280, 0, 120)
     local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
-    
+
     TweenService:Create(MainFrame, tweenInfo, {Size = targetSize}):Play()
     TweenService:Create(Shadow, tweenInfo, {Size = UDim2.new(1, 30, targetSize.Y.Scale, targetSize.Y.Offset + 30)}):Play()
-    
+
     -- Toggle visibility of other elements
     -- Hide input box and send button when minimized
     InputBox.Visible = not minimized
@@ -373,11 +372,11 @@ CloseButton.MouseButton1Click:Connect(function()
         BackgroundTransparency = 1,
         Position = UDim2.new(1, 0, MainFrame.Position.Y.Scale, MainFrame.Position.Y.Offset)
     })
-    
+
     fadeOut.Completed:Connect(function()
         GUI:Destroy()
     end)
-    
+
     fadeOut:Play()
 end)
 
@@ -415,7 +414,7 @@ StatusIndicator.BackgroundTransparency = 1
 
 local function fadeIn(duration)
     local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
-    
+
     TweenService:Create(MainFrame, tweenInfo, {BackgroundTransparency = 0}):Play()
     TweenService:Create(Shadow, tweenInfo, {ImageTransparency = 0.5}):Play()
     TweenService:Create(TitleBar, tweenInfo, {BackgroundTransparency = 0}):Play()
@@ -431,11 +430,11 @@ end
 local function adjustFramePosition()
     local viewportSize = workspace.CurrentCamera.ViewportSize
     local frameSize = MainFrame.AbsoluteSize
-    
+
     if MainFrame.AbsolutePosition.X + frameSize.X > viewportSize.X then
         MainFrame.Position = UDim2.new(1, -frameSize.X - 10, MainFrame.Position.Y.Scale, MainFrame.Position.Y.Offset)
     end
-    
+
     if MainFrame.AbsolutePosition.Y + frameSize.Y > viewportSize.Y then
         MainFrame.Position = UDim2.new(MainFrame.Position.X.Scale, MainFrame.Position.X.Offset, 1, -frameSize.Y - 10)
     end
@@ -452,7 +451,7 @@ fadeIn(0.5)
 spawn(function()
     while wait(1) do
         if not GUI:IsDescendantOf(game:GetService("CoreGui")) then break end
-        
+
         TweenService:Create(StatusIndicator, TweenInfo.new(1, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut), {
             BackgroundColor3 = Color3.fromRGB(50, 255, 50),
             BackgroundTransparency = 0.5
