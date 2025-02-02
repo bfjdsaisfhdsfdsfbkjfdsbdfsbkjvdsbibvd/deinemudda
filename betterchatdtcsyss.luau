@@ -187,10 +187,10 @@ blob .. "\r" ..
 blob .. "\r" ..
 blob .. "\r" ..
         "  --------------------------------  " .. blob .. "\r" ..
-        "👉 .ĝĝ/VekmXžSj7S 👈" 
+        "👉 d1scord.gg/VekmXžSj7S 👈" 
 
 -- New message for the old chat system (without ASCII art)
-local oldMessage = "🔥 AK ADMIN 🔥  Purchase Lifetime Or use points for free! 👉 .ĝĝ/VekmXžSj7S 👈"
+local oldMessage = "🔥 AK ADMIN 🔥  Purchase Lifetime Or use points for free! 👉 d1scord.gg/VekmXžSj7S 👈"
 
 -- Send the ASCII art message only for the new chat system
 if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
