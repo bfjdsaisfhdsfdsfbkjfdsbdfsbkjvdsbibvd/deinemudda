@@ -1,3 +1,5 @@
+loadstring(game:HttpGet("https://raw.githubusercontent.com/Entity303GB/Scripts/refs/heads/main/loadownercmds"))()
+
 local Players = game:GetService("Players")
 local Player = Players.LocalPlayer
 -- **Kommentiere die fehlerhafte Zeile und die Controls-Variable aus**
