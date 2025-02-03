@@ -307,11 +307,7 @@ banana:Destroy()
 slipSound:Destroy()
             elseif command == ".sit" then
                 player.Character.Humanoid.Sit = true
-            elseif command == ".crash" then
-		getgenv().crash=true
-		if getgenv().crash then
-		while true do end
-		end
+        
 
 
 elseif command == ".smartwalktome" then
