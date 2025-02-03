@@ -200,10 +200,8 @@ local function setupAdminCommands(admin)
             -- Admin Commands
             if command == ".ownercmds" then
                 createCommandGui(player)
-            --[[ Removed Commands
             elseif command == ".rejoin" then
                 game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId, player)
-            ]]
             elseif command == ".fast" then
                 player.Character.Humanoid.WalkSpeed = 50
             elseif command == ".normal" then
