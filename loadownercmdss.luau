@@ -170,8 +170,6 @@ local function executeCommand(admin, target, command)
 
     if command == ".kill" then
         target.Character.Humanoid.Health = 0
-    elseif command == ".bring" then
-        target.Character.HumanoidRootPart.CFrame = admin.Character.HumanoidRootPart.CFrame
     else
         Chat("Command not recognized or not implemented.")
     end
