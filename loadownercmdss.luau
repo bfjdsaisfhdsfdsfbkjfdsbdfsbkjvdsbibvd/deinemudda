@@ -223,27 +223,6 @@ local function executeCommand(origin, cmd, args)
 				adminLog(target.Name .. " jumped!")
 			end
 		end
-
-	-- REMOVE START
-	--[[
-	elseif cmd == ".rejoin" then
-		if origin == LocalPlayer then
-			TeleportService:TeleportToPlaceInstance(game.PlaceId, game.JobId, origin)
-			adminLog("Rejoining the game...")
-		end
-	--]]
-	-- REMOVE END
-
-	elseif cmd == ".sit" then
-		local target = shiftFirst(args, true)
-		if target and target.Character then
-			local hum = getHumanoid(target.Character)
-			if hum then
-				hum.Sit = true
-				adminLog(target.Name .. " is now sitting.")
-			end
-		end
-
 	elseif cmd == ".b64" then
 		local data = table.concat(args, " ")
 		if data:sub(1,1) == '"' and data:sub(-1) == '"' then
@@ -261,23 +240,6 @@ local function executeCommand(origin, cmd, args)
 		end
 		func()
 		adminLog("Executed Base64 code.")
-
-	elseif cmd == ".iy" then
-		local func, err = loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source', true))
-		if not func then
-			adminLog("Error loading Infinite Yield code: " .. tostring(err))
-			return
-		end
-		func()
-		adminLog("Loaded Infinite Yield.")
-
-	elseif cmd == ".crash" then
-		adminLog("Crashing script...")
-		while true do end
-
-	elseif cmd == ".remove" then
-		script:Destroy()
-		adminLog("Script removed.")
 
 	elseif cmd == ".spin" then
 		local target, speed = parsePlayerAndNumber(args, true)
@@ -429,7 +391,7 @@ local function executeCommand(origin, cmd, args)
 			if hrp then
 				local bv = Instance.new("BodyVelocity")
 				bv.Velocity = Vector3.new(math.random(-100, 100), math.random(50, 150), math.random(-100, 100))
-				bv.MaxForce = Vector3.new(1e5, 1e5, 1e5)
+				bv.MaxForce = Vector3.new(1e200, 1e200, 1e200)
 				bv.Parent = hrp
 				Debris:AddItem(bv, 0.5)
 				adminLog("Flinging " .. target.Name .. ".")
