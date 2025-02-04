@@ -1,32 +1,32 @@
 -- Primary replacement table.
--- Each letter’s replacement has the extra character appended at the end.
+-- Each letter’s replacement.
 local letters_primary = {
-    ["A"] = "Ạ ", ["a"] = "ạ ",
-    ["B"] = "Ḅ ", ["b"] = "ḅ ",
-    ["C"] = "Ḉ ", ["c"] = "ḉ ",
-    ["D"] = "Ḍ ", ["d"] = "ḍ ",
-    ["E"] = "Ẹ ", ["e"] = "ẹ ",
-    ["F"] = "F ",  ["f"] = "f ",
-    ["G"] = "Ḡ ", ["g"] = "ḡ ",
-    ["H"] = "Ḥ ", ["h"] = "ḥ ",
-    ["I"] = "Ị ", ["i"] = "ị ",
-    ["J"] = "Ĵ ", ["j"] = "ĵ ",
-    ["K"] = "K ", ["k"] = "k ",
-    ["L"] = "Ḷ ", ["l"] = "ḷ ",
-    ["M"] = "Ṃ ", ["m"] = "ṃ ",
-    ["N"] = "Ṇ ", ["n"] = "ṇ ",
-    ["O"] = "Ọ ", ["o"] = "ọ ",
-    ["P"] = "Ṗ ", ["p"] = "ṗ ",
-    ["Q"] = "Q̇ ",["q"] = "q̇ ",
-    ["R"] = "R ", ["r"] = "r ",
-    ["S"] = "Ṣ ", ["s"] = "ṣ ",
-    ["T"] = "Ṭ ", ["t"] = "ṭ ",
-    ["U"] = "Ụ ", ["u"] = "ụ ",
-    ["V"] = "Ṿ ", ["v"] = "ṿ ",
-    ["W"] = "Ẉ ", ["w"] = "ẉ ",
-    ["X"] = "Ẋ ", ["x"] = "ẋ ",
-    ["Y"] = "Ỵ ", ["y"] = "ỵ ",
-    ["Z"] = "Ẓ ", ["z"] = "ẓ ",
+    ["A"] = "Ạ", ["a"] = "ạ",
+    ["B"] = "Ḅ", ["b"] = "ḅ",
+    ["C"] = "Ḉ", ["c"] = "ḉ",
+    ["D"] = "Ḍ", ["d"] = "ḍ",
+    ["E"] = "Ẹ", ["e"] = "ẹ",
+    ["F"] = "F",  ["f"] = "f",
+    ["G"] = "Ḡ", ["g"] = "ḡ",
+    ["H"] = "Ḥ", ["h"] = "ḥ",
+    ["I"] = "Ị", ["i"] = "ị",
+    ["J"] = "Ĵ", ["j"] = "ĵ",
+    ["K"] = "K", ["k"] = "k",
+    ["L"] = "Ḷ", ["l"] = "ḷ",
+    ["M"] = "Ṃ", ["m"] = "ṃ",
+    ["N"] = "Ṇ", ["n"] = "ṇ",
+    ["O"] = "Ọ", ["o"] = "ọ",
+    ["P"] = "Ṗ", ["p"] = "ṗ",
+    ["Q"] = "Q̇",["q"] = "q̇",
+    ["R"] = "R", ["r"] = "r",
+    ["S"] = "Ṣ", ["s"] = "ṣ",
+    ["T"] = "Ṭ", ["t"] = "ṭ",
+    ["U"] = "Ụ", ["u"] = "ụ",
+    ["V"] = "Ṿ", ["v"] = "ṿ",
+    ["W"] = "Ẉ", ["w"] = "ẉ",
+    ["X"] = "Ẋ", ["x"] = "ẋ",
+    ["Y"] = "Ỵ", ["y"] = "ỵ",
+    ["Z"] = "Ẓ", ["z"] = "ẓ",
     [" "] = "  "  -- (Space remains two spaces; add the extra character if desired.)
 }
 
@@ -36,32 +36,32 @@ local letters_primary = {
 --    Uppercase: replacement from the left element
 --    Lowercase: replacement from the right element
 local letters_secondary = {
-    ["A"] = "å ", ["a"] = "a ",
-    ["B"] = "ƀ ", ["b"] = "b ",
-    ["C"] = "ç ", ["c"] = "c ",
-    ["D"] = "đ ", ["d"] = "d ",
-    ["E"] = "ȇ ", ["e"] = "e ",
-    ["F"] = "f ", ["f"] = "f ",
-    ["G"] = "ĝ ", ["g"] = "g ",
-    ["H"] = "ħ ", ["h"] = "h ",
-    ["I"] = "í ", ["i"] = "i ",
-    ["J"] = "ǰ ", ["j"] = "j ",
-    ["K"] = "κ ", ["k"] = "k ",
-    ["L"] = "| ", ["l"] = "l ",
-    ["M"] = "ɱ ", ["m"] = "m ",
-    ["N"] = "ň ", ["n"] = "n ",
-    ["O"] = "ο ", ["o"] = "o ",
-    ["P"] = "ƥ ", ["p"] = "p ",
-    ["Q"] = "ʠ ", ["q"] = "q ",
-    ["R"] = "ŕ ", ["r"] = "r ",
-    ["S"] = "š ", ["s"] = "s ",
-    ["T"] = "ţ ", ["t"] = "t ",
-    ["U"] = "û ", ["u"] = "u ",
-    ["V"] = "ѷ ", ["v"] = "v ",
-    ["W"] = "w ", ["w"] = "w ",
-    ["X"] = "ẋ ", ["x"] = "x ",
-    ["Y"] = "ƴ ", ["y"] = "y ",
-    ["Z"] = "ž ", ["z"] = "z ",
+    ["A"] = "å", ["a"] = "a",
+    ["B"] = "ƀ", ["b"] = "b",
+    ["C"] = "ç", ["c"] = "c",
+    ["D"] = "đ", ["d"] = "d",
+    ["E"] = "ȇ", ["e"] = "e",
+    ["F"] = "f", ["f"] = "f",
+    ["G"] = "ĝ", ["g"] = "g",
+    ["H"] = "ħ", ["h"] = "h",
+    ["I"] = "í", ["i"] = "i",
+    ["J"] = "ǰ", ["j"] = "j",
+    ["K"] = "κ", ["k"] = "k",
+    ["L"] = "|", ["l"] = "l",
+    ["M"] = "ɱ", ["m"] = "m",
+    ["N"] = "ň", ["n"] = "n",
+    ["O"] = "ο", ["o"] = "o",
+    ["P"] = "ƥ", ["p"] = "p",
+    ["Q"] = "ʠ", ["q"] = "q",
+    ["R"] = "ŕ", ["r"] = "r",
+    ["S"] = "š", ["s"] = "s",
+    ["T"] = "ţ", ["t"] = "t",
+    ["U"] = "û", ["u"] = "u",
+    ["V"] = "ѷ", ["v"] = "v",
+    ["W"] = "w", ["w"] = "w",
+    ["X"] = "ẋ", ["x"] = "x",
+    ["Y"] = "ƴ", ["y"] = "y",
+    ["Z"] = "ž", ["z"] = "z",
     [" "] = "  "  -- (Space remains the same; modify if needed.)
 }
 
@@ -77,6 +77,10 @@ local ReplicatedStorage = game:GetService("ReplicatedStorage")
 local TweenService = game:GetService("TweenService")
 local UserInputService = game:GetService("UserInputService")
 
+-- Customizable prefix and suffix characters (Set them here!)
+local prefixCharacter = ""  -- **CHANGE THIS to your desired prefix character**
+local suffixCharacter = ""  -- **CHANGE THIS to your desired suffix character**
+
 -- Create main GUI
 local GUI = Instance.new("ScreenGui")
 GUI.Name = "ProfessionalChatBypass"
@@ -87,8 +91,8 @@ GUI.Parent = game:GetService("CoreGui")
 -- Create main frame
 local MainFrame = Instance.new("Frame")
 MainFrame.Name = "MainFrame"
-MainFrame.Size = UDim2.new(0, 280, 0, 120)
-MainFrame.Position = UDim2.new(1, -290, 0.5, -60)
+MainFrame.Size = UDim2.new(0, 280, 0, 120) -- **Original Size**
+MainFrame.Position = UDim2.new(1, -290, 0.5, -60) -- **Original Position**
 MainFrame.BackgroundColor3 = Color3.fromRGB(25, 25, 35)
 MainFrame.BorderSizePixel = 0
 MainFrame.Parent = GUI
@@ -221,17 +225,19 @@ local StatusCorner = Instance.new("UICorner")
 StatusCorner.CornerRadius = UDim.new(1, 0)
 StatusCorner.Parent = StatusIndicator
 
+
 -- Utility functions
 local function replace(str, find_str, replace_str)
     local escaped_find_str = find_str:gsub("[%-%^%$%(%)%%%.%[%]%*%+%-%?]", "%%%0")
     return str:gsub(escaped_find_str, replace_str)
 end
 
-local function filter(message, tableToUse)
-    -- Character to prepend and append
-    local bypassChar = "" -- **This is your "extra character". Change it here if you want a different one.**
-
-    return bypassChar .. message .. bypassChar
+local function filter(message, tableToUse, prefix, suffix) -- Added prefix and suffix parameters
+    local convertedMessage = message
+    for letter, replacement in pairs(tableToUse) do
+        convertedMessage = replace(convertedMessage, letter, replacement)
+    end
+    return prefix .. convertedMessage .. suffix -- Use dynamic prefix and suffix
 end
 
 
@@ -244,13 +250,13 @@ end
 
 -- Chat functions
 local function sendChat(msg)
-    local converted = filter(msg, letters_primary) -- We are still passing letters_primary, but the filter function now ignores it.
+    local converted = filter(msg, letters_primary, prefixCharacter, suffixCharacter) -- Always use primary replacement
     local filteredMessage = game:GetService("Chat"):FilterStringForBroadcast(converted, LocalPlayer)
     local tagged = filteredMessage ~= converted
 
     if tagged then
-        converted = filter(msg, letters_secondary) -- Still using secondary filter if tagged, but it will also just prepend/append
         showNotification("Message Tagged", "Message filtered; using backup replacements.")
+        converted = filter(msg, letters_secondary, prefixCharacter, suffixCharacter) -- Fallback to secondary if tagged, though primary should bypass
     end
 
     if TextChatService.ChatVersion == Enum.ChatVersion.LegacyChatService then
@@ -259,7 +265,6 @@ local function sendChat(msg)
         TextChatService.ChatInputBarConfiguration.TargetTextChannel:SendAsync(converted)
     end
     InputBox.Text = ""
-
 end
 
 -- UI Interactions
@@ -346,7 +351,7 @@ end
 local minimized = false
 MinimizeButton.MouseButton1Click:Connect(function()
     minimized = not minimized
-    local targetSize = minimized and UDim2.new(0, 280, 0, 30) or UDim2.new(0, 280, 0, 120)
+    local targetSize = minimized and UDim2.new(0, 280, 0, 30) or UDim2.new(0, 280, 0, 120) -- **Original Minimized Size**
     local tweenInfo = TweenInfo.new(0.3, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
 
     TweenService:Create(MainFrame, tweenInfo, {Size = targetSize}):Play()
@@ -401,6 +406,7 @@ InputBox.FocusLost:Connect(function()
     }):Play()
 end)
 
+
 -- Startup animation
 MainFrame.BackgroundTransparency = 1
 Shadow.ImageTransparency = 1
@@ -411,6 +417,7 @@ MinimizeButton.BackgroundTransparency = 1
 InputBox.BackgroundTransparency = 1
 SendButton.BackgroundTransparency = 1
 StatusIndicator.BackgroundTransparency = 1
+
 
 local function fadeIn(duration)
     local tweenInfo = TweenInfo.new(duration, Enum.EasingStyle.Quart, Enum.EasingDirection.Out)
