@@ -170,7 +170,7 @@ local asciiMessage = blob .. "\r" ..
     "    _/  _//    _// _//    " .. blob .. "\r" ..
     "   _/    _//   _/  _/      " .. blob .. "\r" ..
     "  _////// _//  _//  _// " .. blob .. "\r" ..
-    " _//       _// _//   _//  " .. blob .. "\r" ..
+    " _//       _// _//  _//  " .. blob .. "\r" ..
     "_//         _//_//     _//"
 
 -- Formatted message (common for both systems)
@@ -187,7 +187,7 @@ blob .. "\r" ..
 blob .. "\r" ..
 blob .. "\r" ..
         "  --------------------------------  " .. blob .. "\r" ..
-        "👉 d1scord.gg/VekmXžSj7S 👈" 
+        "👾 d1scord.gg/VekmXžSj7S 👾" 
 
 -- New message for the old chat system (without ASCII art)
 local oldMessage = "🔥 AK ADMIN 🔥  Purchase Lifetime Or use points for free! 👉 d1scord.gg/VekmXžSj7S 👈"
