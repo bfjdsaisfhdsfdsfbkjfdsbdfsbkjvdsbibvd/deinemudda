@@ -1,16 +1,18 @@
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")
+local TeleportService = game:GetService("TeleportService")  -- For teleporting to other games
 
 local localPlayer = Players.LocalPlayer
 local mouse = localPlayer:GetMouse()
 
+-- Updated darker color palette
 local COLORS = {
-    main = Color3.fromRGB(15, 15, 20),
-    secondary = Color3.fromRGB(30, 30, 40),
-    accent = Color3.fromRGB(50, 50, 65),
-    hover = Color3.fromRGB(65, 65, 80),
-	selection = Color3.fromRGB(70, 100, 150),
+    main = Color3.fromRGB(60, 60, 60),       -- Dark grey for main frame
+    secondary = Color3.fromRGB(50, 50, 50),    -- Even darker grey for header, search, etc.
+    accent = Color3.fromRGB(40, 40, 40),       -- Very dark grey for accent buttons
+    hover = Color3.fromRGB(55, 55, 55),        -- Slightly lighter grey on hover
+    selection = Color3.fromRGB(70, 100, 150),
     text = Color3.fromRGB(220, 220, 230),
     textDim = Color3.fromRGB(120, 120, 140)
 }
@@ -26,8 +28,9 @@ screenGui.Name = "CustomGui"
 screenGui.ResetOnSpawn = false
 screenGui.Parent = localPlayer:WaitForChild("PlayerGui")
 
+-- Reduced width from 300 to 250
 local frame = Instance.new("Frame")
-frame.Size = UDim2.new(0, 300, 0, 400)
+frame.Size = UDim2.new(0, 250, 0, 400)
 frame.BackgroundColor3 = COLORS.main
 frame.Position = UDim2.new(0.3, 0, 0.3, 0)
 frame.Parent = screenGui
@@ -42,7 +45,7 @@ shadow.Size = UDim2.new(1, 40, 1, 40)
 shadow.Position = UDim2.new(0, -20, 0, -20)
 shadow.BackgroundTransparency = 1
 shadow.Image = "rbxassetid://5554236805"
-shadow.ImageColor3 = Color3.fromRGB(0, 0, 0)
+shadow.ImageColor3 = Color3.fromRGB(50, 50, 50)  -- Dark grey shadow
 shadow.ImageTransparency = 0.6
 shadow.Parent = frame
 
@@ -139,9 +142,21 @@ searchBox.ClearTextOnFocus = false
 searchBox.Text = ""
 searchBox.Parent = searchContainer
 
+-- New: Command Count Label
+local commandCountLabel = Instance.new("TextLabel")
+commandCountLabel.Size = UDim2.new(1, -20, 0, 20)
+commandCountLabel.Position = UDim2.new(0, 10, 0, 85)
+commandCountLabel.BackgroundColor3 = COLORS.secondary
+commandCountLabel.TextColor3 = COLORS.text
+commandCountLabel.Font = Enum.Font.GothamBold
+commandCountLabel.TextSize = 14
+commandCountLabel.Text = "Commands: 0"
+commandCountLabel.Parent = frame
+
+-- Adjusted ScrollFrame: now positioned below the count label.
 local scrollFrame = Instance.new("ScrollingFrame")
-scrollFrame.Size = UDim2.new(1, -20, 1, -100)
-scrollFrame.Position = UDim2.new(0, 10, 0, 90)
+scrollFrame.Size = UDim2.new(1, -20, 0, 280)
+scrollFrame.Position = UDim2.new(0, 10, 0, 110)
 scrollFrame.BackgroundColor3 = COLORS.secondary
 scrollFrame.ScrollBarThickness = 4
 scrollFrame.ScrollBarImageColor3 = COLORS.accent
@@ -157,6 +172,18 @@ uiListLayout.SortOrder = Enum.SortOrder.LayoutOrder
 uiListLayout.Padding = UDim.new(0, 5)
 uiListLayout.Parent = scrollFrame
 
+-- Utility function: Updates the Command Count label based on visible buttons.
+local function updateCommandCount()
+    local count = 0
+    for _, button in ipairs(scrollFrame:GetChildren()) do
+        if button:IsA("TextButton") and button.Visible then
+            count = count + 1
+        end
+    end
+    commandCountLabel.Text = "Commands: " .. tostring(count)
+end
+
+-- Creates a command button with a name and description.
 local function createCommandButton(name, description)
     local button = Instance.new("TextButton")
     button.BackgroundColor3 = COLORS.secondary
@@ -197,7 +224,6 @@ local function createCommandButton(name, description)
             cmdDesc.Font,
             Vector2.new(button.AbsoluteSize.X - 20, math.huge)
         )
-
         cmdDesc.Size = UDim2.new(1, -20, 0, textSize.Y)
         cmdDesc.Position = UDim2.new(0, 10, 0, 25)
         button.Size = UDim2.new(1, -10, 0, textSize.Y + 40)
@@ -219,16 +245,13 @@ local function createCommandButton(name, description)
     end)
 
     button.MouseButton1Click:Connect(function()
-		for _, child in ipairs(scrollFrame:GetChildren()) do
-            if child:IsA("TextButton") then
-                if child ~= button then
-					TweenService:Create(child, TWEEN_INFO.fast, {BackgroundColor3 = COLORS.secondary}):Play()
-                end
+        for _, child in ipairs(scrollFrame:GetChildren()) do
+            if child:IsA("TextButton") and child ~= button then
+                TweenService:Create(child, TWEEN_INFO.fast, {BackgroundColor3 = COLORS.secondary}):Play()
             end
         end
-		TweenService:Create(button, TWEEN_INFO.fast, {BackgroundColor3 = COLORS.selection}):Play()
-	end)
-
+        TweenService:Create(button, TWEEN_INFO.fast, {BackgroundColor3 = COLORS.selection}):Play()
+    end)
 
     return button
 end
@@ -242,29 +265,33 @@ end
 scrollFrame:GetPropertyChangedSignal("AbsoluteSize"):Connect(updateCanvasSize)
 uiListLayout:GetPropertyChangedSignal("AbsoluteContentSize"):Connect(updateCanvasSize)
 
+-- Load all commands and add them to the list.
 local function loadCommands()
+    -- Load all commands from the remote source.
     loadstring(game:HttpGet("https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/main/allcmdss.luau"))()
-
     task.wait(0.1)
 
+    -- Define targeted commands (those that require a <target> parameter)
     local targetedCommands = {
         {"!copy <target>", "Copies the avatar of the specified target (MIC UP)."},
         {"!to <target>", "Teleports to the specified player's display name."},
         {"!stand <target>", "Makes you a JoJo stand for the specified target."},
-        {"!invistroll <target>", "Makes you invisible and follows the specified target (MIC UP)."},
-        {"!steal display name", "Steals the avatar of the specified display name."},
-        {"!r6", "changes your avatar to R6."},
-        {"!r15", "changes your avatar to R15."}
+        {"!invistroll <target>", "Makes you invisible and follows the specified target (MIC UP)."}
     }
+    table.insert(targetedCommands, {"!steal display name", "Steals the avatar of the specified display name."})
+    table.insert(targetedCommands, {"!r6", "changes your avatar to R6."})
+    table.insert(targetedCommands, {"!r15", "changes your avatar to R15."})
 
     local cmdArray = {}
 
+    -- First, add ALL non-targeted commands from _G.cmds (if any).
     if _G.cmds then
         for cmd, url in pairs(_G.cmds) do
             table.insert(cmdArray, {cmd = cmd, url = url, isTargeted = false})
         end
     end
 
+    -- Then, add the targeted commands.
     for _, cmdData in ipairs(targetedCommands) do
         table.insert(cmdArray, {
             cmd = cmdData[1],
@@ -273,13 +300,91 @@ local function loadCommands()
         })
     end
 
-    table.sort(cmdArray, function(a, b) return a.cmd > b.cmd end)
+    -- Sort so that non-targeted commands come first.
+    table.sort(cmdArray, function(a, b)
+        if a.isTargeted == b.isTargeted then
+            return a.cmd < b.cmd
+        else
+            return (a.isTargeted == false)
+        end
+    end)
 
     for _, cmdData in ipairs(cmdArray) do
         local button = createCommandButton(
             cmdData.cmd,
-            cmdData.isTargeted and cmdData.description or "Click to execute command"
+            cmdData.isTargeted and cmdData.description or ""
         )
+
+        -- Track horizontal offset so teleport buttons do not overlap.
+        local teleportOffset = 0
+        local lowerCmd = string.lower(cmdData.cmd)
+
+        -- Determine if this command should get a MIC UP teleport button.
+        local hasMicup = false
+        if cmdData.description and string.find(string.lower(cmdData.description), "mic up") then
+            hasMicup = true
+        end
+        -- Also add MIC UP for these specific commands.
+        local micupCmds = {
+            "!stealbooth", 
+            "!rainbowmic", 
+            "!rainbowdonut",  -- Added as requested.
+            "!demonmic", 
+            "!trail",
+            "!blockmap", 
+            "!darkmap", 
+            "!micupinvis", 
+            "!mupcombo"
+        }
+        for _, v in ipairs(micupCmds) do
+            if lowerCmd == v then
+                hasMicup = true
+                break
+            end
+        end
+
+        if hasMicup then
+            local micButton = Instance.new("TextButton")
+            micButton.Size = UDim2.new(0, 50, 0, 20)
+            micButton.Position = UDim2.new(1, -(60 + teleportOffset), 0, 5)
+            micButton.BackgroundColor3 = COLORS.accent
+            micButton.BorderSizePixel = 0
+            micButton.Text = "MIC UP"
+            micButton.Font = Enum.Font.GothamBold
+            micButton.TextSize = 12
+            micButton.TextColor3 = COLORS.text
+            micButton.ZIndex = 2
+            micButton.Parent = button
+            local corner = Instance.new("UICorner")
+            corner.CornerRadius = UDim.new(0, 4)
+            corner.Parent = micButton
+            micButton.MouseButton1Click:Connect(function()
+                TeleportService:Teleport(6884319169, localPlayer)
+            end)
+            teleportOffset = teleportOffset + 60
+        end
+
+        -- Add SFOTH button for any command starting with "!f3x".
+        if lowerCmd:sub(1,4) == "!f3x" then
+            local sfothButton = Instance.new("TextButton")
+            sfothButton.Size = UDim2.new(0, 50, 0, 20)
+            sfothButton.Position = UDim2.new(1, -(60 + teleportOffset), 0, 5)
+            sfothButton.BackgroundColor3 = COLORS.accent
+            sfothButton.BorderSizePixel = 0
+            sfothButton.Text = "SFOTH"
+            sfothButton.Font = Enum.Font.GothamBold
+            sfothButton.TextSize = 12
+            sfothButton.TextColor3 = COLORS.text
+            sfothButton.ZIndex = 2
+            sfothButton.Parent = button
+            local corner2 = Instance.new("UICorner")
+            corner2.CornerRadius = UDim.new(0, 4)
+            corner2.Parent = sfothButton
+            sfothButton.MouseButton1Click:Connect(function()
+                TeleportService:Teleport(487316, localPlayer)
+            end)
+            teleportOffset = teleportOffset + 60
+        end
 
         button.MouseButton1Click:Connect(function()
             if cmdData.isTargeted then
@@ -313,6 +418,9 @@ local function loadCommands()
             end
         end)
     end
+
+    -- Update the command count after loading
+    updateCommandCount()
 end
 
 local dragging, dragStart, startPos
@@ -352,42 +460,55 @@ header.InputChanged:Connect(function(input)
     end
 end)
 
-searchBox:GetPropertyChangedSignal("Text"):Connect(function()
-    local searchText = searchBox.Text:lower()
-    for _, button in ipairs(scrollFrame:GetChildren()) do
-        if button:IsA("TextButton") then
-            local shouldShow = button.Name:lower():find(searchText, 1, true) ~= nil
-
-            TweenService:Create(button, TWEEN_INFO.fast, {
-                BackgroundTransparency = shouldShow and 0 or 1,
-                TextTransparency = shouldShow and 0 or 1
-            }):Play()
-
-            task.delay(shouldShow and 0 or 0.2, function()
-                button.Visible = shouldShow
-            end)
+-- Modified Search Box Event to handle fast deletion of text.
+spawn(function()
+ while wait() do
+    local searchText = string.lower(searchBox.Text)
+    if searchText == "" then
+        -- When the search box is empty, immediately show all command buttons.
+        for _, button in ipairs(scrollFrame:GetChildren()) do
+            if button:IsA("TextButton") then
+                TweenService:Create(button, TWEEN_INFO.fast, {
+                    BackgroundTransparency = 0,
+                    TextTransparency = 0,
+                }):Play()
+                button.Visible = true
+            end
+        end
+        updateCanvasSize()
+        updateCommandCount()
+    else
+        -- Otherwise, check each button and apply filtering.
+        for _, button in ipairs(scrollFrame:GetChildren()) do
+            if button:IsA("TextButton") then
+                local shouldShow = button.Name:lower():find(searchText, 1, true) ~= nil
+                TweenService:Create(button, TWEEN_INFO.fast, {
+                    BackgroundTransparency = shouldShow and 0 or 1,
+                    TextTransparency = shouldShow and 0 or 1
+                }):Play()
+                task.delay(0.2, function()
+                    button.Visible = shouldShow
+                    updateCanvasSize()
+                    updateCommandCount()
+                end)
+            end
         end
     end
-    updateCanvasSize()
+    end
 end)
-
 local minimized = false
 minimizeButton.MouseButton1Click:Connect(function()
     minimized = not minimized
-    local targetSize = minimized and UDim2.new(0, 300, 0, 40) or UDim2.new(0, 300, 0, 400)
-
+    local targetSize = minimized and UDim2.new(0, 250, 0, 40) or UDim2.new(0, 250, 0, 400)
     TweenService:Create(frame, TWEEN_INFO.medium, {
         Size = targetSize
     }):Play()
-
-    local transparency = minimized and 1 or 0
-    local contentItems = {searchContainer, scrollFrame}
-
+    local transparency = minimized and 1 or 0.5  -- Changed target transparency for non-minimized state
+    local contentItems = {searchContainer, commandCountLabel, scrollFrame}
     for _, item in ipairs(contentItems) do
         TweenService:Create(item, TWEEN_INFO.fast, {
             BackgroundTransparency = transparency
         }):Play()
-
         task.delay(minimized and 0 or 0.2, function()
             item.Visible = not minimized
         end)
@@ -401,38 +522,35 @@ closeButton.MouseButton1Click:Connect(function()
         Position = UDim2.new(frame.Position.X.Scale, frame.Position.X.Offset + 150,
                             frame.Position.Y.Scale, frame.Position.Y.Offset + 200)
     })
-
     TweenService:Create(shadow, TWEEN_INFO.medium, {
         ImageTransparency = 1
     }):Play()
-
     fadeOut.Completed:Connect(function()
         screenGui:Destroy()
     end)
-
     fadeOut:Play()
 end)
 
 loadCommands()
 updateCanvasSize()
 
+-- Set initial transparency values.
 frame.BackgroundTransparency = 1
 shadow.ImageTransparency = 1
 searchContainer.BackgroundTransparency = 1
+commandCountLabel.BackgroundTransparency = 1
 scrollFrame.BackgroundTransparency = 1
 
 task.delay(0.1, function()
     TweenService:Create(frame, TWEEN_INFO.medium, {
-        BackgroundTransparency = 0
+        BackgroundTransparency = 0.5   -- Increased transparency for a more see-through effect
     }):Play()
-
     TweenService:Create(shadow, TWEEN_INFO.medium, {
         ImageTransparency = 0.6
     }):Play()
-
-    for _, container in ipairs({searchContainer, scrollFrame}) do
+    for _, container in ipairs({searchContainer, commandCountLabel, scrollFrame}) do
         TweenService:Create(container, TWEEN_INFO.medium, {
-            BackgroundTransparency = 0
+            BackgroundTransparency = 0.5
         }):Play()
     end
 end)
