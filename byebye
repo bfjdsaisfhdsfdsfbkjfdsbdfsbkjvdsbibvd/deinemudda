@@ -27,7 +27,7 @@ local goodbyeMessage = spaces:rep(10)
     .. blob:rep(40)
 
 -- Compact message for the old chat system
-local compactMessage = "👋 BYE BYE! 👋 ḍịṣcọrḍ.gg/gJgRuwC3MP"
+local compactMessage = "👋 BYE BYE! 👋 d1scord.gg/VekmXžSj7S"
 
 -- Check chat version and send appropriate message
 if TextChatService.ChatVersion == Enum.ChatVersion.TextChatService then
