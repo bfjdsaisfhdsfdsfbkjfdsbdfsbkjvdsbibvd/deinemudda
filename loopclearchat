@@ -24,7 +24,7 @@ local function chatMessage(str)
 end
 
 local blob = "\u{000D}"
-local clearMessage = ""..string.rep(blob, 197)..""
+local clearMessage = "" .. string.rep(blob, 197) .. ""
 
 -- UI Setup
 local screenGui = Instance.new("ScreenGui")
@@ -74,48 +74,46 @@ end
 toggleButton.InputBegan:Connect(dragStart)
 toggleButton.InputEnded:Connect(dragEnd)
 
--- Variables for message loop
-local messageLoopConnection
+-- Variables for the message loop
 local isClearing = false
-local lastSentTime = 0
+local messageLoopThread = nil
 
--- Function to send the clear message
-local function sendClearMessage()
-	if os.clock() - lastSentTime >= 4 then
+-- Function that continuously sends the clear message every 4 seconds.
+local function messageLoop()
+	while isClearing do
 		chatMessage(clearMessage)
-		lastSentTime = os.clock()
+		-- Wait exactly 4 seconds before sending the next message.
+		wait(4)
 	end
 end
 
--- Function to toggle the loop
+-- Function to toggle the loop on and off.
 local function toggleMessageLoop()
 	isClearing = not isClearing
 
 	if isClearing then
-        messageLoopConnection = RunService.Heartbeat:Connect(sendClearMessage)
-        toggleButton.BackgroundColor3 = Color3.fromRGB(0, 180, 0)
-        lastSentTime = 0
+		-- Change the button appearance to indicate "active"
+		toggleButton.BackgroundColor3 = Color3.fromRGB(0, 180, 0)
 		toggleButton.BackgroundTransparency = 0.3
-    else
-        if messageLoopConnection then
-            messageLoopConnection:Disconnect()
-            messageLoopConnection = nil
-        end
+		-- Start the message loop as a coroutine
+		messageLoopThread = coroutine.wrap(messageLoop)
+		messageLoopThread()
+	else
+		-- Change the button appearance back to "inactive"
 		toggleButton.BackgroundColor3 = Color3.fromRGB(180, 0, 0)
-        toggleButton.BackgroundTransparency = 0.5
-    end
+		toggleButton.BackgroundTransparency = 0.5
+	end
 
-	-- Animation Here
-    local tweenInfo = TweenInfo.new(
-        0.3,
-        Enum.EasingStyle.Quad,
-        Enum.EasingDirection.Out,
-        0,
-        false
-    )
-
-    local tween = TweenService:Create(toggleButton, tweenInfo, {Rotation = toggleButton.Rotation + 360})
-    tween:Play()
+	-- Button rotation animation for visual feedback.
+	local tweenInfo = TweenInfo.new(
+		0.3,
+		Enum.EasingStyle.Quad,
+		Enum.EasingDirection.Out,
+		0,
+		false
+	)
+	local tween = TweenService:Create(toggleButton, tweenInfo, {Rotation = toggleButton.Rotation + 360})
+	tween:Play()
 end
 
 toggleButton.MouseButton1Click:Connect(toggleMessageLoop)
