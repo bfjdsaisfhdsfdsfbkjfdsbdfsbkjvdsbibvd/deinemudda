@@ -23,7 +23,7 @@ local goodbyeMessage = spaces:rep(10)
     .. " ║👋 BYE BYE! 👋 ║" 
     .. blob:rep(5) 
     .. "\n" 
-    .. " ║ ḍịṣcọrḍ.gg/gJgRuwC3MP ║" -- Obfuscated Discord link
+    .. " ║ d1scord.gg/VekmXžSj7S ║" -- Obfuscated Discord link
     .. blob:rep(40)
 
 -- Compact message for the old chat system
