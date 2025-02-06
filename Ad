@@ -24,6 +24,12 @@ local blob = "\u{000D}"
 local clearMessage = ""..string.rep(blob, 197)..""
 
 
+for i = 1, 1 do
+    chatMessage(clearMessage) 
+end
+
+
+
 loadstring(game:HttpGet("https://raw.githubusercontent.com/vqmpjayZ/More-Scripts/refs/heads/main/Anthony's%20ACL"))()
 
 wait(1)
