@@ -334,7 +334,7 @@ local function showNotificationsSequentially()
 	local welcomeMessage = function()
         createNotification(
             "AK ADMIN",
-            "Welcome to AK ADMIN! Type !cmds to see available commands. The toggle for the command bar is F6",
+            "Welcome to AK ADMIN! click the AK ADMIN Active GUI to see available commands. The toggle for the command bar is F6",
             10,
             false,
             nil,
