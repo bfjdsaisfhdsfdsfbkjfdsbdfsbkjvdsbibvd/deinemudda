@@ -312,7 +312,8 @@ local function loadCommands()
             "!blockmap",
             "!darkmap",
             "!micupinvis",
-            "!mupcombo"
+            "!mupcombo",
+            "!firework"
         }
         for _, v in ipairs(micupCmds) do
             if lowerCmd == v then
