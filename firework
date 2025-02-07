@@ -1,0 +1,51 @@
+-- This script should be placed in ServerScriptService and executed.
+
+-- Firework Script Functionality
+local function runFireworkScript()
+    local run = true
+    local plr = game:GetService("Players").LocalPlayer
+    local char = plr.Character or plr.CharacterAdded:Wait()
+    local hrp = char:FindFirstChild("HumanoidRootPart")
+
+    if hrp then
+        local old = hrp.CFrame -- Save original position
+
+        while run do
+            task.wait()
+            workspace.FallenPartsDestroyHeight = math.huge * -1 -- Avoid invalid 0/0 operation
+
+            -- Fire ToolEvent
+            local toolEvent = game:GetService("ReplicatedStorage"):FindFirstChild("ToolEvent")
+            if toolEvent then
+                toolEvent:FireServer("FireworkLaunch")
+            end
+
+            -- Teleport character
+            hrp.CFrame = CFrame.new(old.Position.X, old.Position.Y - 170, old.Position.Z)
+            task.wait(1)
+
+            -- Equip and activate FireworkLaunch tool
+            local firework = plr.Backpack:FindFirstChild("FireworkLaunch")
+            if firework then
+                firework.Parent = char
+                firework:Activate()
+            end
+
+            -- Return character to original position
+            hrp.CFrame = old
+            task.wait(3.5)
+
+            -- Delete inventory
+            local deleteInventory = game:GetService("ReplicatedStorage"):FindFirstChild("DeleteInventory")
+            if deleteInventory then
+                deleteInventory:FireServer()
+            end
+
+            run = false
+        end
+    end
+end
+
+-- Execute Firework Script immediately
+print("Running Firework Script...")
+runFireworkScript()
