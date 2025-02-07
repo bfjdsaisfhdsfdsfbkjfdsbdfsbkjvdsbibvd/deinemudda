@@ -1,0 +1,135 @@
+-- Wrap in pcall for error handling
+pcall(function()
+    -- Load the remote script first
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/refs/heads/main/reverse"))()
+end)
+
+-- Ensure we're running in a local context
+if not game:GetService("RunService"):IsClient() then
+    return
+end
+
+local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
+local StarterGui = game:GetService("StarterGui")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+
+-- Function to create GUI
+local function createMobileGui()
+    -- Check if GUI already exists and remove it
+    if Player.PlayerGui:FindFirstChild("MobileKeyboardGui") then
+        Player.PlayerGui.MobileKeyboardGui:Destroy()
+    end
+    
+    -- Show notification
+    pcall(function()
+        StarterGui:SetCore("SendNotification", {
+            Title = "Controls",
+            Text = "Hold C key to reverse",
+            Duration = 5
+        })
+    end)
+
+    -- Only create GUI for mobile users
+    if not UserInputService.TouchEnabled then
+        return
+    end
+
+    -- Create ScreenGui
+    local ScreenGui = Instance.new("ScreenGui")
+    ScreenGui.Name = "MobileKeyboardGui"
+    ScreenGui.ResetOnSpawn = false
+    
+    -- Wait for PlayerGui to be available
+    local success = pcall(function()
+        ScreenGui.Parent = Player:WaitForChild("PlayerGui", 10)
+    end)
+    
+    if not success then
+        warn("Failed to parent ScreenGui to PlayerGui")
+        return
+    end
+
+    -- Create Button
+    local Button = Instance.new("TextButton")
+    Button.Name = "KeyboardButton"
+    Button.Size = UDim2.new(0, 70, 0, 70)  -- Slightly larger for better visibility
+    Button.Position = UDim2.new(0.85, 0, 0.7, 0)
+    Button.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+    Button.BackgroundTransparency = 0.3  -- More visible
+    Button.Text = "C"
+    Button.TextSize = 28  -- Larger text
+    Button.TextColor3 = Color3.fromRGB(0, 0, 0)
+    Button.Parent = ScreenGui
+
+    -- Round the corners
+    local UICorner = Instance.new("UICorner")
+    UICorner.CornerRadius = UDim.new(0.2, 0)
+    UICorner.Parent = Button
+
+    -- Variables for tracking button state
+    local isHolding = false
+    local holdConnection = nil
+
+    -- Function to simulate keyboard press
+    local function simulateKeyPress()
+        VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.C, false, game)
+    end
+
+    -- Function to simulate keyboard release
+    local function simulateKeyRelease()
+        VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.C, false, game)
+    end
+
+    -- Function to handle continuous key press while holding
+    local function startHolding()
+        isHolding = true
+        simulateKeyPress()
+        
+        holdConnection = game:GetService("RunService").Heartbeat:Connect(function()
+            if not isHolding then
+                holdConnection:Disconnect()
+                return
+            end
+            simulateKeyPress()
+        end)
+        
+        -- Visual feedback
+        Button.BackgroundColor3 = Color3.fromRGB(200, 200, 200)
+    end
+
+    -- Function to handle button release
+    local function stopHolding()
+        if isHolding then
+            isHolding = false
+            if holdConnection then
+                holdConnection:Disconnect()
+                holdConnection = nil
+            end
+            simulateKeyRelease()
+            
+            -- Reset button appearance
+            Button.BackgroundColor3 = Color3.fromRGB(255, 255, 255)
+        end
+    end
+
+    -- Handle button press and release
+    Button.MouseButton1Down:Connect(startHolding)
+    Button.MouseButton1Up:Connect(stopHolding)
+
+    -- Handle touch ended outside the button
+    UserInputService.TouchEnded:Connect(function()
+        stopHolding()
+    end)
+end
+
+-- Attempt to create the GUI
+pcall(createMobileGui)
+
+-- Add a delay and try again in case of initial failure
+delay(1, function()
+    if not Player.PlayerGui:FindFirstChild("MobileKeyboardGui") then
+        pcall(createMobileGui)
+    end
+end)
