@@ -98,7 +98,7 @@ local newMessage = blob .. "\r" ..
         " d1scord.ḡg/VekmXžSj7S " 
 
 -- New message for the old chat system (without ASCII art)
-local oldMessage = "🔥 AK ADMIN 🔥  Purchase Lifetime Or use points for free! 👉 d1scord.gg/VekmXžSj7S 👈"
+local oldMessage = "🔥 AK ADMIN 🔥  Purchase Lifetime Or use points for free! 👉 d1scord.ḡg/VekmXžSj7S 👈"
 
 -- Send the appropriate message based on the chat system
 local function sendMessage()
