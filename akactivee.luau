@@ -263,7 +263,9 @@ local function loadCommands()
         {"!invistroll <target>", "Makes you invisible and follows the specified target (MIC UP)."},
         {"!steal display name", "Steals the avatar of the specified display name."},
         {"!r6", "Changes your avatar to R6."},
-        {"!r15", "Changes your avatar to R15."}
+        {"!r15", "Changes your avatar to R15."},
+        {"!scan map", "scans the map in mic ip with the brush."},
+        {"!unscan map", "unscans the map in mic ip with the brush."}
     }
 
     local cmdArray = {}
@@ -313,7 +315,9 @@ local function loadCommands()
             "!darkmap",
             "!micupinvis",
             "!mupcombo",
-            "!firework"
+            "!firework",
+            "!scan map",
+            "!unscan map"
         }
         for _, v in ipairs(micupCmds) do
             if lowerCmd == v then
