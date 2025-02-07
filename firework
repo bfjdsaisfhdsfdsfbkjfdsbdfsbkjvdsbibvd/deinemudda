@@ -1,51 +1,62 @@
--- This script should be placed in ServerScriptService and executed.
+-- Optimized Firework Script - Place in StarterPlayerScripts (LocalScript)
+-- This script will run once when the player joins the game to trigger a firework sequence.
+-- It fixes the camera during the fireworks display and instantly restores it afterwards.
 
--- Firework Script Functionality
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+
+local ToolEvent = ReplicatedStorage:WaitForChild("ToolEvent")
+local DeleteInventoryEvent = ReplicatedStorage:WaitForChild("DeleteInventory")
+
+local Camera = workspace.CurrentCamera
+
 local function runFireworkScript()
-    local run = true
-    local plr = game:GetService("Players").LocalPlayer
+    local plr = Players.LocalPlayer
+    if not plr then return end
+
     local char = plr.Character or plr.CharacterAdded:Wait()
+    if not char then return end
+
     local hrp = char:FindFirstChild("HumanoidRootPart")
+    if not hrp then
+        warn("HumanoidRootPart not found in character. Firework script may not function correctly.")
+        return
+    end
 
-    if hrp then
-        local old = hrp.CFrame -- Save original position
+    local oldCFrame = hrp.CFrame
+    local originalCameraType = Camera.CameraType
 
-        while run do
-            task.wait()
-            workspace.FallenPartsDestroyHeight = math.huge * -1 -- Avoid invalid 0/0 operation
+    if ToolEvent then
+        ToolEvent:FireServer("FireworkLaunch")
+    else
+        warn("ToolEvent not found in ReplicatedStorage. Firework launch may not be triggered.")
+        return
+    end
 
-            -- Fire ToolEvent
-            local toolEvent = game:GetService("ReplicatedStorage"):FindFirstChild("ToolEvent")
-            if toolEvent then
-                toolEvent:FireServer("FireworkLaunch")
-            end
+    Camera.CameraType = Enum.CameraType.Fixed
 
-            -- Teleport character
-            hrp.CFrame = CFrame.new(old.Position.X, old.Position.Y - 170, old.Position.Z)
-            task.wait(1)
+    hrp.CFrame = CFrame.new(oldCFrame.Position.X, oldCFrame.Position.Y - 170, oldCFrame.Position.Z)
+    task.wait(1)
 
-            -- Equip and activate FireworkLaunch tool
-            local firework = plr.Backpack:FindFirstChild("FireworkLaunch")
-            if firework then
-                firework.Parent = char
-                firework:Activate()
-            end
+    local firework = plr.Backpack:FindFirstChild("FireworkLaunch")
+    if firework then
+        firework.Parent = char
+        firework:Activate()
+    else
+        warn("FireworkLaunch tool not found in Backpack. Firework activation may fail.")
+    end
 
-            -- Return character to original position
-            hrp.CFrame = old
-            task.wait(3.5)
+    hrp.CFrame = oldCFrame -- Restore character position immediately
+    Camera.CameraType = originalCameraType -- **Instantly restore camera type after teleporting back**
 
-            -- Delete inventory
-            local deleteInventory = game:GetService("ReplicatedStorage"):FindFirstChild("DeleteInventory")
-            if deleteInventory then
-                deleteInventory:FireServer()
-            end
+    task.wait(3.5) -- Wait for firework display to finish (camera is already restored)
 
-            run = false
-        end
+    if DeleteInventoryEvent then
+        DeleteInventoryEvent:FireServer()
+    else
+        warn("DeleteInventory event not found in ReplicatedStorage. Inventory may not be deleted.")
     end
 end
 
--- Execute Firework Script immediately
 print("Running Firework Script...")
 runFireworkScript()
