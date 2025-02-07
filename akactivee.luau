@@ -112,7 +112,7 @@ end
 
 -- Minimize and Close Buttons
 local minimizeButton = createStyledButton("-", UDim2.new(0, 30, 0, 30), UDim2.new(1, -70, 0, 5), header)
-local closeButton = createStyledButton("X", UDim2.new(0, 30, 0, 30), UDim2.new(1, -35, 0, 5), header)
+-- local closeButton = createStyledButton("X", UDim2.new(0, 30, 0, 30), UDim2.new(1, -35, 0, 5), header) -- Removed Close Button
 
 -- Search Container
 local searchContainer = Instance.new("Frame")
@@ -516,19 +516,19 @@ minimizeButton.MouseButton1Click:Connect(function()
 end)
 
 -- Close Button Functionality (Modified to hide rather than destroy)
-closeButton.MouseButton1Click:Connect(function()
-    local fadeOut = TweenService:Create(frame, TWEEN_INFO.medium, {
-        BackgroundTransparency = 1,
-        Size = UDim2.new(0, 0, 0, 0),
-        Position = UDim2.new(frame.Position.X.Scale, frame.Position.X.Offset + 150,
-                            frame.Position.Y.Scale, frame.Position.Y.Offset + 200)
-    })
-    TweenService:Create(shadow, TWEEN_INFO.medium, {ImageTransparency = 1}):Play()
-    fadeOut.Completed:Connect(function()
-        commandsGui.Enabled = false
-    end)
-    fadeOut:Play()
-end)
+-- closeButton.MouseButton1Click:Connect(function() -- Removed Close Button Functionality
+--     local fadeOut = TweenService:Create(frame, TWEEN_INFO.medium, {
+--         BackgroundTransparency = 1,
+--         Size = UDim2.new(0, 0, 0, 0),
+--         Position = UDim2.new(frame.Position.X.Scale, frame.Position.X.Offset + 150,
+--                             frame.Position.Y.Scale, frame.Position.Y.Offset + 200)
+--     })
+--     TweenService:Create(shadow, TWEEN_INFO.medium, {ImageTransparency = 1}):Play()
+--     fadeOut.Completed:Connect(function()
+--         commandsGui.Enabled = false
+--     end)
+--     fadeOut:Play()
+-- end) -- Removed Close Button Functionality
 
 -- Initial Load and Animation
 loadCommands()
