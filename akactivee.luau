@@ -264,8 +264,8 @@ local function loadCommands()
         {"!steal display name", "Steals the avatar of the specified display name."},
         {"!r6", "Changes your avatar to R6."},
         {"!r15", "Changes your avatar to R15."},
-        {"!scan map", "scans the map in mic ip with the brush."},
-        {"!unscan map", "unscans the map in mic ip with the brush."}
+        {"!scan map", "scans the map in mic up with the brush."},
+        {"!unscan map", "unscans the map in mic up with the brush."}
     }
 
     local cmdArray = {}
