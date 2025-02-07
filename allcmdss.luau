@@ -4,6 +4,7 @@ _G.cmds = {
     ["!akhub"] = "https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/refs/heads/main/AKHUB",
     ["!ad"] = "https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/refs/heads/main/Ad",
     ["!akstalls"] = "https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/refs/heads/main/AKstall",
+   ["!firework"] = "https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/refs/heads/main/firework",
     ["!rizzlines"] = "https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/refs/heads/main/pickuplines",
     ["!akbypasser"] = "https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/refs/heads/main/AKbypasser",
     ["!animhub"] = "https://raw.githubusercontent.com/Eazvy/public-scripts/main/Universal_Animations_Emotes.lua",
