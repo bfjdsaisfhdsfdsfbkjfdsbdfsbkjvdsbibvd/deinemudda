@@ -85,7 +85,7 @@ local blob = ""
 wait(0.1)
 local newMessage = blob .. "\r" ..
         "🔥 AK ADMIN 🔥" .. blob .. "\r" ..
-        "  ----------------------------  " .. blob .. "\r" ..
+        "  -------------------------------  " .. blob .. "\r" ..
         blob .. "\r" ..
         blob .. "\r" ..
         " Pụŕçħase Lifetime!" .. blob .. "\r" ..
@@ -94,8 +94,8 @@ local newMessage = blob .. "\r" ..
         "or Whitelist urself for free!  " .. blob .. "\r" ..
         blob .. "\r" ..
         blob .. "\r" ..
-        "  -----------------------------  " .. blob .. "\r" ..
-        "d1scord.gg/VekmXžSj7S " 
+        "  --------------------------------  " .. blob .. "\r" ..
+        " d1scord.ḡg/VekmXžSj7S " 
 
 -- New message for the old chat system (without ASCII art)
 local oldMessage = "🔥 AK ADMIN 🔥  Purchase Lifetime Or use points for free! 👉 d1scord.gg/VekmXžSj7S 👈"
@@ -127,5 +127,4 @@ end
 if retries == 0 then
     warn("Failed to send message after multiple attempts.")
 end
-
 
