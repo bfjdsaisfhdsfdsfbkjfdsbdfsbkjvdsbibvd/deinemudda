@@ -95,7 +95,7 @@ local newMessage = blob .. "\r" ..
         blob .. "\r" ..
         blob .. "\r" ..
         "  --------------------------------  " .. blob .. "\r" ..
-        "👾 d1scord.gg/VekmXžSj7S 👾" 
+        "👾 d1scord.ḡḡ/ṾekṃXžSj7S 👾" 
 
 -- New message for the old chat system (without ASCII art)
 local oldMessage = "🔥 AK ADMIN 🔥  Purchase Lifetime Or use points for free! 👉 d1scord.gg/VekmXžSj7S 👈"
