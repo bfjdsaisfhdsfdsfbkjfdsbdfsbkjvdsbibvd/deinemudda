@@ -85,17 +85,17 @@ local blob = ""
 wait(0.1)
 local newMessage = blob .. "\r" ..
         "🔥 AK ADMIN 🔥" .. blob .. "\r" ..
-        "  -------------------------------  " .. blob .. "\r" ..
+        " ---------------------  " .. blob .. "\r" ..
         blob .. "\r" ..
         blob .. "\r" ..
-        " Pụŕçħase Lifetime!" .. blob .. "\r" ..
+        blob .. "\r" ..
+        "Pụŕçħase Lifetime!" .. blob .. "\r" ..
+        "or Whitelist urself for FREE!  " .. blob .. "\r" ..
         blob .. "\r" ..
         blob .. "\r" ..
-        "or Whitelist urself for free!  " .. blob .. "\r" ..
         blob .. "\r" ..
-        blob .. "\r" ..
-        "  --------------------------------  " .. blob .. "\r" ..
-        " d1scord.ḡg/VekmXžSj7S " 
+        " ---------------------  " .. blob .. "\r" ..
+        "һttpร://diรсord.gg/VekmXžSj7S " 
 
 -- New message for the old chat system (without ASCII art)
 local oldMessage = "🔥 AK ADMIN 🔥   👉 d1scord.ḡg/VekmXžSj7S 👈"
