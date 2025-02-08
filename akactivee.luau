@@ -623,6 +623,7 @@ adminLabel_Admin.TextXAlignment = Enum.TextXAlignment.Left
 adminLabel_Admin.BackgroundTransparency = 1
 adminLabel_Admin.Parent = mainContainer
 
+
 if identifyexecutor() then
 local executorLabel_Admin = Instance.new("TextLabel")
 executorLabel_Admin.Name = "FPSCounter"
@@ -635,8 +636,18 @@ executorLabel_Admin.TextSize = 12
 executorLabel_Admin.TextXAlignment = Enum.TextXAlignment.Left
 executorLabel_Admin.BackgroundTransparency = 1
 executorLabel_Admin.Font = Enum.Font.ArialBold
-executorLabel_Admin.TextColor3 = Color3.new(1.000000, 0.000000, 0.000000)
 executorLabel_Admin.Parent = mainContainer
+if identifyexecutor() then
+   if identifyexecutor() == "Wave" then
+        executorLabel_Admin.TextColor3 = Color3.new(0.000000, 0.764706, 1.000000)
+        elseif identifyexecutor() == "Delta" then
+        executorLabel_Admin.TextColor3 = Color3.new(0.549020, 0.000000, 1.000000)
+        elseif identifyexecutor() == "Xeno" then
+        executorLabel_Admin.TextColor3 = Color3.new(1.000000, 0.000000, 0.784314)
+        elseif identifyexecutor() == "JJSploit x Xeno" then
+        executorLabel_Admin.TextColor3 = Color3.new(1.000000, 1.000000, 1.000000)
+   end
+end
 end
 
 local fpsLabel_Admin = Instance.new("TextLabel")
