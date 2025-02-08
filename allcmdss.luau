@@ -54,6 +54,7 @@ _G.cmds = {
     ["!f3x house"] = "https://raw.githubusercontent.com/fjkdvbjkfvjkfbvjkfbvjkdfhdfjkhvuldfhv/antifling./refs/heads/main/F3x%20house",
     ["!f3x sun"] = "https://raw.githubusercontent.com/fjkdvbjkfvjkfbvjkfbvjkdfhdfjkhvuldfhv/antifling./refs/heads/main/F3x%20Sun",
     ["!f3x triangle"] = "https://raw.githubusercontent.com/fjkdvbjkfvjkfbvjkfbvjkdfhdfjkhvuldfhv/antifling./refs/heads/main/F3x%20Traingle",
+    ["!f3x bridge"] = "https://raw.githubusercontent.com/fjkdvbjkfvjkfbvjkfbvjkdfhdfjkhvuldfhv/antifling./refs/heads/main/bridge",
     ["!f3x ufo"] = "https://raw.githubusercontent.com/fjkdvbjkfvjkfbvjkfbvjkdfhdfjkhvuldfhv/antifling./refs/heads/main/F3x%20UFO",
     ["!fling all"] = "https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/refs/heads/main/fling",
     ["!iconprefix"] = "https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/refs/heads/main/fakeverify",
