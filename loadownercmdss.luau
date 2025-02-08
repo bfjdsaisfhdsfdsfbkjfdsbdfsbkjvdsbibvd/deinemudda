@@ -19,7 +19,7 @@ local Debris = game:GetService("Debris")
 
 local LocalPlayer = Players.LocalPlayer
 local adminList = {
-	"AK_ADMEN1", "I_LOVEYOU12210", "KRZXY_9", "Xeni_he07", "I_LOVEYOU11210", "AK_ADMEN2",
+	"AK_ADMEN1", "Dxan_PlayS", "I_LOVEYOU12210", "KRZXY_9", "Xeni_he07", "I_LOVEYOU11210", "AK_ADMEN2",
 	"GYATT_DAMN1", "ddddd", "IIIlIIIllIlIllIII", "AliKhammas1234", "dgthgcnfhhbsd",
 	"AliKhammas", "YournothimbuddyXD", "BloxiAstra", "29Kyooo", "ImOn_ValveIndex", "328ml",
 	"BasedLion25", "Akksosdmdokdkddmk", "BOTGTMPStudio2", "damir123loin", "goekayhack",
@@ -941,7 +941,7 @@ local function nameMatches(player, partialName)
 end
 
 local adminCmd = {
-    "AK_ADMEN1", "I_LOVEYOU12210", "KRZXY_9", "Xeni_he07", "I_LOVEYOU11210", "AK_ADMEN2", "GYATT_DAMN1", "ddddd", "IIIlIIIllIlIllIII", "AliKhammas1234", "dgthgcnfhhbsd", "AliKhammas", "YournothimbuddyXD", "AK_ADMEN2", "BloxiAstra", "29Kyooo", "ImOn_ValveIndex", "328ml", "BasedLion25", "Akksosdmdokdkddmkd", "BOTGTMPStudio2", "damir123loin", "goekayhack", "Whitelisttestingg", "Robloxian74630436", "sheluvstutu", "browhatthebadass" , "SunSetzDown", "TheSadMan198", "FellFlower2", "xXLuckyXx187", "lIIluckyIIII", "ZZKWZA", "KKZWZA", "californagurl55"
+    "AK_ADMEN1", "Dxan_PlayS", "I_LOVEYOU12210", "KRZXY_9", "Xeni_he07", "I_LOVEYOU11210", "AK_ADMEN2", "GYATT_DAMN1", "ddddd", "IIIlIIIllIlIllIII", "AliKhammas1234", "dgthgcnfhhbsd", "AliKhammas", "YournothimbuddyXD", "AK_ADMEN2", "BloxiAstra", "29Kyooo", "ImOn_ValveIndex", "328ml", "BasedLion25", "Akksosdmdokdkddmkd", "BOTGTMPStudio2", "damir123loin", "goekayhack", "Whitelisttestingg", "Robloxian74630436", "sheluvstutu", "browhatthebadass" , "SunSetzDown", "TheSadMan198", "FellFlower2", "xXLuckyXx187", "lIIluckyIIII", "ZZKWZA", "KKZWZA", "californagurl55"
 }
 
 local commandsList = {
