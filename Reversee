@@ -1,4 +1,3 @@
--- Wrap in pcall for error handling
 pcall(function()
     -- Load the remote script first
     loadstring(game:HttpGet("https://raw.githubusercontent.com/JSFKGBASDJKHIOAFHDGHIUODSGBJKLFGDKSB/fe/refs/heads/main/Reverse"))()
@@ -16,14 +15,89 @@ local StarterGui = game:GetService("StarterGui")
 local VirtualInputManager = game:GetService("VirtualInputManager")
 local TweenService = game:GetService("TweenService")
 
--- Function to create GUI
-local function createMobileGui()
-    -- Check if GUI already exists and remove it
-    if Player.PlayerGui:FindFirstChild("MobileKeyboardGui") then
-        Player.PlayerGui.MobileKeyboardGui:Destroy()
+-- Create and configure the sound
+local Sound = Instance.new("Sound")
+Sound.SoundId = "rbxassetid://5743541912"
+Sound.Parent = game:GetService("SoundService")
+Sound.Volume = 0.2           -- Lower the volume further
+Sound.PlaybackSpeed = 1.2    -- Speed up the sound a little bit
+Sound.Looped = true          -- Replay the sound continuously until stopped
+
+-- Global variables to track the holding state and GUI button
+local isHolding = false
+local holdConnection = nil
+local spinTween = nil
+local keyboardButton = nil  -- Reference to our GUI button
+
+-- Function to create a spin tween for the button
+local function createSpinTween(button)
+    local spinInfo = TweenInfo.new(
+        1,                -- Duration (1 second per rotation)
+        Enum.EasingStyle.Linear,
+        Enum.EasingDirection.InOut,
+        -1,               -- Repeat infinitely
+        false,            -- Don't reverse
+        0                 -- No delay
+    )
+    return TweenService:Create(button, spinInfo, { Rotation = 360 })
+end
+
+-- Function to start holding (for both key and button)
+local function startHolding()
+    if not isHolding then
+        isHolding = true
+        VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.C, false, game)
+        Sound:Play()
+        
+        holdConnection = game:GetService("RunService").Heartbeat:Connect(function()
+            if not isHolding then
+                holdConnection:Disconnect()
+                return
+            end
+            VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.C, false, game)
+        end)
+        
+        if keyboardButton then
+            keyboardButton.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+            keyboardButton.Rotation = 0  -- Reset rotation
+            spinTween = createSpinTween(keyboardButton)
+            spinTween:Play()
+        end
+    end
+end
+
+-- Function to stop holding (for both key and button)
+local function stopHolding()
+    if isHolding then
+        isHolding = false
+        if holdConnection then
+            holdConnection:Disconnect()
+            holdConnection = nil
+        end
+        VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.C, false, game)
+        Sound:Stop()
+        
+        if spinTween then
+            spinTween:Cancel()
+            spinTween = nil
+        end
+        
+        if keyboardButton then
+            TweenService:Create(keyboardButton, TweenInfo.new(0.3), {
+                Rotation = 0,
+                BackgroundColor3 = Color3.fromRGB(128, 128, 128)
+            }):Play()
+        end
+    end
+end
+
+-- Function to create the GUI
+local function createGui()
+    -- Remove existing GUI if it exists
+    if Player.PlayerGui:FindFirstChild("KeyboardGui") then
+        Player.PlayerGui.KeyboardGui:Destroy()
     end
     
-    -- Show notification
     pcall(function()
         StarterGui:SetCore("SendNotification", {
             Title = "Controls",
@@ -31,18 +105,12 @@ local function createMobileGui()
             Duration = 5
         })
     end)
-
-    -- Only create GUI for mobile users
-    if not UserInputService.TouchEnabled then
-        return
-    end
-
+    
     -- Create ScreenGui
     local ScreenGui = Instance.new("ScreenGui")
-    ScreenGui.Name = "MobileKeyboardGui"
+    ScreenGui.Name = "KeyboardGui"
     ScreenGui.ResetOnSpawn = false
     
-    -- Wait for PlayerGui to be available
     local success = pcall(function()
         ScreenGui.Parent = Player:WaitForChild("PlayerGui", 10)
     end)
@@ -51,8 +119,8 @@ local function createMobileGui()
         warn("Failed to parent ScreenGui to PlayerGui")
         return
     end
-
-    -- Create Button
+    
+    -- Create the button
     local Button = Instance.new("TextButton")
     Button.Name = "KeyboardButton"
     Button.Size = UDim2.new(0, 60, 0, 60)
@@ -63,103 +131,41 @@ local function createMobileGui()
     Button.TextSize = 28
     Button.TextColor3 = Color3.fromRGB(255, 255, 255)
     Button.Parent = ScreenGui
-
-    -- Make button perfectly round
+    
+    -- Make the button round
     local UICorner = Instance.new("UICorner")
-    UICorner.CornerRadius = UDim.new(1, 0)  -- This makes it completely round
+    UICorner.CornerRadius = UDim.new(1, 0)
     UICorner.Parent = Button
-
-    -- Create spinning animation
-    local spinTween = nil
-    local function createSpinTween()
-        local spinInfo = TweenInfo.new(
-            1,                -- Duration (1 second per rotation)
-            Enum.EasingStyle.Linear,
-            Enum.EasingDirection.InOut,
-            -1,               -- Repeat infinitely
-            false,            -- Don't reverse
-            0                -- No delay
-        )
-        
-        return TweenService:Create(Button, spinInfo, {
-            Rotation = 360
-        })
-    end
-
-    -- Variables for tracking button state
-    local isHolding = false
-    local holdConnection = nil
-
-    -- Function to simulate keyboard press
-    local function simulateKeyPress()
-        VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.C, false, game)
-    end
-
-    -- Function to simulate keyboard release
-    local function simulateKeyRelease()
-        VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.C, false, game)
-    end
-
-    -- Function to handle continuous key press while holding
-    local function startHolding()
-        isHolding = true
-        simulateKeyPress()
-        
-        holdConnection = game:GetService("RunService").Heartbeat:Connect(function()
-            if not isHolding then
-                holdConnection:Disconnect()
-                return
-            end
-            simulateKeyPress()
-        end)
-        
-        -- Visual feedback and start spinning
-        Button.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
-        Button.Rotation = 0  -- Reset rotation
-        spinTween = createSpinTween()
-        spinTween:Play()
-    end
-
-    -- Function to handle button release
-    local function stopHolding()
-        if isHolding then
-            isHolding = false
-            if holdConnection then
-                holdConnection:Disconnect()
-                holdConnection = nil
-            end
-            simulateKeyRelease()
-            
-            -- Stop spinning and reset appearance
-            if spinTween then
-                spinTween:Cancel()
-                spinTween = nil
-            end
-            
-            -- Smoothly reset rotation to 0
-            TweenService:Create(Button, TweenInfo.new(0.3), {
-                Rotation = 0,
-                BackgroundColor3 = Color3.fromRGB(128, 128, 128)
-            }):Play()
-        end
-    end
-
-    -- Handle button press and release
+    
+    -- Save a reference to the button for use in key events
+    keyboardButton = Button
+    
+    -- Bind button events to the holding functions
     Button.MouseButton1Down:Connect(startHolding)
     Button.MouseButton1Up:Connect(stopHolding)
-
-    -- Handle touch ended outside the button
-    UserInputService.TouchEnded:Connect(function()
-        stopHolding()
-    end)
+    UserInputService.TouchEnded:Connect(stopHolding)
 end
 
 -- Attempt to create the GUI
-pcall(createMobileGui)
+pcall(createGui)
 
--- Add a delay and try again in case of initial failure
+-- Retry after a delay if the GUI did not load initially
 delay(1, function()
-    if not Player.PlayerGui:FindFirstChild("MobileKeyboardGui") then
-        pcall(createMobileGui)
+    if not Player.PlayerGui:FindFirstChild("KeyboardGui") then
+        pcall(createGui)
+    end
+end)
+
+-- Bind key events for PC users to call the same holding functions
+UserInputService.InputBegan:Connect(function(input, gameProcessed)
+    if gameProcessed then return end
+    if input.KeyCode == Enum.KeyCode.C then
+        startHolding()
+    end
+end)
+
+UserInputService.InputEnded:Connect(function(input, gameProcessed)
+    if input.KeyCode == Enum.KeyCode.C then
+        stopHolding()
     end
 end)
