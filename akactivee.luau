@@ -623,6 +623,22 @@ adminLabel_Admin.TextXAlignment = Enum.TextXAlignment.Left
 adminLabel_Admin.BackgroundTransparency = 1
 adminLabel_Admin.Parent = mainContainer
 
+if identifyexecutor() then
+local executorLabel_Admin = Instance.new("TextLabel")
+executorLabel_Admin.Name = "FPSCounter"
+executorLabel_Admin.Size = UDim2.new(0, 100, 0, 20)
+executorLabel_Admin.Position = UDim2.new(0, 95, 0, 22)
+executorLabel_Admin.Font = Enum.Font.Gotham
+executorLabel_Admin.Text = identifyexecutor()
+executorLabel_Admin.TextColor3 = Color3.fromRGB(200, 200, 200)
+executorLabel_Admin.TextSize = 12
+executorLabel_Admin.TextXAlignment = Enum.TextXAlignment.Left
+executorLabel_Admin.BackgroundTransparency = 1
+executorLabel_Admin.Font = Enum.Font.ArialBold
+executorLabel_Admin.TextColor3 = Color3.new(1.000000, 0.000000, 0.000000)
+executorLabel_Admin.Parent = mainContainer
+end
+
 local fpsLabel_Admin = Instance.new("TextLabel")
 fpsLabel_Admin.Name = "FPSCounter"
 fpsLabel_Admin.Size = UDim2.new(0, 100, 0, 20)
