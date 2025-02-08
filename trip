@@ -1,10 +1,22 @@
 local Players = game:GetService("Players")
 local UserInputService = game:GetService("UserInputService")
 local TweenService = game:GetService("TweenService")  -- (if you need tweens later; not used here)
+local StarterGui = game:GetService("StarterGui")
 
 local Player = Players.LocalPlayer
 
--- Trip function: Changes state and sets velocity to simulate a trip.
+-------------------------------------------------
+-- Core Notification: Display Trip Action Instructions
+-------------------------------------------------
+StarterGui:SetCore("SendNotification", {
+    Title = "Trip Action Instructions",
+    Text = "Press T on PC or tap the button on mobile to trip!",
+    Duration = 5
+})
+
+-------------------------------------------------
+-- Trip Function: Changes state and sets velocity to simulate a trip.
+-------------------------------------------------
 local function trip()
     local character = Player.Character or Player.CharacterAdded:Wait()
     local hum = character:FindFirstChildOfClass("Humanoid")
