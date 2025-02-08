@@ -47,8 +47,8 @@ local function startHolding()
     if not isHolding then
         isHolding = true
         VirtualInputManager:SendKeyEvent(true, Enum.KeyCode.C, false, game)
-        Sound:Play()
-        
+        -- Removed Sound:Play() here so keybind activation won't play the sound
+
         holdConnection = game:GetService("RunService").Heartbeat:Connect(function()
             if not isHolding then
                 holdConnection:Disconnect()
@@ -75,8 +75,8 @@ local function stopHolding()
             holdConnection = nil
         end
         VirtualInputManager:SendKeyEvent(false, Enum.KeyCode.C, false, game)
-        Sound:Stop()
-        
+        -- Removed Sound:Stop() here so keybind deactivation won't stop the sound
+
         if spinTween then
             spinTween:Cancel()
             spinTween = nil
@@ -140,9 +140,15 @@ local function createGui()
     -- Save a reference to the button for use in key events
     keyboardButton = Button
     
-    -- Bind button events to the holding functions
-    Button.MouseButton1Down:Connect(startHolding)
-    Button.MouseButton1Up:Connect(stopHolding)
+    -- Bind button events to the holding functions with sound
+    Button.MouseButton1Down:Connect(function()
+        startHolding()
+        Sound:Play()  -- Only play sound when the button is pressed
+    end)
+    Button.MouseButton1Up:Connect(function()
+        stopHolding()
+        Sound:Stop()  -- Only stop sound when the button is released
+    end)
     UserInputService.TouchEnded:Connect(stopHolding)
 end
 
@@ -156,7 +162,7 @@ delay(1, function()
     end
 end)
 
--- Bind key events for PC users to call the same holding functions
+-- Bind key events for PC users to call the same holding functions (without sound)
 UserInputService.InputBegan:Connect(function(input, gameProcessed)
     if gameProcessed then return end
     if input.KeyCode == Enum.KeyCode.C then
