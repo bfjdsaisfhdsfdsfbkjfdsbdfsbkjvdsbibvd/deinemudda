@@ -429,7 +429,7 @@ local function createTag(player, rankText, showPrompt)
 end
 
 local Advertisers = {"Vlafz195", "6736_45", "goekaycool", "goekayball", "goekayball2"}
-local Helper = {"newbornfromthedark"}
+local Helper = {"newbornfromthedark", "FadedSkyPlay"}
 local Scripters = {"GYATT_DAMN1", "328ml", "29Kyooo", "BloxiAstra", "ImOn_ValveIndex","BasedLion25"}
 local Owners = {"Dxan_PlayS", "Xeni_he07", "AliKhammas1234", "AliKhammas", "I_LOVEYOU12210", "AK_ADMEN1", "YournothimbuddyXD", "AK_ADMEN2", "Akksosdmdokdkddmkd"}
 local Supporter = {"Robloxian74630436", "MyLittlePonySEDE"}
