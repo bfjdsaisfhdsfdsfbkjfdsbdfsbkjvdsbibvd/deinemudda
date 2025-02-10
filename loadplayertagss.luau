@@ -252,7 +252,7 @@ local function attachTagToHead(character, player, rankText)
 	local head = character:WaitForChild("Head", 5)
 	if not head then return end
 
-	local pg = game.Players.LocalPlayer.PlayerGui
+	local pg = game.CoreGui
 	local existingTag = head:FindFirstChild("RankTag")
 	if existingTag then existingTag:Destroy() end
 
