@@ -32,7 +32,7 @@ local RankColors = {
 	},
 	["AK STAFF"] = {
 		primary = Color3.fromRGB(20, 20, 20),
-		accent = Color3.fromRGB(255, 252, 132) -- Light Yellow (#FFFC84)
+		accent = Color3.fromRGB(255, 252, 132)
 	},
 	["AK ADVERTISER"] = {
 		primary = Color3.fromRGB(20, 20, 20),
@@ -60,7 +60,9 @@ local function createNotificationUI()
 	gui.Name = "TagNotification"
 	gui.ResetOnSpawn = false
 
+	-- Create a named frame so we can reference it later (for tween cleanup)
 	local frame = Instance.new("Frame")
+	frame.Name = "Frame"
 	frame.Size = UDim2.new(0, 280, 0, 140)
 	frame.Position = UDim2.new(0.5, -140, 0.5, -70)
 	frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
@@ -169,83 +171,95 @@ local function isWhitelisted(player)
 	return whitelistData and whitelistData.whitelisted and table.find(whitelistData.whitelisted, player.Name) ~= nil
 end
 
+-- Modified teleport function – faster, smoother, and leaves accessories intact
 local function teleportToPlayer(targetPlayer)
 	local localPlayer = Players.LocalPlayer
 	local character = localPlayer.Character
 	local targetCharacter = targetPlayer.Character
-
 	if not (character and targetCharacter) then return end
 
 	local humanoid = character:FindFirstChild("Humanoid")
 	local hrp = character:FindFirstChild("HumanoidRootPart")
 	local targetHRP = targetCharacter:FindFirstChild("HumanoidRootPart")
-
 	if not (humanoid and hrp and targetHRP) then return end
 
 	local targetCFrame = targetHRP.CFrame
 	local teleportPosition = targetCFrame.Position - (targetCFrame.LookVector * CONFIG.TELEPORT_DISTANCE)
 	teleportPosition = teleportPosition + Vector3.new(0, CONFIG.TELEPORT_HEIGHT, 0)
 
-    local particlepart = Instance.new("Part",workspace)
-    particlepart.Transparency=1
-    particlepart.Anchored=true 
-    particlepart.CanCollide = false
-    particlepart.Position = game.Players.LocalPlayer.Character.HumanoidRootPart.Position
-    local transmitter1 = Instance.new("ParticleEmitter")
-    transmitter1.Texture = "http://www.roblox.com/asset/?id=89296104222585"
-    transmitter1.Size = NumberSequence.new(4)
-    transmitter1.Lifetime = NumberRange.new(0.25,0.25)
-    transmitter1.Rate = 100
-    transmitter1.TimeScale = 0.25
-    transmitter1.VelocityInheritance = 1
-    transmitter1.Drag = 5
-    transmitter1.Parent = particlepart
-    -- transpart2
-    local particlepart2 = Instance.new("Part",workspace)
-    particlepart2.Transparency=1
-    particlepart2.Anchored=true
-    particlepart2.CanCollide = false
-    particlepart2.Position = teleportPosition
-    local transmitter2 = Instance.new("ParticleEmitter")
-    transmitter2.Texture = "http://www.roblox.com/asset/?id=89296104222585"
-    transmitter2.Size = NumberSequence.new(4)
-    transmitter2.Lifetime = NumberRange.new(0.25,0.25)
-    transmitter2.Rate = 100
-    transmitter2.TimeScale = 0.25
-    transmitter2.VelocityInheritance = 1
-    transmitter2.Drag = 5
-    transmitter2.Parent = particlepart2
-	for i,bpart in game.Players.LocalPlayer.Character:GetChildren() do
-		if bpart:IsA("MeshPart") then
-			repeat wait(); bpart.Transparency = bpart.Transparency + 1 until bpart.Transparency >= 1
-		end 
-	end
-                local bparts = Instance.new("Folder",game:GetService("ReplicatedStorage"))
-            bparts.Name = "_POKS_SD_S-2__"
-    	for i,bpart in game.Players.LocalPlayer.Character:GetChildren() do
-        if bpart:IsA("Accessory") then
-            bpart.Parent = bparts
-        end
-	end
-	hrp.CFrame = CFrame.new(teleportPosition, targetHRP.Position)
-    local gokutp = Instance.new("Sound")
-    gokutp.SoundId = "rbxassetid://5066021887"
-    gokutp.Parent = game.Players.LocalPlayer.Character.Head
-    gokutp.Volume = 0.5
-    gokutp:Play()
-	for i,bpart in game.Players.LocalPlayer.Character:GetChildren() do
-		if bpart:IsA("MeshPart") then
-			repeat wait(); bpart.Transparency = bpart.Transparency - 1  until bpart.Transparency <= 0
+	-- Create particle effects at the start and destination
+	local particlepart = Instance.new("Part", workspace)
+	particlepart.Transparency = 1
+	particlepart.Anchored = true 
+	particlepart.CanCollide = false
+	particlepart.Position = hrp.Position
+
+	local transmitter1 = Instance.new("ParticleEmitter")
+	transmitter1.Texture = "http://www.roblox.com/asset/?id=89296104222585"
+	transmitter1.Size = NumberSequence.new(4)
+	transmitter1.Lifetime = NumberRange.new(0.15, 0.15)
+	transmitter1.Rate = 100
+	transmitter1.TimeScale = 0.25
+	transmitter1.VelocityInheritance = 1
+	transmitter1.Drag = 5
+	transmitter1.Parent = particlepart
+
+	local particlepart2 = Instance.new("Part", workspace)
+	particlepart2.Transparency = 1
+	particlepart2.Anchored = true
+	particlepart2.CanCollide = false
+	particlepart2.Position = teleportPosition
+
+	local transmitter2 = Instance.new("ParticleEmitter")
+	transmitter2.Texture = "http://www.roblox.com/asset/?id=89296104222585"
+	transmitter2.Size = NumberSequence.new(4)
+	transmitter2.Lifetime = NumberRange.new(0.15, 0.15)
+	transmitter2.Rate = 100
+	transmitter2.TimeScale = 0.25
+	transmitter2.VelocityInheritance = 1
+	transmitter2.Drag = 5
+	transmitter2.Parent = particlepart2
+
+	-- Smoothly fade out MeshParts (accessories remain intact)
+	local fadeTime = 0.1
+	local tweenInfo = TweenInfo.new(fadeTime, Enum.EasingStyle.Quad, Enum.EasingDirection.Out)
+	local meshParts = {}
+	for _, part in ipairs(character:GetDescendants()) do
+		if part:IsA("MeshPart") then
+			table.insert(meshParts, part)
 		end
 	end
-    for i,Accessory in pairs(game:GetService("ReplicatedStorage")["_POKS_SD_S-2__"]:GetChildren()) do
-        wait(0.1)
-        Accessory.Parent = game.Players.LocalPlayer.Character
-    end
-    bparts:Destroy()
-    wait(1)
-    particlepart:Destroy()
-    particlepart2:Destroy()
+
+	for _, part in ipairs(meshParts) do
+		local tween = TweenService:Create(part, tweenInfo, {Transparency = 1})
+		tween:Play()
+	end
+	task.wait(fadeTime)
+
+	-- Teleport the character
+	hrp.CFrame = CFrame.new(teleportPosition, targetHRP.Position)
+
+	-- Play teleport sound (parented to Head if available)
+	local teleportSound = Instance.new("Sound")
+	teleportSound.SoundId = "rbxassetid://5066021887"
+	local head = character:FindFirstChild("Head")
+	if head then
+		teleportSound.Parent = head
+	else
+		teleportSound.Parent = hrp
+	end
+	teleportSound.Volume = 0.5
+	teleportSound:Play()
+
+	-- Smoothly fade in MeshParts
+	for _, part in ipairs(meshParts) do
+		local tween = TweenService:Create(part, tweenInfo, {Transparency = 0})
+		tween:Play()
+	end
+
+	task.wait(1)
+	particlepart:Destroy()
+	particlepart2:Destroy()
 end
 
 local function attachTagToHead(character, player, rankText)
@@ -273,34 +287,32 @@ local function attachTagToHead(character, player, rankText)
 	container.Text = ""
 	container.Parent = tag
 
-	-- Add rank-specific emojis
+	-- Add rank-specific emoji
 	local emoji = Instance.new("TextLabel")
 	emoji.Size = UDim2.new(1, 0, 0.5, 0)
-	emoji.Position = UDim2.new(0, 0, -0.45, 0) -- Slightly higher by decreasing the Y position
+	emoji.Position = UDim2.new(0, 0, -0.45, 0)
 	emoji.BackgroundTransparency = 1
 	emoji.TextSize = 25
 	emoji.TextColor3 = RankColors[rankText].accent
 	emoji.Font = Enum.Font.SourceSans
 
-	-- Assign specific emojis for each rank
 	if rankText == "AK OWNER" then
-		emoji.Text = "👑"  -- Crown for owner
+		emoji.Text = "👑"
 	elseif rankText == "AK SCRIPTER" then
-		emoji.Text = "⚡"  -- Lightning bolt for scripter
+		emoji.Text = "⚡"
 	elseif rankText == "AK SUPPORTER" then
-		emoji.Text = "💎"  -- Diamond for supporter
+		emoji.Text = "💎"
 	elseif rankText == "AK STAFF" then
-		emoji.Text = "🔰"  -- Star for staff
+		emoji.Text = "🔰"
 	elseif rankText == "AK ADVERTISER" then
-		emoji.Text = "📢"  -- Megaphone for advertiser
+		emoji.Text = "📢"
 	elseif rankText == "AK HELPER" then
-		emoji.Text = "📢"  -- Japanese symbol for beginner
+		emoji.Text = "📢"
 	elseif rankText == "AK USER" then
-		emoji.Text = ""  -- Glowing star for user
+		emoji.Text = ""
 	end
 
 	emoji.Parent = container
-
 
 	local corner = Instance.new("UICorner")
 	corner.CornerRadius = UDim.new(0.2, 0)
@@ -313,9 +325,9 @@ local function attachTagToHead(character, player, rankText)
 	accent.BorderSizePixel = 0
 	accent.Parent = container
 
-	local corner = Instance.new("UICorner")
-	corner.CornerRadius = UDim.new(0, 2)
-	corner.Parent = accent
+	local accentCorner = Instance.new("UICorner")
+	accentCorner.CornerRadius = UDim.new(0, 2)
+	accentCorner.Parent = accent
 
 	accent.AnchorPoint = Vector2.new(0.5, 0.5)
 	accent.Position = UDim2.new(0.5, 0, 0, 0)
@@ -369,7 +381,7 @@ local function attachTagToHead(character, player, rankText)
 	userLabel.Font = Enum.Font.GothamBold
 	userLabel.Parent = container
 
-	tag.Parent = pg
+	tag.Parent = game.CoreGui
 
 	local maxDistance = 50
 	local playerHead = player.Character:WaitForChild("Head")
@@ -492,7 +504,7 @@ local function applyPlayerTag(player)
 	local attempts = 0
 	local function retryTagApplication()
 		attempts = attempts + 1
-		local success = pcall(attemptTagApplication)
+		local success, err = pcall(attemptTagApplication)
 
 		if not success and attempts < CONFIG.MAX_RETRY_ATTEMPTS then
 			task.wait(CONFIG.RETRY_DELAY)
@@ -518,7 +530,7 @@ Players.PlayerAdded:Connect(function(player)
 end)
 
 -- Error handling and initialization
-local success, error = pcall(function()
+local success, errorMsg = pcall(function()
 	task.spawn(function()
 		while true do
 			fetchWhitelist()
@@ -528,8 +540,7 @@ local success, error = pcall(function()
 end)
 
 if not success then
-	warn("[Tag System] Initialization Error:", error)
-
+	warn("[Tag System] Initialization Error:", errorMsg)
 	task.wait(5)
 	for _, player in pairs(Players:GetPlayers()) do
 		task.spawn(function()
