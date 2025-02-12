@@ -228,55 +228,139 @@ getgenv().scanningmap = false
         Duration = 3
     })
 elseif command:sub(1,6) == "!steal" then
-local tplayer = command:sub(8)
+local tplayer = command:sub(8) -- Assuming 'command' is defined elsewhere and contains the command with the player name
+
 local function findPlayer(partialName)
     partialName = partialName:lower()
     for _, player in pairs(game.Players:GetPlayers()) do
-        if player.Name:lower():find(partialName) or 
+        if player.Name:lower():find(partialName) or
            (player.DisplayName and player.DisplayName:lower():find(partialName)) then
             return player.UserId
         end
     end
     return nil
 end
+
 local function findPlayer2(partialName)
     partialName = partialName:lower()
     for _, player in pairs(game.Players:GetPlayers()) do
-        if player.Name:lower():find(partialName) or 
+        if player.Name:lower():find(partialName) or
            (player.DisplayName and player.DisplayName:lower():find(partialName)) then
             return player
         end
     end
     return nil
 end
-local realt = findPlayer(tplayer)
-local realb = findPlayer2(tplayer)
+
+local realt = findPlayer(tplayer) -- UserId of target player (not used directly, but kept for consistency)
+local realb = findPlayer2(tplayer) -- Player object of target player
 local AES = game:GetService("AvatarEditorService")
+local deadpos -- For LocalPlayer's position
+
+local function ExecuteRigChange(targetDescription, rigType) -- Modified to take description and rigType
+    local plr = game.Players.LocalPlayer -- Now always targets LocalPlayer
+    pcall(function()
+        local char = plr.Character or plr.CharacterAdded:Wait()
+        local humanoid = char and char:FindFirstChildOfClass("Humanoid")
+        if not humanoid then
+            warn("No humanoid found for LocalPlayer.")
+            return
+        end
+
+        local hrp = char:FindFirstChild("HumanoidRootPart") or char:WaitForChild("HumanoidRootPart", 5)
+        local posToRestore
+        if hrp then
+            posToRestore = hrp.CFrame
+        end
+
+        local desc = targetDescription:Clone() -- Use the provided targetDescription
+        if not desc then
+            warn("Invalid target HumanoidDescription provided.")
+            return
+        end
+
+        AES:PromptSaveAvatar(desc, Enum.HumanoidRigType[rigType]) -- Use the provided rigType
+
+        if AES.PromptSaveAvatarCompleted:Wait() == Enum.AvatarPromptResult.Success then
+            humanoid.Health = 0
+            humanoid:ChangeState(Enum.HumanoidStateType.Dead)
+
+            local newChar = plr.CharacterAdded:Wait()
+
+            local newHRP = newChar:WaitForChild("HumanoidRootPart", 5)
+            if newHRP and posToRestore then
+                newHRP.CFrame = posToRestore
+            end
+        end
+    end)
+end
+
+
+if not realb then
+    warn("Player '" .. tplayer .. "' not found.")
+    return -- Exit if player not found
+end
+
 AES:PromptAllowInventoryReadAccess()
-local YOU = realt -- YOUR ID
 wait(0.5)
 local result = AES.PromptAllowInventoryReadAccessCompleted:Wait()
+
 if result == Enum.AvatarPromptResult.Success then
-	
-    local HumDescWithDoubleAccessories = game.Players:GetHumanoidDescriptionFromUserId(YOU) -- Using your ID for the test
-	    local success, errorMessage = pcall(function()
-    AES:PromptSaveAvatar(HumDescWithDoubleAccessories, realb.Character.Humanoid.RigType)
-end)
-if success then
+    local targetHumDesc = game.Players:GetHumanoidDescriptionFromUserId(realt) -- Get description of the TARGET player using realt (UserId)
 
-game.Players.LocalPlayer.Character.Humanoid.Health = 0
-function log()
-    deadpos = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
-end
+    local success, errorMessage = pcall(function()
+        local localPlayer = game.Players.LocalPlayer
+        if localPlayer and realb and realb.Character and realb.Character.Humanoid then -- Check realb and its character/humanoid too
+            local targetHumanoid = realb.Character.Humanoid
+            local targetRigType = targetHumanoid.RigType -- Get the TARGET player's rig type
 
-game.Players.LocalPlayer.Character.Humanoid.Died:Connect(log)
-game.Players.LocalPlayer.CharacterAdded:Connect(
-    function(char)
-        char:WaitForChild("Humanoid", 3).Died:Connect(log)
-        char:WaitForChild("HumanoidRootPart", 3).CFrame = deadpos
+            local targetRigTypeString
+            if targetRigType == Enum.HumanoidRigType.R6 then
+                targetRigTypeString = "R6"
+            elseif targetRigType == Enum.HumanoidRigType.R15 then
+                targetRigTypeString = "R15"
+            else
+                warn("Unknown rig type for target player " .. realb.Name .. ", defaulting to R15 for LocalPlayer")
+                targetRigTypeString = "R15" -- Default to R15 if target's rig is unknown, or you could choose to match LocalPlayer to R15 in this case.
+            end
+
+            print("Setting LocalPlayer's avatar and rig type to match " .. realb.Name .. " (" .. targetRigTypeString .. ")")
+            ExecuteRigChange(targetHumDesc, targetRigTypeString) -- Call ExecuteRigChange with target's description and TARGET's rig type
+        else
+            warn("Could not get character or humanoid for LocalPlayer or Target Player.")
+        end
+    end)
+
+    if success then
+        local localPlayer = game.Players.LocalPlayer
+        if localPlayer and localPlayer.Character and localPlayer.Character.Humanoid then
+            local localHumanoid = localPlayer.Character.Humanoid
+            localPlayer.Character.Humanoid.Health = 0 -- Kill LocalPlayer's character
+
+            local function log(character) -- Pass character to log function
+                if character and character:FindFirstChild("HumanoidRootPart") then
+                    deadpos = character:FindFirstChild("HumanoidRootPart").CFrame
+                end
+            end
+
+            localHumanoid.Died:Connect(function() log(localPlayer.Character) end) -- Log position on death
+
+            localPlayer.CharacterAdded:Connect(function(char)
+                local newHumanoid = char:WaitForChild("Humanoid", 3)
+                if newHumanoid then
+                    newHumanoid.Died:Connect(function() log(char) end) -- Log position on death for new character too (though probably redundant)
+                end
+                local newHRP = char:WaitForChild("HumanoidRootPart", 3)
+                if newHRP and deadpos then
+                    newHRP.CFrame = deadpos -- Restore position
+                end
+            end)
+        else
+            warn("Could not find character/humanoid to kill and respawn for LocalPlayer.")
+        end
+    else
+        warn("Error during PromptSaveAvatar for LocalPlayer, copying avatar of " .. (realb and realb.Name or "unknown player") .. ": " .. (errorMessage or "Unknown error"))
     end
-)()
-end
 end
 
 elseif command:sub(1,4) == "!r15" then
