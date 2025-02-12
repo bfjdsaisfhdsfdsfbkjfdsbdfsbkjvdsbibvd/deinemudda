@@ -280,61 +280,97 @@ end
 end
 
 elseif command:sub(1,4) == "!r15" then
-local AES = game:GetService("AvatarEditorService")
-AES:PromptAllowInventoryReadAccess()
-local YOU = game.Players.LocalPlayer.UserId -- YOUR ID
-wait(0.5)
-local result = AES.PromptAllowInventoryReadAccessCompleted:Wait()
-if result == Enum.AvatarPromptResult.Success then
-	
-    local HumDescWithDoubleAccessories = game.Players:GetHumanoidDescriptionFromUserId(YOU) -- Using your ID for the test
-	    local success, errorMessage = pcall(function()
-    AES:PromptSaveAvatar(HumDescWithDoubleAccessories, Enum.HumanoidRigType.R15)
-end)
-if success then
+local Players = game:GetService("Players")
+local AvatarEditor = game:GetService("AvatarEditorService")
+local plr = Players.LocalPlayer
+local pos -- Declare pos outside the function so it persists
 
-game.Players.LocalPlayer.Character.Humanoid.Health = 0
-function log()
-    deadpos = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+local function ExecuteRigChange(rigType)
+    pcall(function()
+        local char = plr.Character or plr.CharacterAdded:Wait()
+        local humanoid = char and char:FindFirstChildOfClass("Humanoid")
+        if not humanoid then return end
+
+        local hrp = char:FindFirstChild("HumanoidRootPart") or char:WaitForChild("HumanoidRootPart", 5)
+        if hrp then
+            pos = hrp.CFrame
+        end
+
+        local desc = humanoid.HumanoidDescription and humanoid.HumanoidDescription:Clone()
+        if not desc then return end
+
+        AvatarEditor:PromptSaveAvatar(desc, Enum.HumanoidRigType[rigType])
+
+        if AvatarEditor.PromptSaveAvatarCompleted:Wait() == Enum.AvatarPromptResult.Success then
+            humanoid.Health = 0
+            humanoid:ChangeState(Enum.HumanoidStateType.Dead)
+
+            local newChar = plr.CharacterAdded:Wait()
+
+            local newHRP = newChar:WaitForChild("HumanoidRootPart", 5)
+            if newHRP and pos then
+                newHRP.CFrame = pos
+            end
+        end
+    end)
 end
 
-game.Players.LocalPlayer.Character.Humanoid.Died:Connect(log)
-game.Players.LocalPlayer.CharacterAdded:Connect(
-    function(char)
-        char:WaitForChild("Humanoid", 3).Died:Connect(log)
-        char:WaitForChild("HumanoidRootPart", 3).CFrame = deadpos
+local char = plr.Character or plr.CharacterAdded:Wait()
+local humanoid = char and char:FindFirstChildOfClass("Humanoid")
+if humanoid and humanoid.RigType then
+    if humanoid.RigType == Enum.HumanoidRigType.R15 then -- Check if currently R15
+        print("Current rig is R15, attempting to switch to R6.") -- Added print for clarity
+        ExecuteRigChange("R6") -- Switch to R6
+    else
+        print("Current rig is R6 (or other), attempting to switch to R15.") -- Added print for clarity
+        ExecuteRigChange("R15") -- Switch to R15
     end
-)()
 end
-end
-
 
 elseif command:sub(1,3) == "!r6" then
-local AES = game:GetService("AvatarEditorService")
-AES:PromptAllowInventoryReadAccess()
-local YOU = game.Players.LocalPlayer.UserId -- YOUR ID
-wait(0.5)
-local result = AES.PromptAllowInventoryReadAccessCompleted:Wait()
-if result == Enum.AvatarPromptResult.Success then
-	
-    local HumDescWithDoubleAccessories = game.Players:GetHumanoidDescriptionFromUserId(YOU) -- Using your ID for the test
-	    local success, errorMessage = pcall(function()
-    AES:PromptSaveAvatar(HumDescWithDoubleAccessories, Enum.HumanoidRigType.R6)
-end)
-if success then
-game.Players.LocalPlayer.Character.Humanoid.Health = 0
-function log()
-    deadpos = game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame
+local Players = game:GetService("Players") -- Corrected: Consistent capitalization
+local AvatarEditor = game:GetService("AvatarEditorService")
+local plr = Players.LocalPlayer
+local pos -- Declare pos outside the function so it persists
+
+local function ExecuteRigChange(rigType)
+    pcall(function()
+        local char = plr.Character or plr.CharacterAdded:Wait()
+        local humanoid = char and char:FindFirstChildOfClass("Humanoid")
+        if not humanoid then return end
+
+        local hrp = char:FindFirstChild("HumanoidRootPart") or char:WaitForChild("HumanoidRootPart", 5)
+        if hrp then -- Corrected: Store position unconditionally if hrp exists
+            pos = hrp.CFrame
+        end
+
+        local desc = humanoid.HumanoidDescription and humanoid.HumanoidDescription:Clone()
+        if not desc then return end
+
+        AvatarEditor:PromptSaveAvatar(desc, Enum.HumanoidRigType[rigType])
+
+        if AvatarEditor.PromptSaveAvatarCompleted:Wait() == Enum.AvatarPromptResult.Success then
+            humanoid.Health = 0
+            humanoid:ChangeState(Enum.HumanoidStateType.Dead)
+
+            local newChar = plr.CharacterAdded:Wait()
+
+            local newHRP = newChar:WaitForChild("HumanoidRootPart", 5)
+            if newHRP and pos then -- Corrected: Use the stored pos to set new HRP position
+                newHRP.CFrame = pos
+            end
+        end
+    end)
 end
 
-game.Players.LocalPlayer.Character.Humanoid.Died:Connect(log)
-game.Players.LocalPlayer.CharacterAdded:Connect(
-    function(char)
-        char:WaitForChild("Humanoid", 3).Died:Connect(log)
-        char:WaitForChild("HumanoidRootPart", 3).CFrame = deadpos
+local char = plr.Character or plr.CharacterAdded:Wait()
+local humanoid = char and char:FindFirstChildOfClass("Humanoid")
+if humanoid and humanoid.RigType then
+    if humanoid.RigType == Enum.HumanoidRigType.R6 then
+        ExecuteRigChange("R15") -- Corrected: Pass "R15" string to switch to R15
+    else -- Assuming it's R15 if not R6, or handle other cases if needed
+        ExecuteRigChange("R6") -- Corrected: Pass "R6" string to switch to R6
     end
-)()
-end
 end
 
 
