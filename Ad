@@ -98,7 +98,7 @@ local newMessage = blob .. "\r" ..
         "һttpร://diรсord.gg/VekmXžSj7S " 
 
 -- New message for the old chat system (without ASCII art)
-local oldMessage = "🔥 AK ADMIN 🔥
+local oldMessage = "🔥 AK ADMIN 🔥.           
 👉 һttpร://diรсord.gg/VekmXžSj7S 👈"
 
 -- Send the appropriate message based on the chat system
