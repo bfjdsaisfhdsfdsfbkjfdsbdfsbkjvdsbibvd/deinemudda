@@ -1,13 +1,14 @@
 ------------------------------------------
--- Enhanced Parry Script with Dynamic Spamming Calculation & Enhanced Predictive Calculations
+-- Ultimate Lag-Compensated & High-Speed Chain Parry Script
+-- Enhanced for extreme conditions: high-speed chain parries next to you are caught.
 ------------------------------------------
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
 local VirtualInputManager = game:GetService("VirtualInputManager")
+local Stats = game:GetService("Stats")
 
 local Player = Players.LocalPlayer
 
-local Cooldown = tick()
 local Parried = false
 local Connection = nil
 
@@ -20,7 +21,8 @@ local function GetBall()
     end
 end
 
--- Create (or return an existing) parry visualizer that always appears on the player.
+-- Create (or return an existing) parry visualizer.
+-- It only appears (with normal transparency) when it’s your turn.
 local playerVisualizer = nil
 local function getOrCreatePlayerVisualizer()
     if playerVisualizer and playerVisualizer.Parent then
@@ -34,9 +36,9 @@ local function getOrCreatePlayerVisualizer()
     playerVisualizer.Shape = Enum.PartType.Ball
     playerVisualizer.Anchored = true
     playerVisualizer.CanCollide = false
-    playerVisualizer.Transparency = 0.5
+    playerVisualizer.Transparency = 0.5  -- visible when it's your turn
     playerVisualizer.Material = Enum.Material.Neon
-    playerVisualizer.Color = Color3.new(1, 1, 1) -- Default white.
+    playerVisualizer.Color = Color3.new(1, 1, 1) -- default white
     playerVisualizer.Parent = workspace
     
     return playerVisualizer
@@ -54,7 +56,6 @@ end
 workspace.Balls.ChildAdded:Connect(function(child)
     local Ball = GetBall()
     if not Ball then return end
-
     ResetConnection()
     Connection = Ball:GetAttributeChangedSignal("target"):Connect(function()
         Parried = false
@@ -65,115 +66,126 @@ end)
 RunService.PreSimulation:Connect(function()
     local Ball = GetBall()
     local HRP = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
-    if not HRP then return end
+    if not HRP or not Ball then return end
 
+    -- Only proceed if it’s your turn.
+    local isMyTurn = (Ball:GetAttribute("target") == Player.Name)
     local viz = getOrCreatePlayerVisualizer()
-    if not viz then return end
-
-    -- Always position the visualizer on you.
-    viz.CFrame = HRP.CFrame
-
-    -- Setup parameters for scaling the visualizer.
-    local minScale = 2       -- Minimum bubble size.
-    local maxScale = 10      -- Maximum bubble size.
-    local maxDistance = 50   -- Distance at which the bubble is at its minimum size.
-    local scaleFactor = minScale
-
-    local isTargeting = false
-    local speed = 0
-    local distance = maxDistance  -- Default distance if no ball is present.
-    
-    if Ball then
-        speed = Ball.zoomies.VectorVelocity.Magnitude
-        distance = (HRP.Position - Ball.Position).Magnitude
-        isTargeting = (Ball:GetAttribute("target") == Player.Name)
+    if viz then
+        if isMyTurn then
+            viz.Transparency = 0.5  -- show visualizer when it’s your turn
+            viz.CFrame = HRP.CFrame
+        else
+            viz.Transparency = 1    -- hide when not your turn
+            return
+        end
     end
 
-    -- Scale the visualizer based on proximity.
-    if Ball and isTargeting then
-        local ratio = 1 - math.clamp(distance / maxDistance, 0, 1)
-        scaleFactor = minScale + (maxScale - minScale) * ratio
-    else
-        scaleFactor = minScale
-    end
+    -- Scale visualization based on distance
+    local minVizScale = 5         -- minimum diameter
+    local maxVizScale = 20        -- maximum diameter
+    local maxVizDistance = 100    -- distance at which scale is minimum
+    local distance = (HRP.Position - Ball.Position).Magnitude
+    local ratio = 1 - math.clamp(distance / maxVizDistance, 0, 1)
+    local scaleFactor = minVizScale + (maxVizScale - minVizScale) * ratio
     viz.Size = Vector3.new(scaleFactor, scaleFactor, scaleFactor)
 
-    -- Determine if we are in duel mode.
-    -- If the ball's target is another player AND that player is within 15 studs, we assume a duel.
+    -- Determine duel mode: if the ball is targeting another nearby player.
     local duelMode = false
-    if Ball then
-        local targetName = Ball:GetAttribute("target")
-        if targetName and targetName ~= Player.Name then
-            local targetPlayer = Players:FindFirstChild(targetName)
-            if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
-                local targetHRP = targetPlayer.Character.HumanoidRootPart
-                if (HRP.Position - targetHRP.Position).Magnitude < 15 then
-                    duelMode = true
-                end
+    local targetName = Ball:GetAttribute("target")
+    if targetName and targetName ~= Player.Name then
+        local targetPlayer = Players:FindFirstChild(targetName)
+        if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+            local targetHRP = targetPlayer.Character.HumanoidRootPart
+            if (HRP.Position - targetHRP.Position).Magnitude < 15 then
+                duelMode = true
             end
         end
     end
 
-    -- Enhanced predictive parry calculation using closest approach prediction.
-    local canParry = false
-    local tClosest = 5
-    local distanceAtClosest = maxDistance
-    local parryTimeThreshold = 0.55  -- Time (in seconds) until closest approach needed for parry.
-    local parryDistanceThreshold = 5  -- Distance threshold for a successful parry.
-    
-    if Ball and isTargeting then
-        local v = Ball.zoomies.VectorVelocity
-        local speedSq = v.Magnitude^2
-        if speedSq > 0 then
-            local relativePos = HRP.Position - Ball.Position
-            tClosest = math.clamp(relativePos:Dot(v) / speedSq, 0, 5)
-            local predictedPos = Ball.Position + v * tClosest
-            distanceAtClosest = (predictedPos - HRP.Position).Magnitude
-            
-            canParry = (not Parried) and (tClosest <= parryTimeThreshold) and (distanceAtClosest <= parryDistanceThreshold)
+    -- Lag compensation: get your current ping.
+    local pingMs = Stats.Network.ServerStatsItem["Data Ping"]:GetValue() or 0
+    local ping = pingMs / 1000  -- convert ms to seconds
+
+    local v = Ball.zoomies.VectorVelocity
+    local ballSpeed = v.Magnitude
+    local gravity = Vector3.new(0, -workspace.Gravity, 0)
+    -- Compensate ball position for network lag.
+    local compensatedPos = Ball.Position + v * ping + 0.5 * gravity * (ping ^ 2)
+
+    -- Enhanced predictive collision calculation:
+    local parryRadius = 5                   -- effective parry sphere radius
+    local baseParryTimeThreshold = 0.55       -- base time window for parry (in seconds)
+    local chainCount = Ball:GetAttribute("chainCount") or 0
+    local effectiveParryTimeThreshold = math.max(0.2, baseParryTimeThreshold - 0.05 * chainCount)
+
+    -- Dynamically adjust simulation timestep based on ball speed.
+    local dt = (ballSpeed > 50) and 0.0005 or 0.001
+
+    local collisionFound = false
+    local tCollision = math.huge
+    local lastDistance = (compensatedPos - HRP.Position).Magnitude
+
+    -- Iterative simulation with interpolation for sub-timestep precision.
+    for t = 0, effectiveParryTimeThreshold, dt do
+        local predictedPos = compensatedPos + v * t + 0.5 * gravity * t^2
+        local d = (predictedPos - HRP.Position).Magnitude
+
+        if d <= parryRadius then
+            if t == 0 then
+                tCollision = 0
+            else
+                -- Linear interpolation between the last step and this step.
+                local tPrev = t - dt
+                local ratioInterp = (lastDistance - parryRadius) / (lastDistance - d)
+                tCollision = tPrev + ratioInterp * dt
+            end
+            collisionFound = true
+            break
         end
+        lastDistance = d
     end
 
-    -- Update the visualizer's color based on the ball's state.
-    if Ball and isTargeting then
+    -- Fallback: if no collision was found through simulation but the ball is extremely close,
+    -- trigger parry immediately.
+    if (not collisionFound) and ((Ball.Position - HRP.Position).Magnitude <= parryRadius * 1.1) and (ballSpeed > 75) then
+        tCollision = 0
+        collisionFound = true
+    end
+
+    local canParry = collisionFound and (tCollision <= effectiveParryTimeThreshold)
+
+    -- Update visualizer color based on readiness.
+    if viz then
         if duelMode or canParry then
-            viz.Color = Color3.new(0, 1, 0)  -- Green: ready to parry (or spamming in duel mode).
+            viz.Color = Color3.new(0, 1, 0)  -- green indicates ready
         else
-            viz.Color = Color3.new(1, 0, 0)  -- Red: ball is targeting but parry conditions not met.
+            viz.Color = Color3.new(1, 0, 0)  -- red indicates not ready
         end
-    else
-        viz.Color = Color3.new(1, 1, 1)      -- White: no threat.
     end
 
-    -- Execute the parry.
-    if Ball and isTargeting then
-        if duelMode then
-            -- Dynamically calculate how many parry events to send based on urgency.
-            local minSpamCount = 5
-            local maxSpamCount = 20
-            local urgencyFactor = (parryTimeThreshold - tClosest) / parryTimeThreshold
-            urgencyFactor = math.clamp(urgencyFactor, 0, 1)
-            local dynamicSpamCount = math.floor(minSpamCount + urgencyFactor * (maxSpamCount - minSpamCount))
-            
-            -- Factor in the ball's speed (faster balls produce a higher multiplier).
-            local speedMultiplier = math.clamp(speed / 50, 1, 2)
-            dynamicSpamCount = math.floor(dynamicSpamCount * speedMultiplier)
-            dynamicSpamCount = math.clamp(dynamicSpamCount, minSpamCount, maxSpamCount)
-            
-            for i = 1, dynamicSpamCount do
-                VirtualInputManager:SendMouseButtonEvent(0, 0, 0, true, game, 0)
-                VirtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 0)
-            end
-        elseif canParry then
+    -- Execute the parry input.
+    if duelMode then
+        -- In duel mode, spam the parry input based on urgency.
+        local minSpamCount = 5
+        local maxSpamCount = 20
+        local urgencyFactor = (effectiveParryTimeThreshold - tCollision) / effectiveParryTimeThreshold
+        urgencyFactor = math.clamp(urgencyFactor, 0, 1)
+        local dynamicSpamCount = math.floor(minSpamCount + urgencyFactor * (maxSpamCount - minSpamCount))
+        
+        local speedMultiplier = math.clamp(ballSpeed / 50, 1, 2)
+        dynamicSpamCount = math.floor(dynamicSpamCount * speedMultiplier)
+        dynamicSpamCount = math.clamp(dynamicSpamCount, minSpamCount, maxSpamCount)
+        
+        for i = 1, dynamicSpamCount do
             VirtualInputManager:SendMouseButtonEvent(0, 0, 0, true, game, 0)
             VirtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 0)
-            Parried = true
-            Cooldown = tick()
         end
-    end
-
-    -- Reset parry state after a cooldown period (applies only when not in duel mode).
-    if Parried and (tick() - Cooldown >= 1) then
-        Parried = false
+    elseif canParry then
+        VirtualInputManager:SendMouseButtonEvent(0, 0, 0, true, game, 0)
+        VirtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 0)
+        Parried = true
+        Ball:SetAttribute("chainCount", chainCount + 1)
+        task.delay(1, function() Parried = false end)
     end
 end)
