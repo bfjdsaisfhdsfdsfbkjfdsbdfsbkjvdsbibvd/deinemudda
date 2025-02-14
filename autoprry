@@ -1,0 +1,179 @@
+------------------------------------------
+-- Enhanced Parry Script with Dynamic Spamming Calculation & Enhanced Predictive Calculations
+------------------------------------------
+local RunService = game:GetService("RunService")
+local Players = game:GetService("Players")
+local VirtualInputManager = game:GetService("VirtualInputManager")
+
+local Player = Players.LocalPlayer
+
+local Cooldown = tick()
+local Parried = false
+local Connection = nil
+
+-- Returns the ball marked as the "realBall"
+local function GetBall()
+    for _, Ball in ipairs(workspace.Balls:GetChildren()) do
+        if Ball:GetAttribute("realBall") then
+            return Ball
+        end
+    end
+end
+
+-- Create (or return an existing) parry visualizer that always appears on the player.
+local playerVisualizer = nil
+local function getOrCreatePlayerVisualizer()
+    if playerVisualizer and playerVisualizer.Parent then
+        return playerVisualizer
+    end
+    local HRP = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
+    if not HRP then return end
+
+    playerVisualizer = Instance.new("Part")
+    playerVisualizer.Name = "ParryVisualizer"
+    playerVisualizer.Shape = Enum.PartType.Ball
+    playerVisualizer.Anchored = true
+    playerVisualizer.CanCollide = false
+    playerVisualizer.Transparency = 0.5
+    playerVisualizer.Material = Enum.Material.Neon
+    playerVisualizer.Color = Color3.new(1, 1, 1) -- Default white.
+    playerVisualizer.Parent = workspace
+    
+    return playerVisualizer
+end
+
+-- Reset any previous connection.
+local function ResetConnection()
+    if Connection then
+        Connection:Disconnect()
+        Connection = nil
+    end
+end
+
+-- Listen for new balls being added. Reset parry state when the ball's target changes.
+workspace.Balls.ChildAdded:Connect(function(child)
+    local Ball = GetBall()
+    if not Ball then return end
+
+    ResetConnection()
+    Connection = Ball:GetAttributeChangedSignal("target"):Connect(function()
+        Parried = false
+    end)
+end)
+
+-- Main update loop
+RunService.PreSimulation:Connect(function()
+    local Ball = GetBall()
+    local HRP = Player.Character and Player.Character:FindFirstChild("HumanoidRootPart")
+    if not HRP then return end
+
+    local viz = getOrCreatePlayerVisualizer()
+    if not viz then return end
+
+    -- Always position the visualizer on you.
+    viz.CFrame = HRP.CFrame
+
+    -- Setup parameters for scaling the visualizer.
+    local minScale = 2       -- Minimum bubble size.
+    local maxScale = 10      -- Maximum bubble size.
+    local maxDistance = 50   -- Distance at which the bubble is at its minimum size.
+    local scaleFactor = minScale
+
+    local isTargeting = false
+    local speed = 0
+    local distance = maxDistance  -- Default distance if no ball is present.
+    
+    if Ball then
+        speed = Ball.zoomies.VectorVelocity.Magnitude
+        distance = (HRP.Position - Ball.Position).Magnitude
+        isTargeting = (Ball:GetAttribute("target") == Player.Name)
+    end
+
+    -- Scale the visualizer based on proximity.
+    if Ball and isTargeting then
+        local ratio = 1 - math.clamp(distance / maxDistance, 0, 1)
+        scaleFactor = minScale + (maxScale - minScale) * ratio
+    else
+        scaleFactor = minScale
+    end
+    viz.Size = Vector3.new(scaleFactor, scaleFactor, scaleFactor)
+
+    -- Determine if we are in duel mode.
+    -- If the ball's target is another player AND that player is within 15 studs, we assume a duel.
+    local duelMode = false
+    if Ball then
+        local targetName = Ball:GetAttribute("target")
+        if targetName and targetName ~= Player.Name then
+            local targetPlayer = Players:FindFirstChild(targetName)
+            if targetPlayer and targetPlayer.Character and targetPlayer.Character:FindFirstChild("HumanoidRootPart") then
+                local targetHRP = targetPlayer.Character.HumanoidRootPart
+                if (HRP.Position - targetHRP.Position).Magnitude < 15 then
+                    duelMode = true
+                end
+            end
+        end
+    end
+
+    -- Enhanced predictive parry calculation using closest approach prediction.
+    local canParry = false
+    local tClosest = 5
+    local distanceAtClosest = maxDistance
+    local parryTimeThreshold = 0.55  -- Time (in seconds) until closest approach needed for parry.
+    local parryDistanceThreshold = 5  -- Distance threshold for a successful parry.
+    
+    if Ball and isTargeting then
+        local v = Ball.zoomies.VectorVelocity
+        local speedSq = v.Magnitude^2
+        if speedSq > 0 then
+            local relativePos = HRP.Position - Ball.Position
+            tClosest = math.clamp(relativePos:Dot(v) / speedSq, 0, 5)
+            local predictedPos = Ball.Position + v * tClosest
+            distanceAtClosest = (predictedPos - HRP.Position).Magnitude
+            
+            canParry = (not Parried) and (tClosest <= parryTimeThreshold) and (distanceAtClosest <= parryDistanceThreshold)
+        end
+    end
+
+    -- Update the visualizer's color based on the ball's state.
+    if Ball and isTargeting then
+        if duelMode or canParry then
+            viz.Color = Color3.new(0, 1, 0)  -- Green: ready to parry (or spamming in duel mode).
+        else
+            viz.Color = Color3.new(1, 0, 0)  -- Red: ball is targeting but parry conditions not met.
+        end
+    else
+        viz.Color = Color3.new(1, 1, 1)      -- White: no threat.
+    end
+
+    -- Execute the parry.
+    if Ball and isTargeting then
+        if duelMode then
+            -- Dynamically calculate how many parry events to send based on urgency.
+            local minSpamCount = 5
+            local maxSpamCount = 20
+            local urgencyFactor = (parryTimeThreshold - tClosest) / parryTimeThreshold
+            urgencyFactor = math.clamp(urgencyFactor, 0, 1)
+            local dynamicSpamCount = math.floor(minSpamCount + urgencyFactor * (maxSpamCount - minSpamCount))
+            
+            -- Factor in the ball's speed (faster balls produce a higher multiplier).
+            local speedMultiplier = math.clamp(speed / 50, 1, 2)
+            dynamicSpamCount = math.floor(dynamicSpamCount * speedMultiplier)
+            dynamicSpamCount = math.clamp(dynamicSpamCount, minSpamCount, maxSpamCount)
+            
+            for i = 1, dynamicSpamCount do
+                VirtualInputManager:SendMouseButtonEvent(0, 0, 0, true, game, 0)
+                VirtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 0)
+            end
+        elseif canParry then
+            VirtualInputManager:SendMouseButtonEvent(0, 0, 0, true, game, 0)
+            VirtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 0)
+            Parried = true
+            Cooldown = tick()
+        end
+    end
+
+    -- Reset parry state after a cooldown period (applies only when not in duel mode).
+    if Parried and (tick() - Cooldown >= 1) then
+        Parried = false
+    end
+end)
