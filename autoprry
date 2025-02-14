@@ -1,6 +1,6 @@
 ------------------------------------------
--- Ultimate Lag-Compensated & High-Speed Chain Parry Script
--- Enhanced for extreme conditions: high-speed chain parries next to you are caught.
+-- Ultimate High-Speed, Lag-Compensated Parry Script
+-- With Aggressive Spamming for Extremely High-Speed Balls
 ------------------------------------------
 local RunService = game:GetService("RunService")
 local Players = game:GetService("Players")
@@ -22,7 +22,7 @@ local function GetBall()
 end
 
 -- Create (or return an existing) parry visualizer.
--- It only appears (with normal transparency) when it’s your turn.
+-- It appears normally only when it’s your turn.
 local playerVisualizer = nil
 local function getOrCreatePlayerVisualizer()
     if playerVisualizer and playerVisualizer.Parent then
@@ -62,6 +62,20 @@ workspace.Balls.ChildAdded:Connect(function(child)
     end)
 end)
 
+-- Enhanced spamming function.
+-- Sends parry inputs in a burst over a short duration.
+local function spamParryBurst(spamCount)
+    coroutine.wrap(function()
+        local burstDuration = 0.1  -- total time (in seconds) to spread out the spamming
+        local delayBetween = burstDuration / spamCount
+        for i = 1, spamCount do
+            VirtualInputManager:SendMouseButtonEvent(0, 0, 0, true, game, 0)
+            VirtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 0)
+            task.wait(delayBetween)
+        end
+    end)()
+end
+
 -- Main update loop
 RunService.PreSimulation:Connect(function()
     local Ball = GetBall()
@@ -81,7 +95,7 @@ RunService.PreSimulation:Connect(function()
         end
     end
 
-    -- Scale visualization based on distance
+    -- Scale visualization based on distance.
     local minVizScale = 5         -- minimum diameter
     local maxVizScale = 20        -- maximum diameter
     local maxVizDistance = 100    -- distance at which scale is minimum
@@ -113,42 +127,61 @@ RunService.PreSimulation:Connect(function()
     -- Compensate ball position for network lag.
     local compensatedPos = Ball.Position + v * ping + 0.5 * gravity * (ping ^ 2)
 
-    -- Enhanced predictive collision calculation:
+    -- Enhanced predictive collision calculation.
     local parryRadius = 5                   -- effective parry sphere radius
-    local baseParryTimeThreshold = 0.55       -- base time window for parry (in seconds)
+    local baseParryTimeThreshold = 0.55       -- base time window (seconds)
     local chainCount = Ball:GetAttribute("chainCount") or 0
     local effectiveParryTimeThreshold = math.max(0.2, baseParryTimeThreshold - 0.05 * chainCount)
-
-    -- Dynamically adjust simulation timestep based on ball speed.
-    local dt = (ballSpeed > 50) and 0.0005 or 0.001
-
+    
     local collisionFound = false
     local tCollision = math.huge
-    local lastDistance = (compensatedPos - HRP.Position).Magnitude
 
-    -- Iterative simulation with interpolation for sub-timestep precision.
-    for t = 0, effectiveParryTimeThreshold, dt do
-        local predictedPos = compensatedPos + v * t + 0.5 * gravity * t^2
-        local d = (predictedPos - HRP.Position).Magnitude
-
-        if d <= parryRadius then
-            if t == 0 then
-                tCollision = 0
-            else
-                -- Linear interpolation between the last step and this step.
-                local tPrev = t - dt
-                local ratioInterp = (lastDistance - parryRadius) / (lastDistance - d)
-                tCollision = tPrev + ratioInterp * dt
+    -- For extremely high speeds, use an analytical quadratic solution (ignoring gravity).
+    local HIGH_SPEED_THRESHOLD = 150
+    if ballSpeed > HIGH_SPEED_THRESHOLD then
+        local d = compensatedPos - HRP.Position
+        local a = v:Dot(v)
+        local b = 2 * d:Dot(v)
+        local c = d:Dot(d) - parryRadius^2
+        local disc = b*b - 4*a*c
+        if disc >= 0 then
+            local sqrtDisc = math.sqrt(disc)
+            local t1 = (-b - sqrtDisc) / (2 * a)
+            local t2 = (-b + sqrtDisc) / (2 * a)
+            local candidate = math.huge
+            if t1 > 0 then candidate = math.min(candidate, t1) end
+            if t2 > 0 then candidate = math.min(candidate, t2) end
+            if candidate < math.huge then
+                tCollision = candidate
+                collisionFound = true
             end
-            collisionFound = true
-            break
         end
-        lastDistance = d
+    else
+        -- Adaptive iterative simulation with interpolation:
+        local dt = math.max(0.0001, 1 / (ballSpeed * 100)) -- even smaller dt for high speeds
+        local lastDistance = (compensatedPos - HRP.Position).Magnitude
+        for t = 0, effectiveParryTimeThreshold, dt do
+            local predictedPos = compensatedPos + v * t + 0.5 * gravity * t^2
+            local d = (predictedPos - HRP.Position).Magnitude
+
+            if d <= parryRadius then
+                if t == 0 then
+                    tCollision = 0
+                else
+                    local tPrev = t - dt
+                    local ratioInterp = (lastDistance - parryRadius) / math.max((lastDistance - d), 0.00001)
+                    tCollision = tPrev + ratioInterp * dt
+                end
+                collisionFound = true
+                break
+            end
+            lastDistance = d
+        end
     end
 
-    -- Fallback: if no collision was found through simulation but the ball is extremely close,
+    -- Aggressive fallback: if no collision was found by simulation but the ball is very close and insanely fast,
     -- trigger parry immediately.
-    if (not collisionFound) and ((Ball.Position - HRP.Position).Magnitude <= parryRadius * 1.1) and (ballSpeed > 75) then
+    if (not collisionFound) and ((Ball.Position - HRP.Position).Magnitude <= parryRadius * 1.2) and (ballSpeed > HIGH_SPEED_THRESHOLD) then
         tCollision = 0
         collisionFound = true
     end
@@ -164,26 +197,30 @@ RunService.PreSimulation:Connect(function()
         end
     end
 
-    -- Execute the parry input.
+    -- Execute parry input.
     if duelMode then
-        -- In duel mode, spam the parry input based on urgency.
-        local minSpamCount = 5
-        local maxSpamCount = 20
+        -- In duel mode, use enhanced spamming.
+        local minSpamCount = 10   -- increased baseline count
+        local maxSpamCount = 50   -- increased maximum count
         local urgencyFactor = (effectiveParryTimeThreshold - tCollision) / effectiveParryTimeThreshold
         urgencyFactor = math.clamp(urgencyFactor, 0, 1)
         local dynamicSpamCount = math.floor(minSpamCount + urgencyFactor * (maxSpamCount - minSpamCount))
         
-        local speedMultiplier = math.clamp(ballSpeed / 50, 1, 2)
+        local speedMultiplier = math.clamp(ballSpeed / 50, 1, 3)  -- allow up to 3x multiplier
         dynamicSpamCount = math.floor(dynamicSpamCount * speedMultiplier)
         dynamicSpamCount = math.clamp(dynamicSpamCount, minSpamCount, maxSpamCount)
         
-        for i = 1, dynamicSpamCount do
+        spamParryBurst(dynamicSpamCount)
+    elseif canParry then
+        -- For extremely high-speed balls outside of duel mode, if collision is imminent,
+        -- use an aggressive burst instead of a single input.
+        if ballSpeed > HIGH_SPEED_THRESHOLD and tCollision <= 0.05 then
+            local aggressiveSpamCount = 50
+            spamParryBurst(aggressiveSpamCount)
+        else
             VirtualInputManager:SendMouseButtonEvent(0, 0, 0, true, game, 0)
             VirtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 0)
         end
-    elseif canParry then
-        VirtualInputManager:SendMouseButtonEvent(0, 0, 0, true, game, 0)
-        VirtualInputManager:SendMouseButtonEvent(0, 0, 0, false, game, 0)
         Parried = true
         Ball:SetAttribute("chainCount", chainCount + 1)
         task.delay(1, function() Parried = false end)
