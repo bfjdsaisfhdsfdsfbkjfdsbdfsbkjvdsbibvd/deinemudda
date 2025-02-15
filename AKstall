@@ -11,7 +11,7 @@ local messages = {
     "ꜰuckiฑg",
     "OWNS",
     "YOU ALL",
-    "LOSERS"
+    "LOSẸRS"
 }
 
 local function fireProximityPrompts(name)
