@@ -1,3 +1,40 @@
+if getcustomasset and isfile and readfile and writefile then
+    local ranFile = "iconprefixtutorialran.txt"
+    local ranBefore = isfile(ranFile) and readfile(ranFile) == "true"
+
+    if ranBefore then 
+    else
+
+    -- Otherwise, run the tutorial
+    local url = "https://cdn.discordapp.com/attachments/1174404879545012275/1340446302177071197/2025-02-15_23-15-00.mp4?ex=67b26366&is=67b111e6&hm=89caaf61908699ecc67ee4636cbb59a476c08b23ad74cffcd76c1388810bb2cb&"
+    local videoPath = "IconPrefixTutorial.mp4"
+
+    local data = game:HttpGet(url, true) -- Download file
+    writefile(videoPath, data) -- Save to local storage
+
+    -- GUI Setup
+    local AKTutorial = Instance.new("ScreenGui")
+    local VideoFrame = Instance.new("VideoFrame")
+
+    AKTutorial.Name = "AKTutorial"
+    AKTutorial.Parent = game:GetService("CoreGui")
+    AKTutorial.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    AKTutorial.IgnoreGuiInset = true
+
+    VideoFrame.Parent = AKTutorial
+    VideoFrame.BackgroundTransparency = 1
+    VideoFrame.BorderSizePixel = 0
+    VideoFrame.Size = UDim2.new(1, 0, 1, 0)
+    VideoFrame.Video = getcustomasset(videoPath)
+    VideoFrame.Looped = true
+    VideoFrame:Play()
+
+    VideoFrame.DidLoop:Connect(function()
+        writefile(ranFile, "true") -- Mark tutorial as watched
+        AKTutorial:Destroy()
+    end)
+end
+end -- Exit if already ran before
 --[[ 
     AK CHAT BYPASSER
     Updated with two replacement methods:
