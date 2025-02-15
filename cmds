@@ -258,8 +258,10 @@ local function loadCommands()
         {"!stand <target>", "Makes you a JoJo stand for the specified target."},
         {"!invistroll <target>", "Makes you invisible and follows the specified target (MIC UP)."},
         {"!steal display name", "Steals the avatar of the specified display name."},
-        {"!r6", "Changes your avatar to R6."}, -- R6 Command
-        {"!r15", "Changes your avatar to R15."} -- R15 Command
+        {"!r6", "Changes your avatar to R6."},
+        {"!r15", "Changes your avatar to R15."},
+        {"!scan map", "scans the map in mic up with the brush."},
+        {"!unscan map", "unscans the map in mic up with the brush."}
     }
 
     local cmdArray = {}
