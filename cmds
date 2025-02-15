@@ -303,6 +303,8 @@ local function loadCommands()
             hasMicup = true
         end
         local micupCmds = {
+            "!bodycopy target",
+            "!unbodycopy",
             "!stealbooth",
             "!rainbowmic",
             "!rainbowdonut",
