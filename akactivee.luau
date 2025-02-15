@@ -257,6 +257,8 @@ local function loadCommands()
 
     -- Define targeted commands
     local targetedCommands = {
+        {"!bodycopy <target>", "Copies the targets body 1:1 (MIC UP)."},
+        {"!unbodycopy", "Stops copying the targets body 1:1 (MIC UP)."},
         {"!copy <target>", "Copies the avatar of the specified target (MIC UP)."},
         {"!to <target>", "Teleports to the specified player's display name."},
         {"!stand <target>", "Makes you a JoJo stand for the specified target."},
@@ -306,6 +308,8 @@ local function loadCommands()
             hasMicup = true
         end
         local micupCmds = {
+            "!bodycopy target",
+            "!unbodycopy",
             "!stealbooth",
             "!rainbowmic",
             "!rainbowdonut",
