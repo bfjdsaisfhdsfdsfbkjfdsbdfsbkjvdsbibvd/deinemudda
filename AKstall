@@ -8,10 +8,10 @@ local targetPositions = {
 
 local messages = {
     "AK ADMIN",
-    "FỤḈKỊṆḠ",
+    "ꜰuckiฑg",
     "OWNS",
     "YOU ALL",
-    "ṆỊḠḠẸRṢ"
+    "NΙGḠẸRṢ"
 }
 
 local function fireProximityPrompts(name)
