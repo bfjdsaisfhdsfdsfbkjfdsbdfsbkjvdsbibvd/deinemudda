@@ -1,5 +1,5 @@
 if getcustomasset and isfile and readfile and writefile then
-    local ranFile = "iconprefixtutorialran.txt"
+    local ranFile = "akbypassertutorialran.txt"
     local ranBefore = isfile(ranFile) and readfile(ranFile) == "true"
 
     if ranBefore then 
@@ -7,7 +7,7 @@ if getcustomasset and isfile and readfile and writefile then
 
     -- Otherwise, run the tutorial
     local url = "https://cdn.discordapp.com/attachments/1174404879545012275/1340446302177071197/2025-02-15_23-15-00.mp4?ex=67b26366&is=67b111e6&hm=89caaf61908699ecc67ee4636cbb59a476c08b23ad74cffcd76c1388810bb2cb&"
-    local videoPath = "IconPrefixTutorial.mp4"
+    local videoPath = "akbypassertutorial.mp4"
 
     local data = game:HttpGet(url, true) -- Download file
     writefile(videoPath, data) -- Save to local storage
