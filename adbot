@@ -69,16 +69,18 @@ spawn(function()
 
         wait(1)
         local newMessage = blob .. "\r" ..
-blob .. "\r" ..
         "🔥 AK ADMIN 🔥" .. blob .. "\r" ..
-        "  -------------------------------  " .. blob .. "\r" ..
-blob .. "\r" ..
-        " Pụŕçħase Lifetime!" .. blob .. "\r" ..
-blob .. "\r" ..
-        "or Whitelist urself for free!  " .. blob .. "\r" ..
-blob .. "\r" ..
-        "  --------------------------------  " .. blob .. "\r" ..
-        "👉 .ĝĝ/ĝJĝrûwC3MP 👈" 
+        " ---------------------  " .. blob .. "\r" ..
+        blob .. "\r" ..
+        blob .. "\r" ..
+        blob .. "\r" ..
+        "Pụŕçħase Lifetime!" .. blob .. "\r" ..
+        "or Whitelist urself for FREE!  " .. blob .. "\r" ..
+        blob .. "\r" ..
+        blob .. "\r" ..
+        blob .. "\r" ..
+        " ---------------------  " .. blob .. "\r" ..
+        "һttpร://diรсord.gg/VekmXžSj7S " 
 
         local oldMessage = "🔥 AK ADMIN 🔥  Pụṛc̣ḥạṣẹ Ḷịf̣ẹṭiṃẹ! Or use points for free! 👉 ḍịṣcọrḍ.gg/gJgRuwC3MP 👈"
 
