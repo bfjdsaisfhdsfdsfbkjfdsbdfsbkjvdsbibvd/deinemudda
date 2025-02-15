@@ -999,7 +999,29 @@ elseif command:sub(1,9) == "!bodycopy" then
         end)
         print("BodyCopy aktiviert!")
     end
-    
+
+elseif command:sub(1,11) == "!unbodycopy" then
+        local Players = game:GetService("Players")
+        local ReplicatedStorage = game:GetService("ReplicatedStorage")
+        local LocalPlayer = Players.LocalPlayer
+        getgenv().Running = false
+        workspace.Gravity = 196.2
+        local char = LocalPlayer.Character
+        ReplicatedStorage.UnragdollEvent:FireServer()
+        local function enableSeat(seat)
+            if seat:IsA("Seat") or seat:IsA("VehicleSeat") then
+                seat.Disabled = false
+                seat.CanCollide = true
+            end
+        end
+        for _, seat in ipairs(workspace:GetDescendants()) do
+            enableSeat(seat)
+        end
+        if char and char:FindFirstChild("Humanoid") then
+            workspace.CurrentCamera.CameraSubject = char.Humanoid
+        end
+        print("BodyCopy deaktiviert!")
+
     local function findPlayer(partialName)
         partialName = partialName:lower()
         for _, player in ipairs(Players:GetPlayers()) do
