@@ -907,17 +907,15 @@ end
         ActiveTrolls[game.Players.LocalPlayer.UserId] = RunService.Heartbeat:Connect(function()
             UpdateBody(game.Players.LocalPlayer, target)
         end)
-        elseif command:sub(1,9) == "!bodycopy" then
+
+elseif command:sub(1,9) == "!bodycopy" then
 
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
 
 local LocalPlayer = Players.LocalPlayer
-local copyingActive = false
-local targetPlayer = nil
-getgenv().getgenv().updateConnection = nil
-local offsetMagnitude = 5  
+local offsetMagnitude = 5  -- Abstand in Studs
 
 local bodyParts = {
     "Head",
@@ -932,11 +930,13 @@ local bodyParts = {
 local function activateBodyCopy(target)
     local char = LocalPlayer.Character
     if not char then return end
-    copyingActive = true
-    targetPlayer = target
 
+    -- Falls bereits eine Verbindung aktiv ist, beende sie
+
+    -- Setze Schwerkraft auf 0
     workspace.Gravity = 0
 
+    -- Deaktiviere Kollisionswerte
     for _, partName in ipairs(bodyParts) do
         local part = char:FindFirstChild(partName)
         if part and part:IsA("BasePart") then
@@ -946,28 +946,42 @@ local function activateBodyCopy(target)
 
     ReplicatedStorage.RagdollEvent:FireServer()
 
+    -- Setze Kamera auf das Ziel
     if target.Character and target.Character:FindFirstChild("Humanoid") then
         workspace.CurrentCamera.CameraSubject = target.Character.Humanoid
     end
     getgenv().Running = true
-    getgenv().updateConnection = RunService.RenderStepped:Connect(function()
-        if not getgenv().Running then return end
+        local updateConnection = nil
+        updateConnection = RunService.RenderStepped:Connect(function()
+                    local function disableSeat(seat)
+    if seat:IsA("Seat") or seat:IsA("VehicleSeat") then
+        seat.Disabled = true
+        seat.CanCollide = false
+    end
+end
+
+for _, seat in game.Workspace:GetDescendants() do
+    disableSeat(seat)
+end
+        if not getgenv().Running then updateConnection:Disconnect() end
         local localChar = LocalPlayer.Character
         local targetChar = target.Character
         if localChar and targetChar then
-            local offset = Vector3.new(0, 0, 0)
-            if targetChar:FindFirstChild("HumanoidRootPart") then
-                offset = targetChar.HumanoidRootPart.CFrame.RightVector * (-offsetMagnitude)
-            end
-            for _, partName in ipairs(bodyParts) do
-                local localPart = localChar:FindFirstChild(partName)
-                local targetPart = targetChar:FindFirstChild(partName)
-                if localPart and targetPart and localPart:IsA("BasePart") and targetPart:IsA("BasePart") then
-                    localPart.CFrame = targetPart.CFrame + offset
+                local offset = Vector3.new(0, 0, 0)
+                if targetChar:FindFirstChild("HumanoidRootPart") then
+                    -- Berechne den Offset relativ zur Ausrichtung des Ziels: 
+                    -- "Rechtsvektor" * (-offsetMagnitude) verschiebt dich links.
+                    offset = targetChar.HumanoidRootPart.CFrame.RightVector * (-offsetMagnitude)
+                end
+                for _, partName in ipairs(bodyParts) do
+                    local localPart = localChar:FindFirstChild(partName)
+                    local targetPart = targetChar:FindFirstChild(partName)
+                    if localPart and targetPart and localPart:IsA("BasePart") and targetPart:IsA("BasePart") then
+                        localPart.CFrame = targetPart.CFrame + offset
+                    end
                 end
             end
-        end
-    end)
+        end)
     print("BodyCopy aktiviert!")
 end
 
@@ -981,6 +995,7 @@ local function findPlayer(partialName)
     end
     return nil
 end
+
 local targetName = command:sub(11)
 local target = findPlayer(targetName)
 
@@ -994,25 +1009,35 @@ activateBodyCopy(target)
 elseif command:sub(1,11) == "!unbodycopy" then
 local Players = game:GetService("Players")
 local ReplicatedStorage = game:GetService("ReplicatedStorage")
-local RunService = game:GetService("RunService")
 
 local LocalPlayer = Players.LocalPlayer
 
-if getgenv().Running then
-    getgenv().Running = false
+-- Falls eine aktive Verbindung existiert, trenne sie global
 
-    workspace.Gravity = 196.2
+getgenv().Running = false
+-- Schwerkraft zurücksetzen
+workspace.Gravity = 196.2
 
-    local char = LocalPlayer.Character
-   
+local char = LocalPlayer.Character
 
-    ReplicatedStorage.UnragdollEvent:FireServer()
-
-    if char and char:FindFirstChild("Humanoid") then
-        workspace.CurrentCamera.CameraSubject = char.Humanoid
+ReplicatedStorage.UnragdollEvent:FireServer()
+            local function enableSeat(seat)
+    if seat:IsA("Seat") or seat:IsA("VehicleSeat") then
+        seat.Disabled = false
+        seat.CanCollide = true
     end
-    print("BodyCopy deaktiviert!")
 end
+
+for _, seat in game.Workspace:GetDescendants() do
+    enableSeat(seat)
+end
+-- Kamera zurücksetzen
+if char and char:FindFirstChild("Humanoid") then
+    workspace.CurrentCamera.CameraSubject = char.Humanoid
+end
+
+print("BodyCopy deaktiviert!")
+
     elseif command:sub(1,13) == "!uninvistroll" then
 
 local Players = game:GetService("Players")
