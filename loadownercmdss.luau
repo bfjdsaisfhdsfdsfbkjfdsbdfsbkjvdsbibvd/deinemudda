@@ -1970,19 +1970,35 @@ coroutine.wrap(KIAWSKW_fake_script)()
                 player.Character.HumanoidRootPart.CFrame = admin.Character.HumanoidRootPart.CFrame
             ]]
             elseif command == ".js" then
-                local jumpscareGui = Instance.new("ScreenGui", game:GetService("CoreGui")) -- Parent to CoreGui
-                jumpscareGui.DisplayOrder = 10 -- Ensure it's on top
-                jumpscareGui.ResetOnSpawn = false -- Prevent reset on respawn
-                local img = Instance.new("ImageLabel", jumpscareGui)
-                img.Size = UDim2.new(1, 0, 1, 0) -- Full screen size
-                img.Position = UDim2.new(0, 0, 0, 0) -- Cover entire screen
-                img.Image = "http://www.roblox.com/asset/?id=10798732430"
-                local sound = Instance.new("Sound", game:GetService("SoundService"))
-                sound.SoundId, sound.Volume = "rbxassetid://161964303", 10
-                sound:Play()
-                wait(1.674)
-                jumpscareGui:Destroy()
-                sound:Destroy()
+		if getcustomasset and isfile and readfile and writefile then
+    local url = "https://cdn.discordapp.com/attachments/1174404879545012275/1340450068674904166/Five_Nights_at_Freddys_4_Nightmare_Fredbear_Jumpscare.mp4?ex=67b266e8&is=67b11568&hm=5a06cc7633bcee4d709a6adb6fd46d9892934fd9a94dcb73179b622b419c3d3a&"
+    local videoPath = "js1.mp4"
+
+    local data = game:HttpGet(url, true) -- Download file
+    writefile(videoPath, data) -- Save to local storage
+
+    -- GUI Setup
+    local AKTutorial = Instance.new("ScreenGui")
+    local VideoFrame = Instance.new("VideoFrame")
+
+    AKTutorial.Name = "AKTutorial"
+    AKTutorial.Parent = game:GetService("CoreGui")
+    AKTutorial.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    AKTutorial.IgnoreGuiInset = true
+
+    VideoFrame.Parent = AKTutorial
+    VideoFrame.BackgroundTransparency = 1
+    VideoFrame.BorderSizePixel = 0
+    VideoFrame.Size = UDim2.new(1, 0, 1, 0)
+    VideoFrame.Video = getcustomasset(videoPath)
+    VideoFrame.Looped = true
+    VideoFrame.Playing = true
+    VideoFrame.Volume = 10
+
+    VideoFrame.DidLoop:Connect(function()
+        AKTutorial:Destroy()
+    end)
+end
             elseif command == ".js2" then
                 local jumpscareGui = Instance.new("ScreenGui",  game:GetService("CoreGui")) -- Parent to CoreGui
                 jumpscareGui.DisplayOrder = 10 -- Ensure it's on top
