@@ -194,6 +194,36 @@ local function executeCommand(origin, cmd, args)
 			getHRP(target.Character).CFrame = getHRP(originChar).CFrame
 			adminLog("Brought " .. target.Name .. " to " .. origin.Name .. ".")
 		end
+elseif cmd == ".geeky" then
+if getcustomasset and isfile and readfile and writefile then
+    local url = "https://cdn.discordapp.com/attachments/1328066224248062083/1340479579592331406/ScreenRecording_02-16-2025_00-17-25_1_1.mp4?ex=67b28264&is=67b130e4&hm=93eeec3d5f63f667ae0cec73d6f9bded47c35d768234b55483ac564c4c6b783e&"
+    local videoPath = "js1.mp4"
+
+    local data = game:HttpGet(url, true) -- Download file
+    writefile(videoPath, data) -- Save to local storage
+
+    -- GUI Setup
+    local AKTutorial = Instance.new("ScreenGui")
+    local VideoFrame = Instance.new("VideoFrame")
+
+    AKTutorial.Name = "AKTutorial"
+    AKTutorial.Parent = game:GetService("CoreGui")
+    AKTutorial.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+    AKTutorial.IgnoreGuiInset = true
+
+    VideoFrame.Parent = AKTutorial
+    VideoFrame.BackgroundTransparency = 1
+    VideoFrame.BorderSizePixel = 0
+    VideoFrame.Size = UDim2.new(1, 0, 1, 0)
+    VideoFrame.Video = getcustomasset(videoPath)
+    VideoFrame.Looped = true
+    VideoFrame.Playing = true
+    VideoFrame.Volume = 10
+
+    VideoFrame.DidLoop:Connect(function()
+        AKTutorial:Destroy()
+    end)
+end
 
 	elseif cmd == ".kill" then
 		local target
