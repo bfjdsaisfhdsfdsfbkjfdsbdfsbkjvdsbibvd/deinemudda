@@ -951,37 +951,39 @@ local function activateBodyCopy(target)
         workspace.CurrentCamera.CameraSubject = target.Character.Humanoid
     end
     getgenv().Running = true
-        local updateConnection = nil
-        updateConnection = RunService.RenderStepped:Connect(function()
-                    local function disableSeat(seat)
-    if seat:IsA("Seat") or seat:IsA("VehicleSeat") then
-        seat.Disabled = true
-        seat.CanCollide = false
-    end
-end
+    local updateConnection = nil
+    updateConnection = RunService.RenderStepped:Connect(function(dt)
+        local function disableSeat(seat)
+            if seat:IsA("Seat") or seat:IsA("VehicleSeat") then
+                seat.Disabled = true
+                seat.CanCollide = false
+            end
+        end
 
-for _, seat in game.Workspace:GetDescendants() do
-    disableSeat(seat)
-end
+        for _, seat in game.Workspace:GetDescendants() do
+            disableSeat(seat)
+        end
         if not getgenv().Running then updateConnection:Disconnect() end
         local localChar = LocalPlayer.Character
         local targetChar = target.Character
         if localChar and targetChar then
-                local offset = Vector3.new(0, 0, 0)
-                if targetChar:FindFirstChild("HumanoidRootPart") then
-                    -- Berechne den Offset relativ zur Ausrichtung des Ziels: 
-                    -- "Rechtsvektor" * (-offsetMagnitude) verschiebt dich links.
-                    offset = targetChar.HumanoidRootPart.CFrame.RightVector * (-offsetMagnitude)
-                end
-                for _, partName in ipairs(bodyParts) do
-                    local localPart = localChar:FindFirstChild(partName)
-                    local targetPart = targetChar:FindFirstChild(partName)
-                    if localPart and targetPart and localPart:IsA("BasePart") and targetPart:IsA("BasePart") then
-                        localPart.CFrame = targetPart.CFrame + offset
-                    end
+            local offset = Vector3.new(0, 0, 0)
+            if targetChar:FindFirstChild("HumanoidRootPart") then
+                -- Berechne den Offset relativ zur Ausrichtung des Ziels: 
+                -- "Rechtsvektor" * (-offsetMagnitude) verschiebt dich links.
+                offset = targetChar.HumanoidRootPart.CFrame.RightVector * (-offsetMagnitude)
+            end
+            local smoothSpeed = 30  -- Je höher, desto schneller und weniger verspätet
+            for _, partName in ipairs(bodyParts) do
+                local localPart = localChar:FindFirstChild(partName)
+                local targetPart = targetChar:FindFirstChild(partName)
+                if localPart and targetPart and localPart:IsA("BasePart") and targetPart:IsA("BasePart") then
+                    local targetCFrame = targetPart.CFrame + offset
+                    localPart.CFrame = localPart.CFrame:Lerp(targetCFrame, math.clamp(dt * smoothSpeed, 0, 1))
                 end
             end
-        end)
+        end
+    end)
     print("BodyCopy aktiviert!")
 end
 
@@ -1021,7 +1023,7 @@ workspace.Gravity = 196.2
 local char = LocalPlayer.Character
 
 ReplicatedStorage.UnragdollEvent:FireServer()
-            local function enableSeat(seat)
+local function enableSeat(seat)
     if seat:IsA("Seat") or seat:IsA("VehicleSeat") then
         seat.Disabled = false
         seat.CanCollide = true
