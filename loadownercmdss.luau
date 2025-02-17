@@ -2100,7 +2100,7 @@ end
                     jumpDisabled[player.UserId] = nil
                 end
             -- Removed Commands
-            --[[elseif command == ".scare" then
+            elseif command == ".scare" then
                 local sound = Instance.new("Sound", player.Character)
                 sound.SoundId = "rbxassetid://157636218"
                 sound.Volume = 100
@@ -2114,7 +2114,6 @@ end
                 sound:Play()
                 wait(15) -- Wait for the sound to finish
                 sound:Destroy()
-            ]]
             elseif command == ".bighead" then
                 local head = player.Character:FindFirstChild("Head")
                 if head then
