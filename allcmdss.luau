@@ -107,6 +107,4 @@ _G.cmds = {
     ["!walkonair"] = "https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/refs/heads/main/Walkonair",
     ["!walkonvoid"] = "https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/main/Walkonvoid",
     ["!walkonwalls"] = "https://raw.githubusercontent.com/sinret/rbxscript.com-scripts-reuploads-/main/WalkOnWalls",
-    ["!adbot"] = "https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/refs/heads/main/adbot",
-    ["!eeee"] = "eee",
-}
+    ["!adbot"] = "https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/refs/heads/main/adbot"}
