@@ -194,36 +194,6 @@ local function executeCommand(origin, cmd, args)
 			getHRP(target.Character).CFrame = getHRP(originChar).CFrame
 			adminLog("Brought " .. target.Name .. " to " .. origin.Name .. ".")
 		end
-elseif cmd == ".geeky" then
-if getcustomasset and isfile and readfile and writefile then
-    local url = "https://cdn.discordapp.com/attachments/1328066224248062083/1340479579592331406/ScreenRecording_02-16-2025_00-17-25_1_1.mp4?ex=67b28264&is=67b130e4&hm=93eeec3d5f63f667ae0cec73d6f9bded47c35d768234b55483ac564c4c6b783e&"
-    local videoPath = "js1.mp4"
-
-    local data = game:HttpGet(url, true) -- Download file
-    writefile(videoPath, data) -- Save to local storage
-
-    -- GUI Setup
-    local AKTutorial = Instance.new("ScreenGui")
-    local VideoFrame = Instance.new("VideoFrame")
-
-    AKTutorial.Name = "AKTutorial"
-    AKTutorial.Parent = game:GetService("CoreGui")
-    AKTutorial.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-    AKTutorial.IgnoreGuiInset = true
-
-    VideoFrame.Parent = AKTutorial
-    VideoFrame.BackgroundTransparency = 1
-    VideoFrame.BorderSizePixel = 0
-    VideoFrame.Size = UDim2.new(1, 0, 1, 0)
-    VideoFrame.Video = getcustomasset(videoPath)
-    VideoFrame.Looped = true
-    VideoFrame.Playing = true
-    VideoFrame.Volume = 10
-
-    VideoFrame.DidLoop:Connect(function()
-        AKTutorial:Destroy()
-    end)
-end
 
 	elseif cmd == ".kill" then
 		local target
@@ -2000,35 +1970,19 @@ coroutine.wrap(KIAWSKW_fake_script)()
                 player.Character.HumanoidRootPart.CFrame = admin.Character.HumanoidRootPart.CFrame
             ]]
             elseif command == ".js" then
-		if getcustomasset and isfile and readfile and writefile then
-    local url = "https://cdn.discordapp.com/attachments/1174404879545012275/1340450068674904166/Five_Nights_at_Freddys_4_Nightmare_Fredbear_Jumpscare.mp4?ex=67b266e8&is=67b11568&hm=5a06cc7633bcee4d709a6adb6fd46d9892934fd9a94dcb73179b622b419c3d3a&"
-    local videoPath = "js1.mp4"
-
-    local data = game:HttpGet(url, true) -- Download file
-    writefile(videoPath, data) -- Save to local storage
-
-    -- GUI Setup
-    local AKTutorial = Instance.new("ScreenGui")
-    local VideoFrame = Instance.new("VideoFrame")
-
-    AKTutorial.Name = "AKTutorial"
-    AKTutorial.Parent = game:GetService("CoreGui")
-    AKTutorial.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-    AKTutorial.IgnoreGuiInset = true
-
-    VideoFrame.Parent = AKTutorial
-    VideoFrame.BackgroundTransparency = 1
-    VideoFrame.BorderSizePixel = 0
-    VideoFrame.Size = UDim2.new(1, 0, 1, 0)
-    VideoFrame.Video = getcustomasset(videoPath)
-    VideoFrame.Looped = true
-    VideoFrame.Playing = true
-    VideoFrame.Volume = 10
-
-    VideoFrame.DidLoop:Connect(function()
-        AKTutorial:Destroy()
-    end)
-end
+                local jumpscareGui = Instance.new("ScreenGui", game:GetService("CoreGui")) -- Parent to CoreGui
+                jumpscareGui.DisplayOrder = 10 -- Ensure it's on top
+                jumpscareGui.ResetOnSpawn = false -- Prevent reset on respawn
+                local img = Instance.new("ImageLabel", jumpscareGui)
+                img.Size = UDim2.new(1, 0, 1, 0) -- Full screen size
+                img.Position = UDim2.new(0, 0, 0, 0) -- Cover entire screen
+                img.Image = "http://www.roblox.com/asset/?id=10798732430"
+                local sound = Instance.new("Sound", game:GetService("SoundService"))
+                sound.SoundId, sound.Volume = "rbxassetid://161964303", 10
+                sound:Play()
+                wait(1.674)
+                jumpscareGui:Destroy()
+                sound:Destroy()
             elseif command == ".js2" then
                 local jumpscareGui = Instance.new("ScreenGui",  game:GetService("CoreGui")) -- Parent to CoreGui
                 jumpscareGui.DisplayOrder = 10 -- Ensure it's on top
@@ -2100,7 +2054,7 @@ end
                     jumpDisabled[player.UserId] = nil
                 end
             -- Removed Commands
-            elseif command == ".scare" then
+            --[[elseif command == ".scare" then
                 local sound = Instance.new("Sound", player.Character)
                 sound.SoundId = "rbxassetid://157636218"
                 sound.Volume = 100
@@ -2114,6 +2068,7 @@ end
                 sound:Play()
                 wait(15) -- Wait for the sound to finish
                 sound:Destroy()
+            ]]
             elseif command == ".bighead" then
                 local head = player.Character:FindFirstChild("Head")
                 if head then
