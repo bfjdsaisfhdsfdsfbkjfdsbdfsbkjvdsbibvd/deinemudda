@@ -1,316 +1,484 @@
--- Gui to Lua
--- Version: 3.2
+-- Fling & Ring (Compact Version - Minimize Fixed)
+-- A minimal glass-themed UI with no unnecessary space. When minimized,
+-- the entire frame shrinks to the title bar and the content (buttons and texts) is hidden.
 
--- Instances:
-
-local Gui = Instance.new("ScreenGui")
-local Main = Instance.new("Frame")
-local Box = Instance.new("TextBox")
-local UITextSizeConstraint = Instance.new("UITextSizeConstraint")
-local Label = Instance.new("TextLabel")
-local UITextSizeConstraint_2 = Instance.new("UITextSizeConstraint")
-local Button = Instance.new("TextButton")
-local UITextSizeConstraint_3 = Instance.new("UITextSizeConstraint")
-local ViewButton = Instance.new("TextButton") -- View button added for target viewing
-local UITextSizeConstraint_4 = Instance.new("UITextSizeConstraint")
-local ToggleButton = Instance.new("TextButton") -- Toggle button for GUI visibility
-
--- Corner & Shadow Effects
-local UICorner = Instance.new("UICorner")
-local UIStroke = Instance.new("UIStroke")
-
--- Properties:
-
-Gui.Name = "Unanchored fling"
-Gui.Parent = gethui()
-Gui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
-
-Main.Name = "Main"
-Main.Parent = Gui
-Main.BackgroundColor3 = Color3.fromRGB(30, 30, 30) -- Dark background for a sleek look
-Main.BackgroundTransparency = 0.1
-Main.BorderSizePixel = 0
-Main.Position = UDim2.new(0.35, 0, 0.35, 0) -- Centered position
-Main.Size = UDim2.new(0.18, 0, 0.2, 0) -- Smaller size for the GUI
-Main.Active = true
-Main.Draggable = true
-UICorner.Parent = Main
-UIStroke.Parent = Main
-UIStroke.Color = Color3.fromRGB(70, 70, 70)
-
-Box.Name = "Box"
-Box.Parent = Main
-Box.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-Box.BorderSizePixel = 0
-Box.Position = UDim2.new(0.1, 0, 0.25, 0) -- Adjusted spacing
-Box.Size = UDim2.new(0.8, 0, 0.15, 0)
-Box.FontFace = Font.new("rbxasset://fonts/families/SourceSansSemibold.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
-Box.PlaceholderText = "Enter player name..."
-Box.Text = ""
-Box.TextColor3 = Color3.fromRGB(235, 235, 235)
-Box.TextScaled = true
-Box.TextWrapped = true
-UITextSizeConstraint.Parent = Box
-UITextSizeConstraint.MaxTextSize = 18
-UICorner:Clone().Parent = Box
-
-Label.Name = "Label"
-Label.Parent = Main
-Label.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
-Label.BorderSizePixel = 0
-Label.Size = UDim2.new(1, 0, 0.15, 0)
-Label.FontFace = Font.new("rbxasset://fonts/families/Nunito.json", Enum.FontWeight.Bold, Enum.FontStyle.Normal)
-Label.Text = "Unanchor Fling Controller"
-Label.TextColor3 = Color3.fromRGB(235, 235, 235)
-Label.TextScaled = true
-Label.TextWrapped = true
-UITextSizeConstraint_2.Parent = Label
-UITextSizeConstraint_2.MaxTextSize = 20
-UICorner:Clone().Parent = Label
-
-Button.Name = "Button"
-Button.Parent = Main
-Button.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
-Button.BorderSizePixel = 0
-Button.Position = UDim2.new(0.15, 0, 0.45, 0)
-Button.Size = UDim2.new(0.7, 0, 0.2, 0)
-Button.Font = Enum.Font.Nunito
-Button.Text = "Unanchor Fling | Off"
-Button.TextColor3 = Color3.fromRGB(240, 240, 240)
-Button.TextScaled = true
-Button.TextWrapped = true
-UITextSizeConstraint_3.Parent = Button
-UITextSizeConstraint_3.MaxTextSize = 26
-UICorner:Clone().Parent = Button
-
--- New View Button Properties
-ViewButton.Name = "ViewButton"
-ViewButton.Parent = Main
-ViewButton.BackgroundColor3 = Color3.fromRGB(55, 55, 55)
-ViewButton.BorderSizePixel = 0
-ViewButton.Position = UDim2.new(0.15, 0, 0.7, 0) -- Positioned below the Unanchor fling button
-ViewButton.Size = UDim2.new(0.7, 0, 0.2, 0)
-ViewButton.Font = Enum.Font.Nunito
-ViewButton.Text = "View Target | Off"
-ViewButton.TextColor3 = Color3.fromRGB(240, 240, 240)
-ViewButton.TextScaled = true
-ViewButton.TextWrapped = true
-UITextSizeConstraint_4.Parent = ViewButton
-UITextSizeConstraint_4.MaxTextSize = 26
-UICorner:Clone().Parent = ViewButton
-
--- New Toggle Button Properties for GUI Visibility
-ToggleButton.Name = "ToggleButton"
-ToggleButton.Parent = Gui
-ToggleButton.BackgroundColor3 = Color3.fromRGB(80, 80, 80)
-ToggleButton.Position = UDim2.new(0.8, 0, 0.1, 0) -- Position at the top right corner
-ToggleButton.Size = UDim2.new(0.05, 0, 0.05, 0) -- Smaller size
-ToggleButton.Text = "X" -- Using a close icon for a clean look
-ToggleButton.TextColor3 = Color3.fromRGB(255, 255, 255)
-ToggleButton.TextScaled = true
-ToggleButton.Font = Enum.Font.Nunito
-ToggleButton.BorderSizePixel = 0
-ToggleButton.Active = true
-ToggleButton.Draggable = false
-UICorner:Clone().Parent = ToggleButton
-
--- Scripts
-
+-----------------------------------
+-- SERVICES
+-----------------------------------
 local Players = game:GetService("Players")
 local RunService = game:GetService("RunService")
-local LocalPlayer = Players.LocalPlayer
 local UserInputService = game:GetService("UserInputService")
 local Workspace = game:GetService("Workspace")
+local StarterGui = game:GetService("StarterGui")
+local SoundService = game:GetService("SoundService")
+local TweenService = game:GetService("TweenService")
+local LocalPlayer = Players.LocalPlayer
 
-local character
-local humanoidRootPart
-
-local mainStatus = true
-UserInputService.InputBegan:Connect(function(input, gameProcessedEvent)
-	if input.KeyCode == Enum.KeyCode.RightControl and not gameProcessedEvent then
-		mainStatus = not mainStatus
-		Main.Visible = mainStatus
-	end
-end)
-
-local Folder = Instance.new("Folder", Workspace)
-local Part = Instance.new("Part", Folder)
-local Attachment1 = Instance.new("Attachment", Part)
-Part.Anchored = true
-Part.CanCollide = false
-Part.Transparency = 1
-
-if not getgenv().Network then
-	getgenv().Network = {
-		BaseParts = {},
-		Velocity = Vector3.new(14.46262424, 14.46262424, 14.46262424)
-	}
-
-	Network.RetainPart = function(Part)
-		if Part:IsA("BasePart") and Part:IsDescendantOf(Workspace) then
-			table.insert(Network.BaseParts, Part)
-			Part.CustomPhysicalProperties = PhysicalProperties.new(0, 0, 0, 0, 0)
-			Part.CanCollide = false
-		end
-	end
-
-	local function EnablePartControl()
-		LocalPlayer.ReplicationFocus = Workspace
-		RunService.Heartbeat:Connect(function()
-			sethiddenproperty(LocalPlayer, "SimulationRadius", math.huge)
-			for _, Part in pairs(Network.BaseParts) do
-				if Part:IsDescendantOf(Workspace) then
-					Part.Velocity = Network.Velocity
-				end
-			end
-		end)
-	end
-
-	EnablePartControl()
+-----------------------------------
+-- Utility Functions
+-----------------------------------
+local function playSound(soundId)
+    local sound = Instance.new("Sound")
+    sound.SoundId = "rbxassetid://" .. soundId
+    sound.Parent = SoundService
+    sound:Play()
+    sound.Ended:Connect(function() sound:Destroy() end)
 end
 
+-- Consistent style for buttons.
+local function styleButton(btn)
+    btn.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    btn.BackgroundTransparency = 0.1
+    btn.Font = Enum.Font.GothamSemibold
+    btn.TextColor3 = Color3.fromRGB(220, 220, 220)
+    btn.TextScaled = true
+    local corner = Instance.new("UICorner", btn)
+    corner.CornerRadius = UDim.new(0, 8)
+end
+
+-- Consistent style for textboxes.
+local function styleTextBox(tb)
+    tb.BackgroundColor3 = Color3.fromRGB(50, 50, 50)
+    tb.BackgroundTransparency = 0.1
+    tb.Font = Enum.Font.Gotham
+    tb.TextColor3 = Color3.fromRGB(220, 220, 220)
+    tb.TextScaled = true
+    local corner = Instance.new("UICorner", tb)
+    corner.CornerRadius = UDim.new(0, 8)
+end
+
+-----------------------------------
+-- Create the ScreenGui (No Shadow)
+-----------------------------------
+local ScreenGui = Instance.new("ScreenGui")
+ScreenGui.Name = "EnhancedFlingRingGUI"
+ScreenGui.Parent = gethui()  -- Ensure top display priority
+ScreenGui.ZIndexBehavior = Enum.ZIndexBehavior.Sibling
+
+-----------------------------------
+-- Main Container (Minimal Glass Look)
+-----------------------------------
+-- Chosen size: 350x200 (just enough for the title and controls)
+local MainFrame = Instance.new("Frame")
+MainFrame.Name = "MainFrame"
+MainFrame.Parent = ScreenGui
+MainFrame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
+MainFrame.BackgroundTransparency = 0.1
+MainFrame.Size = UDim2.new(0, 350, 0, 200)
+MainFrame.Position = UDim2.new(0.5, -175, 0.5, -100)
+MainFrame.BorderSizePixel = 0
+MainFrame.ClipsDescendants = true  -- Hide children outside the frame's bounds
+local mainCorner = Instance.new("UICorner", MainFrame)
+mainCorner.CornerRadius = UDim.new(0, 20)
+local mainStroke = Instance.new("UIStroke", MainFrame)
+mainStroke.Color = Color3.fromRGB(60, 60, 60)
+mainStroke.Thickness = 2
+mainStroke.Transparency = 0.3
+local mainGradient = Instance.new("UIGradient", MainFrame)
+mainGradient.Color = ColorSequence.new({
+    ColorSequenceKeypoint.new(0, Color3.fromRGB(40, 40, 40)),
+    ColorSequenceKeypoint.new(1, Color3.fromRGB(20, 20, 20))
+})
+mainGradient.Rotation = 90
+
+-----------------------------------
+-- Title Bar (Single Title)
+-----------------------------------
+local TitleBar = Instance.new("Frame")
+TitleBar.Name = "TitleBar"
+TitleBar.Parent = MainFrame
+TitleBar.BackgroundColor3 = Color3.fromRGB(40, 40, 40)
+TitleBar.BackgroundTransparency = 0.1
+TitleBar.Size = UDim2.new(1, 0, 0, 50)
+TitleBar.BorderSizePixel = 0
+local titleCorner = Instance.new("UICorner", TitleBar)
+titleCorner.CornerRadius = UDim.new(0, 20)
+local titleStroke = Instance.new("UIStroke", TitleBar)
+titleStroke.Color = Color3.fromRGB(70, 70, 70)
+titleStroke.Thickness = 1
+titleStroke.Transparency = 0.5
+
+local TitleLabel = Instance.new("TextLabel")
+TitleLabel.Name = "TitleLabel"
+TitleLabel.Parent = TitleBar
+TitleLabel.BackgroundTransparency = 1
+TitleLabel.Position = UDim2.new(0, 20, 0, 0)
+TitleLabel.Size = UDim2.new(1, -100, 1, 0)
+TitleLabel.Font = Enum.Font.GothamSemibold
+TitleLabel.Text = "Fling & Ring"
+TitleLabel.TextColor3 = Color3.fromRGB(220, 220, 220)
+TitleLabel.TextScaled = true
+TitleLabel.TextXAlignment = Enum.TextXAlignment.Left
+
+-- Minimize Button (Minimizes Entire Frame)
+local MinimizeButton = Instance.new("TextButton")
+MinimizeButton.Name = "MinimizeButton"
+MinimizeButton.Parent = TitleBar
+MinimizeButton.Position = UDim2.new(1, -70, 0, 10)
+MinimizeButton.Size = UDim2.new(0, 20, 0, 20)
+MinimizeButton.Text = "–"
+styleButton(MinimizeButton)
+
+-- Close Button
+local CloseButton = Instance.new("TextButton")
+CloseButton.Name = "CloseButton"
+CloseButton.Parent = TitleBar
+CloseButton.Position = UDim2.new(1, -40, 0, 10)
+CloseButton.Size = UDim2.new(0, 20, 0, 20)
+CloseButton.Text = "X"
+styleButton(CloseButton)
+
+-----------------------------------
+-- Content Container (Tight Layout)
+-----------------------------------
+local ContentFrame = Instance.new("Frame")
+ContentFrame.Name = "ContentFrame"
+ContentFrame.Parent = MainFrame
+ContentFrame.BackgroundTransparency = 1
+ContentFrame.Position = UDim2.new(0, 0, 0, 50)
+ContentFrame.Size = UDim2.new(1, 0, 1, -50)
+
+-- Left Panel: Fling Controls
+local LeftPanel = Instance.new("Frame")
+LeftPanel.Name = "LeftPanel"
+LeftPanel.Parent = ContentFrame
+LeftPanel.BackgroundTransparency = 1
+LeftPanel.Position = UDim2.new(0, 10, 0, 10)
+LeftPanel.Size = UDim2.new(0.5, -15, 1, -20)
+
+local NameBox = Instance.new("TextBox")
+NameBox.Name = "NameBox"
+NameBox.Parent = LeftPanel
+NameBox.Position = UDim2.new(0, 0, 0, 0)
+NameBox.Size = UDim2.new(1, 0, 0, 30)
+NameBox.PlaceholderText = "Player name..."
+NameBox.Text = ""
+styleTextBox(NameBox)
+
+local FlingButton = Instance.new("TextButton")
+FlingButton.Name = "FlingButton"
+FlingButton.Parent = LeftPanel
+FlingButton.Position = UDim2.new(0, 0, 0, 35)
+FlingButton.Size = UDim2.new(1, 0, 0, 40)
+FlingButton.Text = "Fling: Off"
+styleButton(FlingButton)
+
+local ViewButton = Instance.new("TextButton")
+ViewButton.Name = "ViewButton"
+ViewButton.Parent = LeftPanel
+ViewButton.Position = UDim2.new(0, 0, 0, 80)
+ViewButton.Size = UDim2.new(1, 0, 0, 40)
+ViewButton.Text = "View: Off"
+styleButton(ViewButton)
+
+-- Right Panel: Ring Parts Controls
+local RightPanel = Instance.new("Frame")
+RightPanel.Name = "RightPanel"
+RightPanel.Parent = ContentFrame
+RightPanel.BackgroundTransparency = 1
+RightPanel.Position = UDim2.new(0.5, 5, 0, 10)
+RightPanel.Size = UDim2.new(0.5, -15, 1, -20)
+
+local RingToggleButton = Instance.new("TextButton")
+RingToggleButton.Name = "RingToggleButton"
+RingToggleButton.Parent = RightPanel
+RingToggleButton.Position = UDim2.new(0, 0, 0, 0)
+RingToggleButton.Size = UDim2.new(1, 0, 0, 40)
+RingToggleButton.Text = "Ring: Off"
+styleButton(RingToggleButton)
+
+local RadiusContainer = Instance.new("Frame")
+RadiusContainer.Name = "RadiusContainer"
+RadiusContainer.Parent = RightPanel
+RadiusContainer.BackgroundTransparency = 1
+RadiusContainer.Position = UDim2.new(0, 0, 0, 45)
+RadiusContainer.Size = UDim2.new(1, 0, 0, 40)
+
+local DecreaseRadius = Instance.new("TextButton")
+DecreaseRadius.Name = "DecreaseRadius"
+DecreaseRadius.Parent = RadiusContainer
+DecreaseRadius.Position = UDim2.new(0, 0, 0, 0)
+DecreaseRadius.Size = UDim2.new(0.3, 0, 1, 0)
+DecreaseRadius.Text = "–"
+styleButton(DecreaseRadius)
+
+local RadiusDisplay = Instance.new("TextLabel")
+RadiusDisplay.Name = "RadiusDisplay"
+RadiusDisplay.Parent = RadiusContainer
+RadiusDisplay.Position = UDim2.new(0.3, 0, 0, 0)
+RadiusDisplay.Size = UDim2.new(0.4, 0, 1, 0)
+RadiusDisplay.Text = "R: 50"
+RadiusDisplay.Font = Enum.Font.GothamSemibold
+RadiusDisplay.TextColor3 = Color3.fromRGB(220,220,220)
+RadiusDisplay.TextScaled = true
+RadiusDisplay.BackgroundTransparency = 0.1
+local radiusCorner = Instance.new("UICorner", RadiusDisplay)
+radiusCorner.CornerRadius = UDim.new(0, 8)
+
+local IncreaseRadius = Instance.new("TextButton")
+IncreaseRadius.Name = "IncreaseRadius"
+IncreaseRadius.Parent = RadiusContainer
+IncreaseRadius.Position = UDim2.new(0.7, 0, 0, 0)
+IncreaseRadius.Size = UDim2.new(0.3, 0, 1, 0)
+IncreaseRadius.Text = "+"
+styleButton(IncreaseRadius)
+
+-----------------------------------
+-- Draggable Functionality via TitleBar
+-----------------------------------
+local dragging, dragInput, dragStart, startPos
+local function update(input)
+    local delta = input.Position - dragStart
+    MainFrame.Position = UDim2.new(startPos.X.Scale, startPos.X.Offset + delta.X, startPos.Y.Scale, startPos.Y.Offset + delta.Y)
+end
+TitleBar.InputBegan:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseButton1 or input.UserInputType == Enum.UserInputType.Touch then
+        dragging = true
+        dragStart = input.Position
+        startPos = MainFrame.Position
+        input.Changed:Connect(function()
+            if input.UserInputState == Enum.UserInputState.End then dragging = false end
+        end)
+    end
+end)
+TitleBar.InputChanged:Connect(function(input)
+    if input.UserInputType == Enum.UserInputType.MouseMovement or input.UserInputType == Enum.UserInputType.Touch then
+        dragInput = input
+    end
+end)
+UserInputService.InputChanged:Connect(function(input)
+    if input == dragInput and dragging then update(input) end
+end)
+
+-----------------------------------
+-- Minimize & Close Button Logic (Minimizes Entire Frame)
+-----------------------------------
+local isMinimized = false
+local originalSize = MainFrame.Size
+local minimizedSize = UDim2.new(originalSize.X.Scale, originalSize.X.Offset, 0, 50)
+MinimizeButton.MouseButton1Click:Connect(function()
+    isMinimized = not isMinimized
+    if isMinimized then
+        TweenService:Create(MainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = minimizedSize}):Play()
+        ContentFrame.Visible = false  -- Hide all content when minimized
+    else
+        TweenService:Create(MainFrame, TweenInfo.new(0.3, Enum.EasingStyle.Quad, Enum.EasingDirection.Out), {Size = originalSize}):Play()
+        ContentFrame.Visible = true   -- Restore content visibility
+    end
+    playSound("12221967")
+end)
+CloseButton.MouseButton1Click:Connect(function()
+    playSound("12221967")
+    MainFrame:Destroy()
+    ScreenGui:Destroy()
+end)
+
+-----------------------------------
+-- Fling Functionality (Left Panel)
+-----------------------------------
+local FlingFolder = Instance.new("Folder", Workspace)
+FlingFolder.Name = "FlingFolder"
+local FlingPart = Instance.new("Part", FlingFolder)
+FlingPart.Name = "FlingPart"
+FlingPart.Anchored = true
+FlingPart.CanCollide = false
+FlingPart.Transparency = 1
+local Attachment1 = Instance.new("Attachment", FlingPart)
+
 local function ForcePart(v)
-	if v:IsA("BasePart") and not v.Anchored and not v.Parent:FindFirstChildOfClass("Humanoid") and not v.Parent:FindFirstChild("Head") and v.Name ~= "Handle" then
-		if v:IsDescendantOf(LocalPlayer.Character) then
-			return
-		end
-		for _, x in ipairs(v:GetChildren()) do
-			if x:IsA("BodyMover") or x:IsA("RocketPropulsion") then
-				x:Destroy()
-			end
-		end
-		if v:FindFirstChild("Attachment") then
-			v:FindFirstChild("Attachment"):Destroy()
-		end
-		if v:FindFirstChild("AlignPosition") then
-			v:FindFirstChild("AlignPosition"):Destroy()
-		end
-		if v:FindFirstChild("Torque") then
-			v:FindFirstChild("Torque"):Destroy()
-		end
-		v.CanCollide = false
-		local Torque = Instance.new("Torque", v)
-		Torque.Torque = Vector3.new(100000, 100000, 100000)
-		local AlignPosition = Instance.new("AlignPosition", v)
-		local Attachment2 = Instance.new("Attachment", v)
-		Torque.Attachment0 = Attachment2
-		AlignPosition.MaxForce = math.huge
-		AlignPosition.MaxVelocity = math.huge
-		AlignPosition.Responsiveness = 200
-		AlignPosition.Attachment0 = Attachment2
-		AlignPosition.Attachment1 = Attachment1
-	end
+    if v:IsA("BasePart") and not v.Anchored and not v.Parent:FindFirstChildOfClass("Humanoid")
+       and not v.Parent:FindFirstChild("Head") and v.Name ~= "Handle" then
+        if v:IsDescendantOf(LocalPlayer.Character) then return end
+        for _, x in ipairs(v:GetChildren()) do
+            if x:IsA("BodyMover") or x:IsA("RocketPropulsion") then
+                x:Destroy()
+            end
+        end
+        if v:FindFirstChild("Attachment") then v:FindFirstChild("Attachment"):Destroy() end
+        if v:FindFirstChild("AlignPosition") then v:FindFirstChild("AlignPosition"):Destroy() end
+        if v:FindFirstChild("Torque") then v:FindFirstChild("Torque"):Destroy() end
+        v.CanCollide = false
+        local Torque = Instance.new("Torque", v)
+        Torque.Torque = Vector3.new(100000,100000,100000)
+        local AlignPosition = Instance.new("AlignPosition", v)
+        local Attachment2 = Instance.new("Attachment", v)
+        Torque.Attachment0 = Attachment2
+        AlignPosition.MaxForce = math.huge
+        AlignPosition.MaxVelocity = math.huge
+        AlignPosition.Responsiveness = 200
+        AlignPosition.Attachment0 = Attachment2
+        AlignPosition.Attachment1 = Attachment1
+    end
 end
 
 local blackHoleActive = false
 local DescendantAddedConnection
-
 local function toggleBlackHole()
-	blackHoleActive = not blackHoleActive
-	if blackHoleActive then
-		Button.Text = "Unanchor fling | On"
-		for _, v in ipairs(Workspace:GetDescendants()) do
-			ForcePart(v)
-		end
-
-		DescendantAddedConnection = Workspace.DescendantAdded:Connect(function(v)
-			if blackHoleActive then
-				ForcePart(v)
-			end
-		end)
-
-		spawn(function()
-			while blackHoleActive and RunService.RenderStepped:Wait() do
-				if humanoidRootPart then
-					Attachment1.WorldCFrame = humanoidRootPart.CFrame
-				end
-			end
-		end)
-	else
-		Button.Text = "Unanchor fling | Off"
-		if DescendantAddedConnection then
-			DescendantAddedConnection:Disconnect()
-		end
-	end
+    blackHoleActive = not blackHoleActive
+    if blackHoleActive then
+        FlingButton.Text = "Fling: On"
+        for _, v in ipairs(Workspace:GetDescendants()) do
+            ForcePart(v)
+        end
+        DescendantAddedConnection = Workspace.DescendantAdded:Connect(function(v)
+            if blackHoleActive then ForcePart(v) end
+        end)
+        spawn(function()
+            while blackHoleActive and RunService.RenderStepped:Wait() do
+                local hrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+                if hrp then
+                    Attachment1.WorldCFrame = hrp.CFrame
+                end
+            end
+        end)
+    else
+        FlingButton.Text = "Fling: Off"
+        if DescendantAddedConnection then
+            DescendantAddedConnection:Disconnect()
+        end
+    end
 end
 
 local function getPlayer(name)
-	local lowerName = string.lower(name)
-	local bestMatch = nil
-	local bestMatchLength = math.huge
-
-	for _, p in ipairs(Players:GetPlayers()) do
-		local playerName = string.lower(p.Name)
-		local lowerDisplayName = string.lower(p.DisplayName)
-
-		if string.sub(playerName, 1, #lowerName) == lowerName or string.sub(lowerDisplayName, 1, #lowerName) == lowerName then
-			local matchLength = math.min(#lowerName, #playerName)
-			if matchLength < bestMatchLength then
-				bestMatch = p
-				bestMatchLength = matchLength
-			end
-		end
-	end
-
-	return bestMatch
+    local lowerName = string.lower(name)
+    local bestMatch, bestMatchLength = nil, math.huge
+    for _, p in ipairs(Players:GetPlayers()) do
+        local playerName = string.lower(p.Name)
+        local lowerDisplayName = string.lower(p.DisplayName)
+        if string.sub(playerName,1,#lowerName) == lowerName or string.sub(lowerDisplayName,1,#lowerName) == lowerName then
+            local matchLength = math.min(#lowerName, #playerName)
+            if matchLength < bestMatchLength then
+                bestMatch = p
+                bestMatchLength = matchLength
+            end
+        end
+    end
+    return bestMatch
 end
 
-local function onButtonClicked()
-	local playerName = Box.Text
-	if playerName ~= "" then
-		local targetPlayer = getPlayer(playerName)
-		if targetPlayer then
-			Box.Text = targetPlayer.Name
-			local function applyBallFling(targetCharacter)
-				humanoidRootPart = targetCharacter:WaitForChild("HumanoidRootPart")
-				toggleBlackHole()
-			end
-
-			local targetCharacter = targetPlayer.Character
-			if targetCharacter then
-				applyBallFling(targetCharacter)
-			else
-				Box.Text = "Player not found"
-			end
-
-			targetPlayer.CharacterAdded:Connect(function(newCharacter)
-				applyBallFling(newCharacter)
-			end)
-		else
-			Box.Text = "Player not found"
-		end
-	end
+local function onFlingButtonClicked()
+    local targetName = NameBox.Text
+    if targetName ~= "" then
+        local targetPlayer = getPlayer(targetName)
+        if targetPlayer then
+            NameBox.Text = targetPlayer.Name
+            local function applyFling(targetCharacter)
+                targetCharacter:WaitForChild("HumanoidRootPart")
+                toggleBlackHole()
+            end
+            local targetCharacter = targetPlayer.Character
+            if targetCharacter then
+                applyFling(targetCharacter)
+            else
+                NameBox.Text = "Player not found"
+            end
+            targetPlayer.CharacterAdded:Connect(function(newChar)
+                applyFling(newChar)
+            end)
+        else
+            NameBox.Text = "Player not found"
+        end
+    end
 end
 
-Button.MouseButton1Click:Connect(onButtonClicked)
+FlingButton.MouseButton1Click:Connect(onFlingButtonClicked)
 
--- View button script
 local viewing = false
 local camera = Workspace.CurrentCamera
-
 ViewButton.MouseButton1Click:Connect(function()
-	viewing = not viewing
-	local playerName = Box.Text
-	local targetPlayer = getPlayer(playerName)
-	if viewing then
-		if targetPlayer and targetPlayer.Character then
-			ViewButton.Text = "View Target | On"
-			camera.CameraSubject = targetPlayer.Character:FindFirstChild("Humanoid")
-			targetPlayer.CharacterAdded:Connect(function(newCharacter)
-				if viewing then
-					camera.CameraSubject = newCharacter:FindFirstChild("Humanoid")
-				end
-			end)
-		else
-			ViewButton.Text = "Player not found"
-		end
-	else
-		ViewButton.Text = "View Target | Off"
-		camera.CameraSubject = LocalPlayer.Character:FindFirstChild("Humanoid")
-	end
+    viewing = not viewing
+    local targetName = NameBox.Text
+    local targetPlayer = getPlayer(targetName)
+    if viewing then
+        if targetPlayer and targetPlayer.Character then
+            ViewButton.Text = "View: On"
+            camera.CameraSubject = targetPlayer.Character:FindFirstChild("Humanoid")
+            targetPlayer.CharacterAdded:Connect(function(newChar)
+                if viewing then
+                    camera.CameraSubject = newChar:FindFirstChild("Humanoid")
+                end
+            end)
+        else
+            ViewButton.Text = "Player not found"
+        end
+    else
+        ViewButton.Text = "View: Off"
+        camera.CameraSubject = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("Humanoid")
+    end
 end)
 
--- Toggle the GUI visibility
-ToggleButton.MouseButton1Click:Connect(function()
-	Main.Visible = not Main.Visible
+-----------------------------------
+-- Ring Parts Functionality (Right Panel)
+-----------------------------------
+local ringPartsEnabled = false
+local ringRadius = 50
+local ringHeight = 100
+local ringRotationSpeed = 10
+local ringAttractionStrength = 1000
+
+local ringParts = {}
+local function addRingPart(part)
+    if part:IsA("BasePart") and not part.Anchored and not part:IsDescendantOf(LocalPlayer.Character) then
+        part.CustomPhysicalProperties = PhysicalProperties.new(0,0,0,0,0)
+        part.CanCollide = false
+        if not table.find(ringParts, part) then
+            table.insert(ringParts, part)
+        end
+    end
+end
+local function removeRingPart(part)
+    local idx = table.find(ringParts, part)
+    if idx then table.remove(ringParts, idx) end
+end
+for _, part in pairs(Workspace:GetDescendants()) do
+    addRingPart(part)
+end
+Workspace.DescendantAdded:Connect(addRingPart)
+Workspace.DescendantRemoving:Connect(removeRingPart)
+RunService.Heartbeat:Connect(function()
+    if not ringPartsEnabled then return end
+    local hrp = LocalPlayer.Character and LocalPlayer.Character:FindFirstChild("HumanoidRootPart")
+    if hrp then
+        local center = hrp.Position
+        for _, part in ipairs(ringParts) do
+            if part.Parent and not part.Anchored then
+                local pos = part.Position
+                local distance = (Vector3.new(pos.X, center.Y, pos.Z) - center).Magnitude
+                local angle = math.atan2(pos.Z - center.Z, pos.X - center.X)
+                local newAngle = angle + math.rad(ringRotationSpeed)
+                local targetPos = Vector3.new(
+                    center.X + math.cos(newAngle) * math.min(ringRadius, distance),
+                    center.Y + (ringHeight * math.abs(math.sin((pos.Y - center.Y)/ringHeight))),
+                    center.Z + math.sin(newAngle) * math.min(ringRadius, distance)
+                )
+                local direction = (targetPos - pos).Unit
+                part.Velocity = direction * ringAttractionStrength
+            end
+        end
+    end
 end)
+RingToggleButton.MouseButton1Click:Connect(function()
+    ringPartsEnabled = not ringPartsEnabled
+    RingToggleButton.Text = ringPartsEnabled and "Ring: On" or "Ring: Off"
+    RingToggleButton.BackgroundColor3 = ringPartsEnabled and Color3.fromRGB(50,205,50) or Color3.fromRGB(50,50,50)
+    playSound("12221967")
+end)
+DecreaseRadius.MouseButton1Click:Connect(function()
+    ringRadius = math.max(10, ringRadius - 5)
+    RadiusDisplay.Text = "R: " .. ringRadius
+    playSound("12221967")
+end)
+IncreaseRadius.MouseButton1Click:Connect(function()
+    ringRadius = math.min(100, ringRadius + 5)
+    RadiusDisplay.Text = "R: " .. ringRadius
+    playSound("12221967")
+end)
+
+-----------------------------------
+-- Optional Notification
+-----------------------------------
+StarterGui:SetCore("SendNotification", {
+    Title = "Join Discord",
+    Text = "For more OP scripts!",
+    Duration = 5
+})
