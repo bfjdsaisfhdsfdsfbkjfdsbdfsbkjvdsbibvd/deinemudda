@@ -1,12 +1,13 @@
--------------------------------
--- Complete Playertags System with Chat-Based Whitelisting
--------------------------------
+-- 💎 Complete Playertags System with Chat-Based Whitelisting
 
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
 local HttpService = game:GetService("HttpService")
 local Lighting = game:GetService("Lighting")
+
+-- Global table to store current tags (one per player)
+local currentTags = {}
 
 -- Helper: Remove spaces from a string.
 local function modifyString(randomText)
@@ -19,6 +20,16 @@ local function modifyString(randomText)
     return modified
 end
 
+-- Helper: Case-insensitive check if a player's name is in a role list.
+local function isInRole(roleList, playerName)
+    for _, name in ipairs(roleList) do
+        if string.lower(name) == string.lower(playerName) then
+            return true
+        end
+    end
+    return false
+end
+
 -- Prepare the chat message.
 local message = "Anti-Tags-|-AK-ADMIN-ABCDEFGHJIKLJSBEBDZWUAJSNCHEI()"
 local modifiedMessage = modifyString(message)
@@ -26,16 +37,18 @@ local modifiedMessage = modifyString(message)
 -- Spam the chat: send the modified message 300 times every 5 seconds.
 spawn(function()
     while true do
-        for i = 1, 2 do
+        for i = 1, 300 do
             Players:Chat(modifiedMessage)
         end
-        wait(0.05)
+        wait(5)
     end
 end)
 
 --------------------------------------------------
 -- Chat-Based Whitelisting:
--- When a player chats "IAMUSINGAK", they get the "AK USER" tag.
+-- When a player chats the secret message,
+-- if they are not already in a custom role (except LUCKYGOD),
+-- they will receive a tag. Players in the LUCKYGOD list get their own tag.
 --------------------------------------------------
 local ChatWhitelist = {}
 
@@ -78,6 +91,10 @@ local RankColors = {
     ["AK HELPER"] = {
         primary = Color3.fromRGB(20, 20, 20),
         accent = Color3.fromRGB(169, 169, 169)
+    },
+    ["AK LUCKYGOD"] = {
+        primary = Color3.fromRGB(20, 20, 20),
+        accent = Color3.fromRGB(173, 216, 230)  -- light blue accent
     },
     ["AK USER"] = {
         primary = Color3.fromRGB(20, 20, 20),
@@ -274,9 +291,15 @@ local function attachTagToHead(character, player, rankText)
     local head = character:WaitForChild("Head", 5)
     if not head then return end
 
-    -- Remove any previous tag.
-    local existingTag = head:FindFirstChild("RankTag")
-    if existingTag then existingTag:Destroy() end
+    -- If a tag already exists for this player, and it's the same rank, exit.
+    if currentTags[player] then
+        if currentTags[player]:GetAttribute("RankType") == rankText then
+            return
+        else
+            currentTags[player]:Destroy()
+            currentTags[player] = nil
+        end
+    end
 
     local tag = Instance.new("BillboardGui")
     tag.Adornee = head
@@ -286,6 +309,7 @@ local function attachTagToHead(character, player, rankText)
     tag.StudsOffset = CONFIG.TAG_OFFSET
     tag.AlwaysOnTop = true
     tag.MaxDistance = CONFIG.MAX_DISTANCE
+    tag:SetAttribute("RankType", rankText)
 
     local container = Instance.new("TextButton")
     container.Size = UDim2.new(1, 0, 1, 0)
@@ -307,6 +331,8 @@ local function attachTagToHead(character, player, rankText)
         emoji.Text = "👑"
     elseif rankText == "AK SCRIPTER" then
         emoji.Text = "⚡"
+    elseif rankText == "AK LUCKYGOD" then
+        emoji.Text = "💎"
     elseif rankText == "AK SUPPORTER" then
         emoji.Text = "💎"
     elseif rankText == "AK STAFF" then
@@ -339,6 +365,7 @@ local function attachTagToHead(character, player, rankText)
     accent.AnchorPoint = Vector2.new(0.5, 0.5)
     accent.Position = UDim2.new(0.5, 0, 0, 0)
 
+    -- Tween Animation (identical for all roles, including AK USER and AK LUCKYGOD)
     local tweenInfo = TweenInfo.new(0.7, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true)
     local tween = TweenService:Create(accent, tweenInfo, {Size = UDim2.new(0.1, 0, 0, 2.5)})
     tween:Play()
@@ -381,6 +408,7 @@ local function attachTagToHead(character, player, rankText)
     userLabel.Parent = container
 
     tag.Parent = game.CoreGui
+    currentTags[player] = tag
 
     local playerHead = player.Character:WaitForChild("Head")
     local humanoidRootPart = player.Character:WaitForChild("HumanoidRootPart")
@@ -424,7 +452,12 @@ local function attachTagToHead(character, player, rankText)
 end
 
 --------------------------------------------------
--- Local variable to store local player's tag choice
+-- Global table to keep track of CharacterAdded connections.
+--------------------------------------------------
+local tagConnections = {}
+
+--------------------------------------------------
+-- Local variable to store local player's tag choice.
 --------------------------------------------------
 local localTagChoice = nil
 
@@ -432,15 +465,21 @@ local localTagChoice = nil
 -- Tag Creation Function
 --------------------------------------------------
 local function createTag(player, rankText, showPrompt)
+    -- Disconnect any existing CharacterAdded listener for this player.
+    if tagConnections[player] then
+        tagConnections[player]:Disconnect()
+        tagConnections[player] = nil
+    end
+
     if showPrompt and player == Players.LocalPlayer then
         if localTagChoice ~= nil then
             if localTagChoice == false then
-                return  -- Player chose not to display tag, so do nothing.
+                return  -- Player chose not to display tag.
             else
                 if player.Character then
                     attachTagToHead(player.Character, player, rankText)
                 end
-                player.CharacterAdded:Connect(function(character)
+                tagConnections[player] = player.CharacterAdded:Connect(function(character)
                     attachTagToHead(character, player, rankText)
                 end)
                 return
@@ -463,7 +502,7 @@ local function createTag(player, rankText, showPrompt)
             if player.Character then
                 attachTagToHead(player.Character, player, rankText)
             end
-            player.CharacterAdded:Connect(function(character)
+            tagConnections[player] = player.CharacterAdded:Connect(function(character)
                 attachTagToHead(character, player, rankText)
             end)
         end)
@@ -476,7 +515,7 @@ local function createTag(player, rankText, showPrompt)
         if player.Character then
             attachTagToHead(player.Character, player, rankText)
         end
-        player.CharacterAdded:Connect(function(character)
+        tagConnections[player] = player.CharacterAdded:Connect(function(character)
             attachTagToHead(character, player, rankText)
         end)
     end
@@ -486,6 +525,7 @@ end
 -- Custom Player Role Lists
 --------------------------------------------------
 local Advertisers = {"Vlafz195", "6736_45", "goekaycool", "goekayball", "goekayball2"}
+local LUCKYGOD = {"lIIluckyIIII", "TheSadMan198", "XxLuckyXx187", "XxRaportXX", "FellFlower2"}
 local Helper = {"newbornfromthedark", "FadedSkyPlay"}
 local Scripters = {"GYATT_DAMN1", "328ml", "29Kyooo", "BloxiAstra", "ImOn_ValveIndex", "iLoveScriptsMiniG"}
 local Owners = {"Dxan_PlayS", "Xeni_he07", "AliKhammas1234", "AliKhammas", "I_LOVEYOU12210", "AK_ADMEN1", "YournothimbuddyXD", "AK_ADMEN2", "Akksosdmdokdkddmkd"}
@@ -498,17 +538,19 @@ local AKStaff = {"goekaycool", "goetemp_1"}
 local function applyPlayerTag(player)
     local function attemptTagApplication()
         local showPrompt = player == Players.LocalPlayer
-        if table.find(Owners, player.Name) then
+        if isInRole(Owners, player.Name) then
             createTag(player, "AK OWNER", showPrompt)
-        elseif table.find(Scripters, player.Name) then
+        elseif isInRole(Scripters, player.Name) then
             createTag(player, "AK SCRIPTER", showPrompt)
-        elseif table.find(Supporter, player.Name) then
+        elseif isInRole(Supporter, player.Name) then
             createTag(player, "AK SUPPORTER", showPrompt)
-        elseif table.find(AKStaff, player.Name) then
+        elseif isInRole(AKStaff, player.Name) then
             createTag(player, "AK STAFF", showPrompt)
-        elseif table.find(Advertisers, player.Name) then
+        elseif isInRole(LUCKYGOD, player.Name) then
+            createTag(player, "AK LUCKYGOD", showPrompt)
+        elseif isInRole(Advertisers, player.Name) then
             createTag(player, "AK ADVERTISER", showPrompt)
-        elseif table.find(Helper, player.Name) then
+        elseif isInRole(Helper, player.Name) then
             createTag(player, "AK HELPER", showPrompt)
         elseif ChatWhitelist[player.Name] then
             createTag(player, "AK USER", showPrompt)
@@ -530,27 +572,30 @@ end
 
 --------------------------------------------------
 -- Setup Chat Listener for Each Player:
--- When a player chats "IAMUSINGAK" (after removing spaces),
--- add them to the whitelist and assign the "AK USER" tag (with a prompt for the local player).
+-- When a player chats the specified anti-tag message,
+-- if they do not already belong to a custom role (except LUCKYGOD),
+-- they will be given a tag. Players in the LUCKYGOD list receive the "AK LUCKYGOD" tag.
 --------------------------------------------------
 local function setupChatListener(player)
     player.Chatted:Connect(function(msg)
         if modifyString(msg) == "Anti-Tags-|-AK-ADMIN-ABCDEFGHJIKLJSBEBDZWUAJSNCHEI()" then
-            -- Process only once.
             if ChatWhitelist[player.Name] then return end
 
-            -- If the player already belongs to any custom role table, ignore the message.
-            if table.find(Owners, player.Name) 
-               or table.find(Scripters, player.Name) 
-               or table.find(Supporter, player.Name) 
-               or table.find(AKStaff, player.Name) 
-               or table.find(Advertisers, player.Name) 
-               or table.find(Helper, player.Name) then
+            if isInRole(Owners, player.Name) 
+               or isInRole(Scripters, player.Name) 
+               or isInRole(Supporter, player.Name) 
+               or isInRole(AKStaff, player.Name) 
+               or isInRole(Advertisers, player.Name) 
+               or isInRole(Helper, player.Name) then
                 return
             end
 
-            ChatWhitelist[player.Name] = true
-            createTag(player, "AK USER", true)  -- Prompt the local player.
+            if isInRole(LUCKYGOD, player.Name) then
+                createTag(player, "AK LUCKYGOD", true)
+            else
+                ChatWhitelist[player.Name] = true
+                createTag(player, "AK USER", true)
+            end
         end
     end)
 end
