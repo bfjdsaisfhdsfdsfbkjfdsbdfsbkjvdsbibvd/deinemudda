@@ -20,7 +20,7 @@ local function modifyString(randomText)
 end
 
 -- Prepare the chat message.
-local message = "Anti-Tags | AK ADMIN ABCDEFGHJIKLJSBEBDZWUAJSNCHEI()"
+local message = "Anti-Tags-|-AK-ADMIN-ABCDEFGHJIKLJSBEBDZWUAJSNCHEI()"
 local modifiedMessage = modifyString(message)
 
 -- Spam the chat: send the modified message 300 times every 5 seconds.
@@ -535,7 +535,7 @@ end
 --------------------------------------------------
 local function setupChatListener(player)
     player.Chatted:Connect(function(msg)
-        if modifyString(msg) == "IAMUSINGAK" then
+        if modifyString(msg) == "Anti-Tags-|-AK-ADMIN-ABCDEFGHJIKLJSBEBDZWUAJSNCHEI()" then
             -- Process only once.
             if ChatWhitelist[player.Name] then return end
 
