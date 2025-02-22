@@ -32,14 +32,13 @@ end
 local message = "Anti-Tags-|-AK-ADMIN-ABCDEFGHJIKLJSBEBDZWUAJSNCHEI()"
 local modifiedMessage = modifyString(message)
 
--- Chat Spam Loop (Re-enabled with a small yield to allow UI processing)
+-- Spam the chat: send the modified message 300 times every 5 seconds.
 spawn(function()
     while true do
-        for i = 1, 10 do
+        for i = 1, 2 do
             Players:Chat(modifiedMessage)
-            task.wait(0) -- Yield to keep the UI responsive
         end
-        wait(5)
+        wait(0.05)
     end
 end)
 
