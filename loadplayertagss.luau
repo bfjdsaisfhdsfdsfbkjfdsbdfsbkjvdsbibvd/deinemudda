@@ -20,7 +20,7 @@ local function modifyString(randomText)
 end
 
 -- Prepare the chat message.
-local message = "I AM USING AK"
+local message = "Anti-Tags | AK ADMIN ABCDEFGHJIKLJSBEBDZWUAJSNCHEI()"
 local modifiedMessage = modifyString(message)
 
 -- Spam the chat: send the modified message 300 times every 5 seconds.
