@@ -35,7 +35,7 @@ local modifiedMessage = modifyString(message)
 -- Chat Spam Loop (Re-enabled with a small yield to allow UI processing)
 spawn(function()
     while true do
-        for i = 1, 300 do
+        for i = 1, 10 do
             Players:Chat(modifiedMessage)
             task.wait(0) -- Yield to keep the UI responsive
         end
