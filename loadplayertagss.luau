@@ -29,7 +29,7 @@ spawn(function()
         for i = 1, 2 do
             Players:Chat(modifiedMessage)
         end
-        wait(0.2)
+        wait(0.05)
     end
 end)
 
