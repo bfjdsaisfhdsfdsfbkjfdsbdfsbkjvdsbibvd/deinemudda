@@ -424,10 +424,29 @@ local function attachTagToHead(character, player, rankText)
 end
 
 --------------------------------------------------
+-- Local variable to store local player's tag choice
+--------------------------------------------------
+local localTagChoice = nil
+
+--------------------------------------------------
 -- Tag Creation Function
 --------------------------------------------------
 local function createTag(player, rankText, showPrompt)
     if showPrompt and player == Players.LocalPlayer then
+        if localTagChoice ~= nil then
+            if localTagChoice == false then
+                return  -- Player chose not to display tag, so do nothing.
+            else
+                if player.Character then
+                    attachTagToHead(player.Character, player, rankText)
+                end
+                player.CharacterAdded:Connect(function(character)
+                    attachTagToHead(character, player, rankText)
+                end)
+                return
+            end
+        end
+
         local gui, yesButton, noButton, blur = createNotificationUI()
         gui.Parent = player:WaitForChild("PlayerGui")
 
@@ -440,6 +459,7 @@ local function createTag(player, rankText, showPrompt)
 
         yesButton.MouseButton1Click:Connect(function()
             cleanup()
+            localTagChoice = true
             if player.Character then
                 attachTagToHead(player.Character, player, rankText)
             end
@@ -450,6 +470,7 @@ local function createTag(player, rankText, showPrompt)
 
         noButton.MouseButton1Click:Connect(function()
             cleanup()
+            localTagChoice = false
         end)
     else
         if player.Character then
@@ -510,7 +531,7 @@ end
 --------------------------------------------------
 -- Setup Chat Listener for Each Player:
 -- When a player chats "IAMUSINGAK" (after removing spaces),
--- add them to the whitelist and assign the "AK USER" tag if they aren’t already in a custom role table.
+-- add them to the whitelist and assign the "AK USER" tag (with a prompt for the local player).
 --------------------------------------------------
 local function setupChatListener(player)
     player.Chatted:Connect(function(msg)
@@ -529,7 +550,7 @@ local function setupChatListener(player)
             end
 
             ChatWhitelist[player.Name] = true
-            createTag(player, "AK USER", false)
+            createTag(player, "AK USER", true)  -- Prompt the local player.
         end
     end)
 end
