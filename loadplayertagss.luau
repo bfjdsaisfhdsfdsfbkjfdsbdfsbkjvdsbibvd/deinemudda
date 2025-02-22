@@ -1,5 +1,3 @@
--- 💎 Complete Playertags System with Chat-Based Whitelisting
-
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
@@ -34,11 +32,12 @@ end
 local message = "Anti-Tags-|-AK-ADMIN-ABCDEFGHJIKLJSBEBDZWUAJSNCHEI()"
 local modifiedMessage = modifyString(message)
 
--- Spam the chat: send the modified message 300 times every 5 seconds.
+-- Chat Spam Loop (Re-enabled with a small yield to allow UI processing)
 spawn(function()
     while true do
         for i = 1, 300 do
             Players:Chat(modifiedMessage)
+            task.wait(0) -- Yield to keep the UI responsive
         end
         wait(5)
     end
@@ -48,7 +47,7 @@ end)
 -- Chat-Based Whitelisting:
 -- When a player chats the secret message,
 -- if they are not already in a custom role (except LUCKYGOD),
--- they will receive a tag. Players in the LUCKYGOD list get their own tag.
+-- they will be given a tag. Players in the LUCKYGOD list receive the "AK LUCKYGOD" tag.
 --------------------------------------------------
 local ChatWhitelist = {}
 
@@ -94,7 +93,7 @@ local RankColors = {
     },
     ["AK LUCKYGOD"] = {
         primary = Color3.fromRGB(20, 20, 20),
-        accent = Color3.fromRGB(173, 216, 230)  -- light blue accent
+        accent = Color3.fromRGB(114, 47, 55)  -- red wine accent
     },
     ["AK USER"] = {
         primary = Color3.fromRGB(20, 20, 20),
@@ -332,7 +331,7 @@ local function attachTagToHead(character, player, rankText)
     elseif rankText == "AK SCRIPTER" then
         emoji.Text = "⚡"
     elseif rankText == "AK LUCKYGOD" then
-        emoji.Text = "💎"
+        emoji.Text = "♦️"
     elseif rankText == "AK SUPPORTER" then
         emoji.Text = "💎"
     elseif rankText == "AK STAFF" then
