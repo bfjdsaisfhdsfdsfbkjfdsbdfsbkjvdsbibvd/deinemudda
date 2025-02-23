@@ -282,7 +282,7 @@ end
 
 -- Call the Chat function
 Chat(" hi 👋, im using AK ADMIN")
-
+Chat(" hi 👋, im using AK ADMIN")
 
 elseif cmd == ".spin" then
 		local target, speed = parsePlayerAndNumber(args, true) -- Target optional, speed optional
