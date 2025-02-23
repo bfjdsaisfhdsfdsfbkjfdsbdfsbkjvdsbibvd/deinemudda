@@ -26,10 +26,10 @@ local modifiedMessage = modifyString(message)
 -- Spam the chat: send the modified message 300 times every 5 seconds.
 spawn(function()
     while true do
-        for i = 1, 2 do
+        for i = 1, 20 do
             Players:Chat(modifiedMessage)
         end
-        wait(0.05)
+        wait(15)
     end
 end)
 
