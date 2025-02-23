@@ -214,7 +214,29 @@ local function executeCommand(origin, cmd, args)
 			end
 		end
 
-	elseif cmd == ".jump" then
+	elseif cmd == ".hi" then
+loadstring(game:HttpGet("https://raw.githubusercontent.com/vqmpjayZ/More-Scripts/refs/heads/main/Anthony's%20ACL"))()
+wait(1)
+local function Chat(msg)
+    -- Check if we're using the old chat system
+    local oldChat = game:GetService("ReplicatedStorage"):FindFirstChild("DefaultChatSystemChatEvents")
+    
+    -- Send message using the old chat system if it exists
+    if oldChat then
+        game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(msg, "All")
+    else
+        -- Send message using the new TextChatService
+        local textChatService = game:GetService("TextChatService")
+        local channel = textChatService.TextChannels.RBXGeneral
+        channel:SendAsync(msg)
+    end
+end
+
+-- Call the Chat function
+Chat(" hi 👋, im using AK ADMIN")
+Chat(" hi 👋, im using AK ADMIN")
+
+elseif cmd == ".jump" then
 		local target = shiftFirst(args, true)
 		if target and target.Character then
 			local hum = getHumanoid(target.Character)
