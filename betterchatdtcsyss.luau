@@ -458,42 +458,6 @@ if humanoid and humanoid.RigType then
 end
 
 
-getgenv().annoyingserver = false
-  elseif command == "!annoyserver" then
-    -- Create and show notification
-    game:GetService("StarterGui"):SetCore("SendNotification", {
-        Title = "Reminder",
-        Text = "Make sure you own admin gamepass, use !unannoy to stop scanning map.",
-        Duration = 3
-    })
-    
-    getgenv().annoyingserver = true
-    local args = {
-        [1] = "Wand"
-    }
-    
-    game:GetService("ReplicatedStorage"):WaitForChild("ToolEvent"):FireServer(unpack(args))
-    wait(2.5)
-    
-    for i, tool in pairs(game.Players.LocalPlayer.Backpack:GetChildren()) do
-        tool.Parent = game.Players.LocalPlayer.Character
-    end
-    
-    while getgenv().annoyingserver do
-        for i, plr in pairs(game.Players:GetChildren()) do
-            wait(0.01)
-            pcall(function()
-                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = plr.Character.HumanoidRootPart.CFrame
-            end)
-        end
-        wait()
-    end
-
-local Players = game:GetService("Players")
-local plr = Players.LocalPlayer
-
-
-
 -- Command handling
 elseif command:sub(1, 6) == "!stand" then
 local plr = Players.LocalPlayer
@@ -1069,15 +1033,6 @@ local RunService = game:GetService("RunService")
             end
             
             ReplicatedStorage.UnragdollEvent:FireServer()
-
-  elseif command == "!unannoy" then
-  
-getgenv().annoyingserver = false    
-    game:GetService("StarterGui"):SetCore("SendNotification", {
-        Title = "Reminder",
-        Text = "Stopped annoying server.",
-        Duration = 3
-    })
 
         elseif command == "!uncopy" then
         -- Stop all ongoing copying activities immediately
