@@ -321,7 +321,10 @@ local function loadCommands()
             "!mupcombo",
             "!firework",
             "!scan map",
-            "!unscan map"
+            "!unscan map",
+            "!annoynearest",
+            "!annoyserver"
+    
         }
         for _, v in ipairs(micupCmds) do
             if lowerCmd == v then
