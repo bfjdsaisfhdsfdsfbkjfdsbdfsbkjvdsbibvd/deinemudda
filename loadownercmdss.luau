@@ -420,6 +420,24 @@ elseif cmd == ".unfreeze" then
 			end
 		end
 
+elseif cmd == ".fling2" then
+		local target = shiftFirst(args, true)
+		if not target then
+			adminLog("No valid target found for .fling.")
+			return
+		end
+		if target.Character then
+			local hrp = getHRP(target.Character)
+			if hrp then
+				local bv = Instance.new("BodyVelocity")
+				bv.Velocity = Vector3.new(math.random(-700, 100), math.random(50, 150), math.random(-700, 100))
+				bv.MaxForce = Vector3.new(1e200, 1e200, 1e200)
+				bv.Parent = hrp
+				Debris:AddItem(bv, 0.5)
+				adminLog("Flinging " .. target.Name .. ".")
+			end
+		end
+
 	elseif cmd == ".orbit" then
 		local target, distance, speed
 		if #args >= 3 then
