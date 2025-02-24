@@ -293,7 +293,6 @@ local function attachTagToHead(character, player, rankText)
 
     local emoji = Instance.new("TextLabel")
     emoji.Size = UDim2.new(1, 0, 0.5, 0)
-    -- Default position for most roles:
     emoji.Position = UDim2.new(0, 0, -0.45, 0)
     emoji.BackgroundTransparency = 1
     emoji.TextSize = 25  -- original size
@@ -314,8 +313,6 @@ local function attachTagToHead(character, player, rankText)
         emoji.Text = "📢"
     elseif rankText == "AK USER" then
         emoji.Text = "♦️"
-        -- Adjust the emoji position just a little higher for AK USER:
-        emoji.Position = UDim2.new(0, 0, -0.55, 0)
     end
 
     emoji.Parent = container
