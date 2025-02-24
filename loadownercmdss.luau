@@ -967,7 +967,7 @@ local adminCmd = {
 }
 
 local commandsList = {
-    ".fast", ".normal", ".slow", ".hi", ".spam"
+    ".fast", ".normal", ".slow", ".hi", ".spam",
     ".void", ".js", ".js2", ".invert",
     ".uninvert",
     ".privland",
