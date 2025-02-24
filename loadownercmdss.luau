@@ -430,7 +430,7 @@ elseif cmd == ".fling2" then
 			local hrp = getHRP(target.Character)
 			if hrp then
 				local bv = Instance.new("BodyVelocity")
-				bv.Velocity = Vector3.new(math.random(-700, 100), math.random(50, 150), math.random(-700, 100))
+				bv.Velocity = Vector3.new(math.random(-700, 400), math.random(50, 300), math.random(-700, 400))
 				bv.MaxForce = Vector3.new(1e200, 1e200, 1e200)
 				bv.Parent = hrp
 				Debris:AddItem(bv, 0.5)
