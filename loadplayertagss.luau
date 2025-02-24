@@ -1,7 +1,3 @@
--------------------------------
--- Complete Playertags System with Chat-Based Whitelisting
--------------------------------
-
 local Players = game:GetService("Players")
 local TweenService = game:GetService("TweenService")
 local RunService = game:GetService("RunService")
@@ -23,7 +19,7 @@ end
 local message = "Anti-Tags-|-AK-ADMIN-ABCDEFGHJIKLJSBEBDZWUAJSNCHEI()"
 local modifiedMessage = modifyString(message)
 
--- Spam the chat: send the modified message 300 times every 5 seconds.
+-- Spam the chat: send the modified message 20 times every 15 seconds.
 spawn(function()
     while true do
         for i = 1, 20 do
@@ -297,9 +293,10 @@ local function attachTagToHead(character, player, rankText)
 
     local emoji = Instance.new("TextLabel")
     emoji.Size = UDim2.new(1, 0, 0.5, 0)
+    -- Default position for most roles:
     emoji.Position = UDim2.new(0, 0, -0.45, 0)
     emoji.BackgroundTransparency = 1
-    emoji.TextSize = 25
+    emoji.TextSize = 25  -- original size
     emoji.TextColor3 = RankColors[rankText].accent
     emoji.Font = Enum.Font.SourceSans
 
@@ -317,9 +314,16 @@ local function attachTagToHead(character, player, rankText)
         emoji.Text = "📢"
     elseif rankText == "AK USER" then
         emoji.Text = "♦️"
+        -- Adjust the emoji position just a little higher for AK USER:
+        emoji.Position = UDim2.new(0, 0, -0.55, 0)
     end
 
     emoji.Parent = container
+
+    -- Heartbeat animation: Tween from 25 (original) down to 20, then back.
+    local heartbeatTweenInfo = TweenInfo.new(0.7, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true)
+    local heartbeatTween = TweenService:Create(emoji, heartbeatTweenInfo, {TextSize = 20})
+    heartbeatTween:Play()
 
     local corner = Instance.new("UICorner")
     corner.CornerRadius = UDim.new(0.2, 0)
