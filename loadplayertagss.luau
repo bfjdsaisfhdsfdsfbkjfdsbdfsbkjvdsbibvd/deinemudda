@@ -61,7 +61,7 @@ end
 --------------------------------------------------
 -- Chat message for spam.
 --------------------------------------------------
-local message = "Anti-Tags-|-AK-ADMIN-ABCDEFGHJIKLJSBEBDZWUAJSNCHEI()"
+local message = "AK ADMIN ABCDEFGH()"
 local modifiedMessage = modifyString(message)
 
 -- Removed Chat Spam Functionality
