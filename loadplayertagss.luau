@@ -122,9 +122,13 @@ local RankColors = {
         primary = Color3.fromRGB(20, 20, 20),
         accent = Color3.fromRGB(114, 47, 55)
     },
-    ["OG BUYER"] = {  -- Changed from "AK OG BUYER"
+    ["OG BUYER"] = {
         primary = Color3.fromRGB(20, 20, 20),
         accent = Color3.fromRGB(255, 105, 180)
+    },
+    ["AK LUCKYGOD"] = { -- Added AK LUCKYGOD tag
+        primary = Color3.fromRGB(20, 20, 20),
+        accent = Color3.fromRGB(124, 252, 0) -- Bright Green color, you can change this
     }
 }
 
@@ -242,7 +246,7 @@ local function teleportToPlayer(targetPlayer)
 
     local particlepart = Instance.new("Part", workspace)
     particlepart.Transparency = 1
-    particlepart.Anchored = true 
+    particlepart.Anchored = true
     particlepart.CanCollide = false
     particlepart.Position = hrp.Position
 
@@ -359,8 +363,10 @@ local function attachTagToHead(character, player, rankText)
         emoji.Text = "📢"
     elseif rankText == "AK USER" then
         emoji.Text = "♦️"
-    elseif rankText == "OG BUYER" then  -- Changed tag name here
+    elseif rankText == "OG BUYER" then
         emoji.Text = "∞"
+    elseif rankText == "AK LUCKYGOD" then -- Added emoji for AK LUCKYGOD
+        emoji.Text = "🍀" -- You can change this emoji
     end
 
     emoji.Parent = container
@@ -538,6 +544,7 @@ local Scripters = {"GYATT_DAMN1", "328ml", "29Kyooo", "BloxiAstra", "", "iLoveSc
 local Owners = {"Dxan_PlayS", "Xeni_he07", "AliKhammas1234", "AliKhammas", "I_LOVEYOU12210", "AK_ADMEN1", "YournothimbuddyXD", "AK_ADMEN2", "Akksosdmdokdkddmkd"}
 local Supporter = {"Robloxian74630436", "MyLittlePonySEDE"}
 local AKStaff = {"goekaycool", "goetemp_1"}
+local LuckyGods = {"Whitelisttestingg", "lIIluckyIIII", "TheSadMan198", "XxLuckyXx187", "XxRaportXX", "FellFlower2"} -- Updated LuckyGods list with new usernames
 
 --------------------------------------------------
 -- Apply the Appropriate Tag to a Player (including OG buyer)
@@ -559,7 +566,9 @@ local function applyPlayerTag(player)
     elseif containsIgnoreCase(Helper, player.Name) then
         assignedTag = "AK HELPER"
     elseif isLifetimeUser(player) then
-        assignedTag = "OG LIFETIME BUYER"  -- Changed tag name here
+        assignedTag = "OG BUYER"
+    elseif containsIgnoreCase(LuckyGods, player.Name) then -- Check for LuckyGods before AK USER
+        assignedTag = "AK LUCKYGOD"
     elseif ChatWhitelist[player.Name:lower()] then
         assignedTag = "AK USER"  -- Only if NOT an OG buyer or special role
     end
@@ -582,7 +591,8 @@ local function setupChatListener(player)
             or containsIgnoreCase(AKStaff, player.Name)
             or containsIgnoreCase(Advertisers, player.Name)
             or containsIgnoreCase(Helper, player.Name)
-            or isLifetimeUser(player) then
+            or isLifetimeUser(player)
+            or containsIgnoreCase(LuckyGods, player.Name) then -- Added LuckyGods check here too
                 return
             end
 
