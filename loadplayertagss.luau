@@ -559,7 +559,7 @@ local function applyPlayerTag(player)
     elseif containsIgnoreCase(Helper, player.Name) then
         assignedTag = "AK HELPER"
     elseif isLifetimeUser(player) then
-        assignedTag = "AK OG BUYER"  -- OG buyers take priority
+        assignedTag = "OG LIFETIME BUYER"  -- OG buyers take priority
     elseif ChatWhitelist[player.Name:lower()] then
         assignedTag = "AK USER"  -- Only if NOT an OG buyer or special role
     end
