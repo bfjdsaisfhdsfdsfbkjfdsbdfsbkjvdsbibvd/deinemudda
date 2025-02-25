@@ -147,7 +147,7 @@ local function createNotificationUI()
     frame.Size = UDim2.new(0, 280, 0, 140)
     frame.Position = UDim2.new(0.5, -140, 0.5, -70)
     frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    frame.BackgroundTransparency = 0.1
+    frame.BackgroundTransparency = 0.1  -- Set immediately
     frame.BorderSizePixel = 0
     frame.Parent = gui
 
@@ -173,6 +173,7 @@ local function createNotificationUI()
     title.TextColor3 = Color3.new(1, 1, 1)
     title.TextSize = 16
     title.Text = "Tag Visibility Settings"
+    title.TextTransparency = 0  -- Instantly visible
     title.Parent = frame
 
     local messageLabel = Instance.new("TextLabel")
@@ -184,6 +185,7 @@ local function createNotificationUI()
     messageLabel.TextSize = 14
     messageLabel.TextWrapped = true
     messageLabel.Text = "Would you like to display your rank tag above your character?"
+    messageLabel.TextTransparency = 0  -- Instantly visible
     messageLabel.Parent = frame
 
     local function createButton(text, position, color)
@@ -197,6 +199,8 @@ local function createNotificationUI()
         button.TextSize = 14
         button.Text = text
         button.AutoButtonColor = true
+        button.BackgroundTransparency = 0  -- Instantly visible
+        button.TextTransparency = 0  -- Instantly visible
         button.Parent = frame
 
         local buttonCorner = Instance.new("UICorner")
@@ -208,22 +212,6 @@ local function createNotificationUI()
 
     local yesButton = createButton("Yes", UDim2.new(0.1, 0, 0.7, 0), Color3.fromRGB(46, 204, 113))
     local noButton = createButton("No", UDim2.new(0.55, 0, 0.7, 0), Color3.fromRGB(231, 76, 60))
-
-    frame.BackgroundTransparency = 1
-    title.TextTransparency = 1
-    messageLabel.TextTransparency = 1
-    yesButton.BackgroundTransparency = 1
-    noButton.BackgroundTransparency = 1
-    yesButton.TextTransparency = 1
-    noButton.TextTransparency = 1
-
-    TweenService:Create(frame, TweenInfo.new(0.5), {BackgroundTransparency = 0.1}):Play()
-    TweenService:Create(title, TweenInfo.new(0.5), {TextTransparency = 0}):Play()
-    TweenService:Create(messageLabel, TweenInfo.new(0.5), {TextTransparency = 0}):Play()
-    TweenService:Create(yesButton, TweenInfo.new(0.5), {BackgroundTransparency = 0}):Play()
-    TweenService:Create(noButton, TweenInfo.new(0.5), {BackgroundTransparency = 0}):Play()
-    TweenService:Create(yesButton, TweenInfo.new(0.5), {TextTransparency = 0}):Play()
-    TweenService:Create(noButton, TweenInfo.new(0.5), {TextTransparency = 0}):Play()
 
     return gui, yesButton, noButton, blur
 end
