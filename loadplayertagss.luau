@@ -122,7 +122,7 @@ local RankColors = {
         primary = Color3.fromRGB(20, 20, 20),
         accent = Color3.fromRGB(114, 47, 55)
     },
-    ["AK OG BUYER"] = {  -- Formerly "LIFETIME USER"
+    ["OG LIFETIME BUYER"] = {  -- Formerly "LIFETIME USER"
         primary = Color3.fromRGB(20, 20, 20),
         accent = Color3.fromRGB(255, 105, 180)
     }
