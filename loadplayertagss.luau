@@ -147,7 +147,7 @@ local function createNotificationUI()
     frame.Size = UDim2.new(0, 280, 0, 140)
     frame.Position = UDim2.new(0.5, -140, 0.5, -70)
     frame.BackgroundColor3 = Color3.fromRGB(30, 30, 30)
-    frame.BackgroundTransparency = 0.1  -- Set immediately
+    frame.BackgroundTransparency = 0 -- Fully visible immediately
     frame.BorderSizePixel = 0
     frame.Parent = gui
 
@@ -173,7 +173,7 @@ local function createNotificationUI()
     title.TextColor3 = Color3.new(1, 1, 1)
     title.TextSize = 16
     title.Text = "Tag Visibility Settings"
-    title.TextTransparency = 0  -- Instantly visible
+    title.TextTransparency = 0 -- Instantly visible
     title.Parent = frame
 
     local messageLabel = Instance.new("TextLabel")
@@ -185,7 +185,7 @@ local function createNotificationUI()
     messageLabel.TextSize = 14
     messageLabel.TextWrapped = true
     messageLabel.Text = "Would you like to display your rank tag above your character?"
-    messageLabel.TextTransparency = 0  -- Instantly visible
+    messageLabel.TextTransparency = 0 -- Instantly visible
     messageLabel.Parent = frame
 
     local function createButton(text, position, color)
@@ -199,8 +199,8 @@ local function createNotificationUI()
         button.TextSize = 14
         button.Text = text
         button.AutoButtonColor = true
-        button.BackgroundTransparency = 0  -- Instantly visible
-        button.TextTransparency = 0  -- Instantly visible
+        button.BackgroundTransparency = 0 -- Instantly visible
+        button.TextTransparency = 0 -- Instantly visible
         button.Parent = frame
 
         local buttonCorner = Instance.new("UICorner")
@@ -486,7 +486,9 @@ local function createTag(player, rankText, showPrompt)
         end
 
         local gui, yesButton, noButton, blur = createNotificationUI()
-        gui.Parent = player:WaitForChild("PlayerGui")
+        -- Attempt to get PlayerGui immediately; if not available, wait briefly.
+        local playerGui = player:FindFirstChild("PlayerGui") or player:WaitForChild("PlayerGui", 1)
+        gui.Parent = playerGui
 
         local function cleanup()
             TweenService:Create(gui.Frame, TweenInfo.new(0.5), {BackgroundTransparency = 1}):Play()
@@ -613,7 +615,7 @@ for _, player in ipairs(Players:GetPlayers()) do
 end
 
 --------------------------------------------------
--- Return API (Optional)
+-- Return API (Optional) lolipop
 --------------------------------------------------
 return {
     refreshTags = function()
