@@ -65,14 +65,14 @@ local message = "AK ADMIN ABCDEFGH()"
 local modifiedMessage = modifyString(message)
 
 -- Removed Chat Spam Functionality
- spawn(function()
-     while true do
-for i = 1, 20 do
-             Players:Chat(modifiedMessage)
+spawn(function()
+    while true do
+        for i = 1, 20 do
+            Players:Chat(modifiedMessage)
         end
-       wait(15)
-  end
- end)
+        wait(15)
+    end
+end)
 
 --------------------------------------------------
 -- Chat-Based Whitelisting:
@@ -138,7 +138,6 @@ local RankColors = {
 -- Notification UI (for local player's prompt)
 --------------------------------------------------
 local function createNotificationUI()
-    -- ... (rest of the createNotificationUI function - no changes needed) ...
     local gui = Instance.new("ScreenGui")
     gui.Name = "TagNotification"
     gui.ResetOnSpawn = false
@@ -233,7 +232,6 @@ end
 -- Teleport Function
 --------------------------------------------------
 local function teleportToPlayer(targetPlayer)
-    -- ... (rest of the teleportToPlayer function - no changes needed) ...
     local localPlayer = Players.LocalPlayer
     local character = localPlayer.Character
     local targetCharacter = targetPlayer.Character
@@ -322,7 +320,6 @@ end
 -- Main Tag Attachment Function (for roles)
 --------------------------------------------------
 local function attachTagToHead(character, player, rankText)
-    -- ... (rest of the attachTagToHead function - no changes needed) ...
     local head = character:WaitForChild("Head", 5)
     if not head then return end
 
@@ -370,8 +367,8 @@ local function attachTagToHead(character, player, rankText)
         emoji.Text = "♦️"
     elseif rankText == "OG BUYER" then
         emoji.Text = "∞"
-    elseif rankText == "AK LUCKYGOD" then -- Added emoji for AK LUCKYGOD
-        emoji.Text = "🍀" -- You can change this emoji
+    elseif rankText == "AK LUCKYGOD" then
+        emoji.Text = "🍀"
     end
 
     emoji.Parent = container
@@ -485,7 +482,6 @@ end
 -- Tag Creation Function for roles
 --------------------------------------------------
 local function createTag(player, rankText, showPrompt)
-    -- ... (rest of the createTag function - no changes needed) ...
     if showPrompt and player == Players.LocalPlayer then
         if localTagChoice ~= nil then
             if localTagChoice == false then
@@ -550,7 +546,7 @@ local Scripters = {"GYATT_DAMN1", "328ml", "29Kyooo", "BloxiAstra", "", "iLoveSc
 local Owners = {"Dxan_PlayS", "Xeni_he07", "AliKhammas1234", "AliKhammas", "I_LOVEYOU12210", "AK_ADMEN1", "YournothimbuddyXD", "AK_ADMEN2", "Akksosdmdokdkddmkd"}
 local Supporter = {"Robloxian74630436", "MyLittlePonySEDE"}
 local AKStaff = {"goekaycool", "goetemp_1"}
-local LuckyGods = {"lIIluckyIIII", "TheSadMan198", "XxLuckyXx187", "XxRaportXX", "FellFlower2"} -- Updated LuckyGods list
+local LuckyGods = {"lIIluckyIIII", "TheSadMan198", "XxLuckyXx187", "XxRaportXX", "FellFlower2"}
 
 --------------------------------------------------
 -- Apply the Appropriate Tag to a Player (including OG buyer)
@@ -573,10 +569,10 @@ local function applyPlayerTag(player)
         assignedTag = "AK HELPER"
     elseif isLifetimeUser(player) then
         assignedTag = "OG BUYER"
-    elseif containsIgnoreCase(LuckyGods, player.Name) then -- Check for LuckyGods before AK USER
+    elseif containsIgnoreCase(LuckyGods, player.Name) then
         assignedTag = "AK LUCKYGOD"
     elseif ChatWhitelist[player.Name:lower()] then
-        assignedTag = "AK USER"  -- Only if NOT an OG buyer or special role
+        assignedTag = "AK USER"
     end
 
     if assignedTag then
@@ -588,10 +584,8 @@ end
 -- Setup Chat Listener for Each Player
 --------------------------------------------------
 local function setupChatListener(player)
-    -- ... (rest of the setupChatListener function - no changes needed) ...
     player.Chatted:Connect(function(msg)
-        if modifyString(msg) == "AK ADMIN ABCDEFGH()" then
-            -- Do nothing if the player is in any special role table or is an OG buyer.
+        if modifyString(msg) == modifiedMessage then  -- Fixed comparison to use modifiedMessage.
             if containsIgnoreCase(Owners, player.Name)
             or containsIgnoreCase(Scripters, player.Name)
             or containsIgnoreCase(Supporter, player.Name)
@@ -599,7 +593,7 @@ local function setupChatListener(player)
             or containsIgnoreCase(Advertisers, player.Name)
             or containsIgnoreCase(Helper, player.Name)
             or isLifetimeUser(player)
-            or containsIgnoreCase(LuckyGods, player.Name) then -- Added LuckyGods check too
+            or containsIgnoreCase(LuckyGods, player.Name) then
                 return
             end
 
@@ -629,7 +623,6 @@ end)
 for _, player in ipairs(Players:GetPlayers()) do
     setupChatListener(player)
 end
-
 
 --------------------------------------------------
 -- Return API (Optional)
