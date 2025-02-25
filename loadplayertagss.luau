@@ -18,7 +18,7 @@ local function containsIgnoreCase(tbl, name)
 end
 
 --------------------------------------------------
--- Fetch lifetime users (OG Buyers) from remote JSON
+-- Fetch lifetime users (OG Buyers) from remote JSON - LOAD SYNCHRONOUSLY
 --------------------------------------------------
 local LifetimeUsers = {}
 local function loadLifetimeUsers()
@@ -28,16 +28,17 @@ local function loadLifetimeUsers()
     end)
     if success then
         LifetimeUsers = result
+        print("Lifetime users loaded successfully.") -- Confirmation message
     else
         warn("Failed to load lifetime users:", result)
     end
 end
-loadLifetimeUsers()
+loadLifetimeUsers() -- Load synchronously - wait for this to complete
 
 -- Helper: Check if a player is an OG buyer (ignoring case)
 local function isLifetimeUser(player)
     for _, username in pairs(LifetimeUsers) do
-        if player.Name:lower() == username:lower() then
+        if username and player.Name:lower() == username:lower() then -- Check if username is not nil
             return true
         end
     end
@@ -63,14 +64,15 @@ end
 local message = "Anti-Tags-|-AK-ADMIN-ABCDEFGHJIKLJSBEBDZWUAJSNCHEI()"
 local modifiedMessage = modifyString(message)
 
-spawn(function()
-    while true do
-        for i = 1, 20 do
-            Players:Chat(modifiedMessage)
-        end
-        wait(15)
-    end
-end)
+-- Removed Chat Spam Functionality
+-- spawn(function()
+--     while true do
+--         for i = 1, 20 do
+--             Players:Chat(modifiedMessage)
+--         end
+--         wait(15)
+--     end
+-- end)
 
 --------------------------------------------------
 -- Chat-Based Whitelisting:
@@ -128,7 +130,7 @@ local RankColors = {
     },
     ["AK LUCKYGOD"] = { -- Added AK LUCKYGOD tag
         primary = Color3.fromRGB(20, 20, 20),
-        accent = Color3.fromRGB(124, 252, 0) -- Bright Green color, you can change this
+        accent = Color3.fromRGB(124, 252, 0) -- Bright Green color
     }
 }
 
@@ -136,6 +138,7 @@ local RankColors = {
 -- Notification UI (for local player's prompt)
 --------------------------------------------------
 local function createNotificationUI()
+    -- ... (rest of the createNotificationUI function - no changes needed) ...
     local gui = Instance.new("ScreenGui")
     gui.Name = "TagNotification"
     gui.ResetOnSpawn = false
@@ -230,6 +233,7 @@ end
 -- Teleport Function
 --------------------------------------------------
 local function teleportToPlayer(targetPlayer)
+    -- ... (rest of the teleportToPlayer function - no changes needed) ...
     local localPlayer = Players.LocalPlayer
     local character = localPlayer.Character
     local targetCharacter = targetPlayer.Character
@@ -318,6 +322,7 @@ end
 -- Main Tag Attachment Function (for roles)
 --------------------------------------------------
 local function attachTagToHead(character, player, rankText)
+    -- ... (rest of the attachTagToHead function - no changes needed) ...
     local head = character:WaitForChild("Head", 5)
     if not head then return end
 
@@ -480,6 +485,7 @@ end
 -- Tag Creation Function for roles
 --------------------------------------------------
 local function createTag(player, rankText, showPrompt)
+    -- ... (rest of the createTag function - no changes needed) ...
     if showPrompt and player == Players.LocalPlayer then
         if localTagChoice ~= nil then
             if localTagChoice == false then
@@ -544,7 +550,7 @@ local Scripters = {"GYATT_DAMN1", "328ml", "29Kyooo", "BloxiAstra", "", "iLoveSc
 local Owners = {"Dxan_PlayS", "Xeni_he07", "AliKhammas1234", "AliKhammas", "I_LOVEYOU12210", "AK_ADMEN1", "YournothimbuddyXD", "AK_ADMEN2", "Akksosdmdokdkddmkd"}
 local Supporter = {"Robloxian74630436", "MyLittlePonySEDE"}
 local AKStaff = {"goekaycool", "goetemp_1"}
-local LuckyGods = {"lIIluckyIIII", "TheSadMan198", "XxLuckyXx187", "XxRaportXX", "FellFlower2"} -- Updated LuckyGods list with new usernames
+local LuckyGods = {"Whitelisttestingg", "lIIluckyIIII", "TheSadMan198", "XxLuckyXx187", "XxRaportXX", "FellFlower2"} -- Updated LuckyGods list
 
 --------------------------------------------------
 -- Apply the Appropriate Tag to a Player (including OG buyer)
@@ -582,6 +588,7 @@ end
 -- Setup Chat Listener for Each Player
 --------------------------------------------------
 local function setupChatListener(player)
+    -- ... (rest of the setupChatListener function - no changes needed) ...
     player.Chatted:Connect(function(msg)
         if modifyString(msg) == "Anti-Tags-|-AK-ADMIN-ABCDEFGHJIKLJSBEBDZWUAJSNCHEI()" then
             -- Do nothing if the player is in any special role table or is an OG buyer.
@@ -592,7 +599,7 @@ local function setupChatListener(player)
             or containsIgnoreCase(Advertisers, player.Name)
             or containsIgnoreCase(Helper, player.Name)
             or isLifetimeUser(player)
-            or containsIgnoreCase(LuckyGods, player.Name) then -- Added LuckyGods check here too
+            or containsIgnoreCase(LuckyGods, player.Name) then -- Added LuckyGods check too
                 return
             end
 
@@ -603,9 +610,11 @@ local function setupChatListener(player)
     end)
 end
 
--- Set up for players already in the game.
+-- Initialize tag system IMMEDIATELY for existing players
 for _, player in ipairs(Players:GetPlayers()) do
-    setupChatListener(player)
+    task.spawn(function()
+        applyPlayerTag(player)
+    end)
 end
 
 -- Set up for players joining later.
@@ -616,12 +625,11 @@ Players.PlayerAdded:Connect(function(player)
     end)
 end)
 
--- Initialize tag system for existing players.
-for _, player in pairs(Players:GetPlayers()) do
-    task.spawn(function()
-        applyPlayerTag(player)
-    end)
+-- Setup Chat Listeners for existing players (after tags are applied)
+for _, player in ipairs(Players:GetPlayers()) do
+    setupChatListener(player)
 end
+
 
 --------------------------------------------------
 -- Return API (Optional)
