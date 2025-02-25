@@ -359,7 +359,7 @@ local function attachTagToHead(character, player, rankText)
         emoji.Text = "📢"
     elseif rankText == "AK USER" then
         emoji.Text = "♦️"
-    elseif rankText == "AK OG BUYER" then  -- Previously "LIFETIME USER"
+    elseif rankText == "OG LIFETIME BUYER" then  -- Previously "LIFETIME USER"
         emoji.Text = "∞"
     end
 
