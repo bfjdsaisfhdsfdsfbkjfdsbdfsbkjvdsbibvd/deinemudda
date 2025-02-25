@@ -122,7 +122,7 @@ local RankColors = {
         primary = Color3.fromRGB(20, 20, 20),
         accent = Color3.fromRGB(114, 47, 55)
     },
-    ["OG LIFETIME BUYER"] = {  -- Formerly "LIFETIME USER"
+    ["OG BUYER"] = {  -- Changed from "AK OG BUYER"
         primary = Color3.fromRGB(20, 20, 20),
         accent = Color3.fromRGB(255, 105, 180)
     }
@@ -359,7 +359,7 @@ local function attachTagToHead(character, player, rankText)
         emoji.Text = "📢"
     elseif rankText == "AK USER" then
         emoji.Text = "♦️"
-    elseif rankText == "OG LIFETIME BUYER" then  -- Previously "LIFETIME USER"
+    elseif rankText == "OG BUYER" then  -- Changed tag name here
         emoji.Text = "∞"
     end
 
@@ -559,7 +559,7 @@ local function applyPlayerTag(player)
     elseif containsIgnoreCase(Helper, player.Name) then
         assignedTag = "AK HELPER"
     elseif isLifetimeUser(player) then
-        assignedTag = "OG LIFETIME BUYER"  -- OG buyers take priority
+        assignedTag = "OG LIFETIME BUYER"  -- Changed tag name here
     elseif ChatWhitelist[player.Name:lower()] then
         assignedTag = "AK USER"  -- Only if NOT an OG buyer or special role
     end
