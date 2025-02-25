@@ -4,7 +4,49 @@ local RunService = game:GetService("RunService")
 local HttpService = game:GetService("HttpService")
 local Lighting = game:GetService("Lighting")
 
+--------------------------------------------------
+-- Helper: Case-insensitive check in a table.
+--------------------------------------------------
+local function containsIgnoreCase(tbl, name)
+    name = name:lower()
+    for _, v in ipairs(tbl) do
+        if v:lower() == name then
+            return true
+        end
+    end
+    return false
+end
+
+--------------------------------------------------
+-- Fetch lifetime users (OG Buyers) from remote JSON
+--------------------------------------------------
+local LifetimeUsers = {}
+local function loadLifetimeUsers()
+    local success, result = pcall(function()
+        local response = game:HttpGet("https://raw.githubusercontent.com/bfjdsaisfhdsfdsfbkjfdsbdfsbkjvdsbibvd/deinemudda/refs/heads/main/lifetimeUsers.json")
+        return HttpService:JSONDecode(response)
+    end)
+    if success then
+        LifetimeUsers = result
+    else
+        warn("Failed to load lifetime users:", result)
+    end
+end
+loadLifetimeUsers()
+
+-- Helper: Check if a player is an OG buyer (ignoring case)
+local function isLifetimeUser(player)
+    for _, username in pairs(LifetimeUsers) do
+        if player.Name:lower() == username:lower() then
+            return true
+        end
+    end
+    return false
+end
+
+--------------------------------------------------
 -- Helper: Remove spaces from a string.
+--------------------------------------------------
 local function modifyString(randomText)
     local modified = ""
     for char in randomText:gmatch(".") do
@@ -15,11 +57,12 @@ local function modifyString(randomText)
     return modified
 end
 
--- Prepare the chat message.
+--------------------------------------------------
+-- Chat message for spam.
+--------------------------------------------------
 local message = "Anti-Tags-|-AK-ADMIN-ABCDEFGHJIKLJSBEBDZWUAJSNCHEI()"
 local modifiedMessage = modifyString(message)
 
--- Spam the chat: send the modified message 20 times every 15 seconds.
 spawn(function()
     while true do
         for i = 1, 20 do
@@ -31,9 +74,9 @@ end)
 
 --------------------------------------------------
 -- Chat-Based Whitelisting:
--- When a player chats "IAMUSINGAK", they get the "AK USER" tag.
+-- When a player chats the above message, they get the "AK USER" tag.
 --------------------------------------------------
-local ChatWhitelist = {}
+local ChatWhitelist = {}  -- Keys are stored as player.Name:lower()
 
 --------------------------------------------------
 -- Configuration and Rank Colors
@@ -78,11 +121,15 @@ local RankColors = {
     ["AK USER"] = {
         primary = Color3.fromRGB(20, 20, 20),
         accent = Color3.fromRGB(114, 47, 55)
+    },
+    ["AK OG BUYER"] = {  -- Formerly "LIFETIME USER"
+        primary = Color3.fromRGB(20, 20, 20),
+        accent = Color3.fromRGB(255, 105, 180)
     }
 }
 
 --------------------------------------------------
--- Notification UI (for local player tag prompt)
+-- Notification UI (for local player's prompt)
 --------------------------------------------------
 local function createNotificationUI()
     local gui = Instance.new("ScreenGui")
@@ -264,13 +311,12 @@ local function teleportToPlayer(targetPlayer)
 end
 
 --------------------------------------------------
--- Tag Attachment Function
+-- Main Tag Attachment Function (for roles)
 --------------------------------------------------
 local function attachTagToHead(character, player, rankText)
     local head = character:WaitForChild("Head", 5)
     if not head then return end
 
-    -- Remove any previous tag.
     local existingTag = head:FindFirstChild("RankTag")
     if existingTag then existingTag:Destroy() end
 
@@ -295,7 +341,7 @@ local function attachTagToHead(character, player, rankText)
     emoji.Size = UDim2.new(1, 0, 0.5, 0)
     emoji.Position = UDim2.new(0, 0, -0.45, 0)
     emoji.BackgroundTransparency = 1
-    emoji.TextSize = 25  -- original size
+    emoji.TextSize = 25
     emoji.TextColor3 = RankColors[rankText].accent
     emoji.Font = Enum.Font.SourceSans
 
@@ -313,11 +359,12 @@ local function attachTagToHead(character, player, rankText)
         emoji.Text = "📢"
     elseif rankText == "AK USER" then
         emoji.Text = "♦️"
+    elseif rankText == "AK OG BUYER" then  -- Previously "LIFETIME USER"
+        emoji.Text = "∞"
     end
 
     emoji.Parent = container
 
-    -- Heartbeat animation: Tween from 25 (original) down to 20, then back.
     local heartbeatTweenInfo = TweenInfo.new(0.7, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true)
     local heartbeatTween = TweenService:Create(emoji, heartbeatTweenInfo, {TextSize = 20})
     heartbeatTween:Play()
@@ -340,9 +387,9 @@ local function attachTagToHead(character, player, rankText)
     accent.AnchorPoint = Vector2.new(0.5, 0.5)
     accent.Position = UDim2.new(0.5, 0, 0, 0)
 
-    local tweenInfo = TweenInfo.new(0.7, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true)
-    local tween = TweenService:Create(accent, tweenInfo, {Size = UDim2.new(0.1, 0, 0, 2.5)})
-    tween:Play()
+    local tweenInfoAccent = TweenInfo.new(0.7, Enum.EasingStyle.Sine, Enum.EasingDirection.InOut, -1, true)
+    local tweenAccent = TweenService:Create(accent, tweenInfoAccent, {Size = UDim2.new(0.1, 0, 0, 2.5)})
+    tweenAccent:Play()
 
     local rankLabel = Instance.new("TextLabel")
     rankLabel.Size = UDim2.new(1, 0, 0.6, 0)
@@ -400,8 +447,7 @@ local function attachTagToHead(character, player, rankText)
         local localHead = localCharacter:FindFirstChild("Head")
         if not localHead then return end
         local distance = (head.Position - localHead.Position).Magnitude
-        local scale = math.clamp(1 - (distance / CONFIG.SCALE_DISTANCE), 0.5, 2)
-        tag.Size = UDim2.new(0, CONFIG.TAG_SIZE.X.Offset * scale, 0, CONFIG.TAG_SIZE.Y.Offset * scale)
+        tag.Size = UDim2.new(0, CONFIG.TAG_SIZE.X.Offset * math.clamp(1 - (distance / CONFIG.SCALE_DISTANCE), 0.5, 2), 0, CONFIG.TAG_SIZE.Y.Offset * math.clamp(1 - (distance / CONFIG.SCALE_DISTANCE), 0.5, 2))
     end)
 
     tag.AncestryChanged:Connect(function(_, parent)
@@ -425,18 +471,13 @@ local function attachTagToHead(character, player, rankText)
 end
 
 --------------------------------------------------
--- Local variable to store local player's tag choice
---------------------------------------------------
-local localTagChoice = nil
-
---------------------------------------------------
--- Tag Creation Function
+-- Tag Creation Function for roles
 --------------------------------------------------
 local function createTag(player, rankText, showPrompt)
     if showPrompt and player == Players.LocalPlayer then
         if localTagChoice ~= nil then
             if localTagChoice == false then
-                return  -- Player chose not to display tag, so do nothing.
+                return
             else
                 if player.Character then
                     attachTagToHead(player.Character, player, rankText)
@@ -484,74 +525,70 @@ local function createTag(player, rankText, showPrompt)
 end
 
 --------------------------------------------------
--- Custom Player Role Lists
+-- Local variable to store the local player's prompt choice
+--------------------------------------------------
+local localTagChoice = nil
+
+--------------------------------------------------
+-- Custom Player Role Lists (case-insensitive)
 --------------------------------------------------
 local Advertisers = {"Vlafz195", "6736_45", "goekaycool", "goekayball", "goekayball2"}
 local Helper = {"newbornfromthedark", "FadedSkyPlay"}
-local Scripters = {"GYATT_DAMN1", "328ml", "29Kyooo", "BloxiAstra", "ImOn_ValveIndex", "iLoveScriptsMiniG"}
+local Scripters = {"GYATT_DAMN1", "328ml", "29Kyooo", "BloxiAstra", "", "iLoveScriptsMiniG"}
 local Owners = {"Dxan_PlayS", "Xeni_he07", "AliKhammas1234", "AliKhammas", "I_LOVEYOU12210", "AK_ADMEN1", "YournothimbuddyXD", "AK_ADMEN2", "Akksosdmdokdkddmkd"}
 local Supporter = {"Robloxian74630436", "MyLittlePonySEDE"}
 local AKStaff = {"goekaycool", "goetemp_1"}
 
 --------------------------------------------------
--- Apply the Appropriate Tag to a Player
+-- Apply the Appropriate Tag to a Player (including OG buyer)
 --------------------------------------------------
 local function applyPlayerTag(player)
-    local function attemptTagApplication()
-        local showPrompt = player == Players.LocalPlayer
-        if table.find(Owners, player.Name) then
-            createTag(player, "AK OWNER", showPrompt)
-        elseif table.find(Scripters, player.Name) then
-            createTag(player, "AK SCRIPTER", showPrompt)
-        elseif table.find(Supporter, player.Name) then
-            createTag(player, "AK SUPPORTER", showPrompt)
-        elseif table.find(AKStaff, player.Name) then
-            createTag(player, "AK STAFF", showPrompt)
-        elseif table.find(Advertisers, player.Name) then
-            createTag(player, "AK ADVERTISER", showPrompt)
-        elseif table.find(Helper, player.Name) then
-            createTag(player, "AK HELPER", showPrompt)
-        elseif ChatWhitelist[player.Name] then
-            createTag(player, "AK USER", showPrompt)
-        end
+    local showPrompt = player == Players.LocalPlayer
+    local assignedTag = nil  -- Track the assigned tag
+
+    if containsIgnoreCase(Owners, player.Name) then
+        assignedTag = "AK OWNER"
+    elseif containsIgnoreCase(Scripters, player.Name) then
+        assignedTag = "AK SCRIPTER"
+    elseif containsIgnoreCase(Supporter, player.Name) then
+        assignedTag = "AK SUPPORTER"
+    elseif containsIgnoreCase(AKStaff, player.Name) then
+        assignedTag = "AK STAFF"
+    elseif containsIgnoreCase(Advertisers, player.Name) then
+        assignedTag = "AK ADVERTISER"
+    elseif containsIgnoreCase(Helper, player.Name) then
+        assignedTag = "AK HELPER"
+    elseif isLifetimeUser(player) then
+        assignedTag = "AK OG BUYER"  -- OG buyers take priority
+    elseif ChatWhitelist[player.Name:lower()] then
+        assignedTag = "AK USER"  -- Only if NOT an OG buyer or special role
     end
 
-    local attempts = 0
-    local function retryTagApplication()
-        attempts = attempts + 1
-        local success, err = pcall(attemptTagApplication)
-        if not success and attempts < CONFIG.MAX_RETRY_ATTEMPTS then
-            task.wait(CONFIG.RETRY_DELAY)
-            retryTagApplication()
-        end
+    if assignedTag then
+        createTag(player, assignedTag, showPrompt)
     end
-
-    retryTagApplication()
 end
 
 --------------------------------------------------
--- Setup Chat Listener for Each Player:
--- When a player chats "IAMUSINGAK" (after removing spaces),
--- add them to the whitelist and assign the "AK USER" tag (with a prompt for the local player).
+-- Setup Chat Listener for Each Player
 --------------------------------------------------
 local function setupChatListener(player)
     player.Chatted:Connect(function(msg)
         if modifyString(msg) == "Anti-Tags-|-AK-ADMIN-ABCDEFGHJIKLJSBEBDZWUAJSNCHEI()" then
-            -- Process only once.
-            if ChatWhitelist[player.Name] then return end
-
-            -- If the player already belongs to any custom role table, ignore the message.
-            if table.find(Owners, player.Name) 
-               or table.find(Scripters, player.Name) 
-               or table.find(Supporter, player.Name) 
-               or table.find(AKStaff, player.Name) 
-               or table.find(Advertisers, player.Name) 
-               or table.find(Helper, player.Name) then
+            -- Do nothing if the player is in any special role table or is an OG buyer.
+            if containsIgnoreCase(Owners, player.Name)
+            or containsIgnoreCase(Scripters, player.Name)
+            or containsIgnoreCase(Supporter, player.Name)
+            or containsIgnoreCase(AKStaff, player.Name)
+            or containsIgnoreCase(Advertisers, player.Name)
+            or containsIgnoreCase(Helper, player.Name)
+            or isLifetimeUser(player) then
                 return
             end
 
-            ChatWhitelist[player.Name] = true
-            createTag(player, "AK USER", true)  -- Prompt the local player.
+            if ChatWhitelist[player.Name:lower()] then return end
+            ChatWhitelist[player.Name:lower()] = true
+            createTag(player, "AK USER", true)
         end
     end)
 end
@@ -569,9 +606,7 @@ Players.PlayerAdded:Connect(function(player)
     end)
 end)
 
---------------------------------------------------
--- Initialize Tag System for Existing Players.
---------------------------------------------------
+-- Initialize tag system for existing players.
 for _, player in pairs(Players:GetPlayers()) do
     task.spawn(function()
         applyPlayerTag(player)
