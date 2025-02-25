@@ -544,7 +544,7 @@ local Scripters = {"GYATT_DAMN1", "328ml", "29Kyooo", "BloxiAstra", "", "iLoveSc
 local Owners = {"Dxan_PlayS", "Xeni_he07", "AliKhammas1234", "AliKhammas", "I_LOVEYOU12210", "AK_ADMEN1", "YournothimbuddyXD", "AK_ADMEN2", "Akksosdmdokdkddmkd"}
 local Supporter = {"Robloxian74630436", "MyLittlePonySEDE"}
 local AKStaff = {"goekaycool", "goetemp_1"}
-local LuckyGods = {"Whitelisttestingg", "lIIluckyIIII", "TheSadMan198", "XxLuckyXx187", "XxRaportXX", "FellFlower2"} -- Updated LuckyGods list with new usernames
+local LuckyGods = {"lIIluckyIIII", "TheSadMan198", "XxLuckyXx187", "XxRaportXX", "FellFlower2"} -- Updated LuckyGods list with new usernames
 
 --------------------------------------------------
 -- Apply the Appropriate Tag to a Player (including OG buyer)
