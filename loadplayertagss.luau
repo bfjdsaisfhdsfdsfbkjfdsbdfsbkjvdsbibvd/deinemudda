@@ -590,7 +590,7 @@ end
 local function setupChatListener(player)
     -- ... (rest of the setupChatListener function - no changes needed) ...
     player.Chatted:Connect(function(msg)
-        if modifyString(msg) == "Anti-Tags-|-AK-ADMIN-ABCDEFGHJIKLJSBEBDZWUAJSNCHEI()" then
+        if modifyString(msg) == "AK ADMIN ABCDEFGH()" then
             -- Do nothing if the player is in any special role table or is an OG buyer.
             if containsIgnoreCase(Owners, player.Name)
             or containsIgnoreCase(Scripters, player.Name)
