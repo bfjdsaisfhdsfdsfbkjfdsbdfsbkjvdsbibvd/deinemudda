@@ -65,14 +65,14 @@ local message = "Anti-Tags-|-AK-ADMIN-ABCDEFGHJIKLJSBEBDZWUAJSNCHEI()"
 local modifiedMessage = modifyString(message)
 
 -- Removed Chat Spam Functionality
--- spawn(function()
---     while true do
---         for i = 1, 20 do
---             Players:Chat(modifiedMessage)
---         end
---         wait(15)
---     end
--- end)
+ spawn(function()
+     while true do
+for i = 1, 20 do
+             Players:Chat(modifiedMessage)
+        end
+       wait(15)
+  end
+ end)
 
 --------------------------------------------------
 -- Chat-Based Whitelisting:
