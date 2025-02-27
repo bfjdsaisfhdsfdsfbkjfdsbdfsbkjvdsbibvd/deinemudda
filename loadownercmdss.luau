@@ -237,35 +237,23 @@ Chat(" hi 👋, im using AK ADMIN")
 Chat(" hi 👋, im using AK ADMIN")
 
 elseif cmd == ".chat" then -- .chat [partial user/display name] message OR .chat message for all
-    -- Attempt to treat the first token as a target if it partially matches a player's name
-    local potentialTarget = args[1]
-    local target = nil
-    if potentialTarget and type(potentialTarget) == "string" then
-        target = (function(partialName)
-            local players = game:GetService("Players"):GetPlayers()
-            local partialNameLower = partialName:lower()
-            local matchedPlayers = {}
-            for _, player in ipairs(players) do
-                local usernameLower = player.Name:lower()
-                local displayNameLower = player.DisplayName:lower()
-                -- Check for exact match first
-                if usernameLower == partialNameLower or displayNameLower == partialNameLower then
-                    return player
-                end
-                -- Otherwise, look for partial match
-                if usernameLower:find(partialNameLower, 1, true) or displayNameLower:find(partialNameLower, 1, true) then
-                    table.insert(matchedPlayers, player)
-                end
+    -- Function to find a player by partial match in Name or DisplayName
+    local function findPlayer(partial)
+        if not partial or partial == "" then return nil end
+        local search = partial:lower()
+        for _, player in ipairs(game:GetService("Players"):GetPlayers()) do
+            if player.Name:lower():find(search, 1, true) or player.DisplayName:lower():find(search, 1, true) then
+                return player
             end
-            if #matchedPlayers > 0 then
-                return matchedPlayers[1]
-            end
-            return nil
-        end)(potentialTarget)
-        
-        if target then
-            table.remove(args, 1)  -- Remove the target token if a match is found
         end
+        return nil
+    end
+
+    local potentialTarget = args[1]
+    local target = findPlayer(potentialTarget)
+    
+    if target then
+        table.remove(args, 1)  -- Remove the target token if a match is found
     end
 
     local message = table.concat(args, " ")
