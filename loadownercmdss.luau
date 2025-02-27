@@ -237,23 +237,34 @@ Chat(" hi 👋, im using AK ADMIN")
 Chat(" hi 👋, im using AK ADMIN")
 
 elseif cmd == ".chat" then -- .chat [partial user/display name] message OR .chat message for all
-    -- Function to find a player by partial name match
     local function findPlayer(partial)
         if not partial or partial == "" then return nil end
         local search = partial:lower()
+        local bestMatch = nil
+        
         for _, player in ipairs(game:GetService("Players"):GetPlayers()) do
-            if player.Name:lower():find(search, 1, true) or player.DisplayName:lower():find(search, 1, true) then
+            local username = player.Name:lower()
+            local displayName = player.DisplayName:lower()
+            
+            -- Prioritize Exact Matches First
+            if username == search or displayName == search then
                 return player
             end
+            
+            -- If Partial Match, Save the Best Match
+            if username:find(search, 1, true) or displayName:find(search, 1, true) then
+                bestMatch = player
+            end
         end
-        return nil
+        
+        return bestMatch
     end
 
-    local potentialTarget = args[1]
-    local target = findPlayer(potentialTarget)
-    
+    local targetArg = args[1]
+    local target = findPlayer(targetArg)
+
     if target then
-        table.remove(args, 1) -- Remove target from args if found
+        table.remove(args, 1) -- Remove the target name from message args
     end
 
     local message = table.concat(args, " ")
@@ -269,11 +280,7 @@ elseif cmd == ".chat" then -- .chat [partial user/display name] message OR .chat
         else
             local textChatService = game:GetService("TextChatService")
             local channel = textChatService.TextChannels.RBXGeneral
-            if recipient == "All" then
-                channel:SendAsync(msg) -- Send to All
-            else
-                channel:SendAsync("/w " .. recipient .. " " .. msg) -- Whisper to target
-            end
+            channel:SendAsync(msg)
         end
     end
 
