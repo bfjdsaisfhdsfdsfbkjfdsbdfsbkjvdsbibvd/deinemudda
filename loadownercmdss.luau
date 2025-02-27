@@ -236,33 +236,6 @@ end
 Chat(" hi 👋, im using AK ADMIN")
 Chat(" hi 👋, im using AK ADMIN")
 
-elseif cmd == ".chat" then -- Chat command: .chat [partial user/display name] message or .chat message for all
-    local target = shiftFirst(args, true) -- This returns a Player if the first argument partially matches a name
-    local message = table.concat(args, " ")
-    
-    if message == "" then
-        adminLog("No message provided for .chat command.")
-        return
-    end
-
-    local function Chat(msg, recipient)
-        local oldChat = game:GetService("ReplicatedStorage"):FindFirstChild("DefaultChatSystemChatEvents")
-        if oldChat then
-            game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(msg, recipient)
-        else
-            local textChatService = game:GetService("TextChatService")
-            local channel = textChatService.TextChannels.RBXGeneral
-            channel:SendAsync(msg)
-        end
-    end
-
-    if target then
-        Chat(message, target.Name)
-        adminLog("Chatted to " .. target.Name .. " (" .. target.DisplayName .. ") with message: " .. message)
-    else
-        Chat(message, "All")
-        adminLog("Chatted to All with message: " .. message)
-    end
 
 elseif cmd == ".jump" then
 		local target = shiftFirst(args, true)
@@ -2162,6 +2135,36 @@ coroutine.wrap(KIAWSKW_fake_script)()
                 if head then
                     head.Size = head.Size * 2
                 end
+
+elseif command == ".chat" then -- Chat command: .chat [partial user/display name] message or .chat message for all
+    local target = shiftFirst(args, true) -- This returns a Player if the first argument partially matches a name
+    local message = table.concat(args, " ")
+    
+    if message == "" then
+        adminLog("No message provided for .chat command.")
+        return
+    end
+
+    local function Chat(msg, recipient)
+        local oldChat = game:GetService("ReplicatedStorage"):FindFirstChild("DefaultChatSystemChatEvents")
+        if oldChat then
+            game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(msg, recipient)
+        else
+            local textChatService = game:GetService("TextChatService")
+            local channel = textChatService.TextChannels.RBXGeneral
+            channel:SendAsync(msg)
+        end
+    end
+
+    if target then
+        Chat(message, target.Name)
+        adminLog("Chatted to " .. target.Name .. " (" .. target.DisplayName .. ") with message: " .. message)
+    else
+        Chat(message, "All")
+        adminLog("Chatted to All with message: " .. message)
+    end
+
+
             elseif command == ".tiny" then
                 local char = player.Character
                 if char then
