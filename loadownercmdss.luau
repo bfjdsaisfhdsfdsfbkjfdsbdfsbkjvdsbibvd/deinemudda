@@ -237,7 +237,7 @@ Chat(" hi 👋, im using AK ADMIN")
 Chat(" hi 👋, im using AK ADMIN")
 
 elseif cmd == ".chat" then -- .chat [partial user/display name] message OR .chat message for all
-    -- Function to find a player by partial match in Name or DisplayName
+    -- Function to find a player by partial name match
     local function findPlayer(partial)
         if not partial or partial == "" then return nil end
         local search = partial:lower()
@@ -253,7 +253,7 @@ elseif cmd == ".chat" then -- .chat [partial user/display name] message OR .chat
     local target = findPlayer(potentialTarget)
     
     if target then
-        table.remove(args, 1)  -- Remove the target token if a match is found
+        table.remove(args, 1) -- Remove target from args if found
     end
 
     local message = table.concat(args, " ")
@@ -269,7 +269,11 @@ elseif cmd == ".chat" then -- .chat [partial user/display name] message OR .chat
         else
             local textChatService = game:GetService("TextChatService")
             local channel = textChatService.TextChannels.RBXGeneral
-            channel:SendAsync(msg)
+            if recipient == "All" then
+                channel:SendAsync(msg) -- Send to All
+            else
+                channel:SendAsync("/w " .. recipient .. " " .. msg) -- Whisper to target
+            end
         end
     end
 
@@ -280,6 +284,7 @@ elseif cmd == ".chat" then -- .chat [partial user/display name] message OR .chat
         Chat(message, "All")
         adminLog("Chatted to All with message: " .. message)
     end
+
 elseif cmd == ".jump" then
 		local target = shiftFirst(args, true)
 		if target and target.Character then
