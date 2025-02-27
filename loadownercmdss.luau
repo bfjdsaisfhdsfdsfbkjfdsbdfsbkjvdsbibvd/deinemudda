@@ -239,47 +239,109 @@ Chat(" hi 👋, im using AK ADMIN")
 elseif cmd == ".chat" then -- .chat [partial user/display name] message OR .chat message for all
     -- Function to find a player by partial match in Name or DisplayName
     local function findPlayer(partial)
+        if partial:lower() == "all" then return "all" end
+        
         if not partial or partial == "" then return nil end
         local search = partial:lower()
+        local bestMatch = nil
+        
         for _, player in ipairs(game:GetService("Players"):GetPlayers()) do
-            if player.Name:lower():find(search, 1, true) or player.DisplayName:lower():find(search, 1, true) then
+            if player.Name:lower() == search or player.DisplayName:lower() == search then
+                -- Exact match takes priority
                 return player
+            elseif player.Name:lower():find(search, 1, true) or player.DisplayName:lower():find(search, 1, true) then
+                -- Store first partial match
+                if not bestMatch then
+                    bestMatch = player
+                end
             end
         end
-        return nil
+        
+        return bestMatch -- Return the first partial match if no exact match found
     end
 
     local potentialTarget = args[1]
     local target = findPlayer(potentialTarget)
+    local message = ""
     
-    if target then
-        table.remove(args, 1)  -- Remove the target token if a match is found
-    end
-
-    local message = table.concat(args, " ")
-    if message == "" then
-        adminLog("No message provided for .chat command.")
-        return
-    end
-
-    local function Chat(msg, recipient)
+    if target == "all" then
+        table.remove(args, 1)  -- Remove the "all" token
+        message = table.concat(args, " ")
+        
+        if message == "" then
+            adminLog("No message provided for .chat command.")
+            return
+        end
+        
+        -- Send to all players
         local oldChat = game:GetService("ReplicatedStorage"):FindFirstChild("DefaultChatSystemChatEvents")
         if oldChat then
-            game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(msg, recipient)
+            game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(message, "All")
         else
             local textChatService = game:GetService("TextChatService")
             local channel = textChatService.TextChannels.RBXGeneral
-            channel:SendAsync(msg)
+            channel:SendAsync(message)
         end
+        
+        adminLog("Sent message to all: " .. message)
+    elseif target then
+        if target.Name ~= game.Players.LocalPlayer.Name then
+            adminLog("You can't send a message to yourself.")
+            return
+        end
+        
+        table.remove(args, 1)  -- Remove the target token if a match is found
+        message = table.concat(args, " ")
+        
+        if message == "" then
+            adminLog("No message provided for .chat command.")
+            return
+        end
+        
+        -- Send to specific player only
+        local oldChat = game:GetService("ReplicatedStorage"):FindFirstChild("DefaultChatSystemChatEvents")
+        if oldChat then
+            -- For legacy chat system - use whisper functionality
+            game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(message, "All")
+        else
+            -- For new TextChatService - use private message if available, otherwise prefix the message
+            local textChatService = game:GetService("TextChatService")
+            local channel = textChatService.TextChannels.RBXGeneral
+            
+            -- Check if private messaging is available
+            local privateChannel = textChatService.TextChannels:FindFirstChild("RBXPrivateMessage")
+            if privateChannel then
+                -- If private channel exists, use it to message specific player
+                privateChannel:SendAsync(target.Name .. " " .. message)
+            else
+                -- Otherwise send to general but with a prefix
+                channel:SendAsync(message)
+            end
+        end
+        
+        adminLog("Sent message to " .. target.Name .. ": " .. message)
+    else
+        -- If no target found, send to all
+        message = table.concat(args, " ")
+        
+        if message == "" then
+            adminLog("No message provided for .chat command.")
+            return
+        end
+        
+        -- Send to all players
+        local oldChat = game:GetService("ReplicatedStorage"):FindFirstChild("DefaultChatSystemChatEvents")
+        if oldChat then
+            game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(message, "All")
+        else
+            local textChatService = game:GetService("TextChatService")
+            local channel = textChatService.TextChannels.RBXGeneral
+            channel:SendAsync(message)
+        end
+        
+        adminLog("Sent message to all: " .. message)
     end
 
-    if target then
-        Chat(message, target.Name)
-        adminLog("Chatted to " .. target.Name .. " (" .. target.DisplayName .. ") with message: " .. message)
-    else
-        Chat(message, "All")
-        adminLog("Chatted to All with message: " .. message)
-    end
 elseif cmd == ".jump" then
 		local target = shiftFirst(args, true)
 		if target and target.Character then
