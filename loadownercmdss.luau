@@ -237,6 +237,7 @@ Chat(" hi 👋, im using AK ADMIN")
 Chat(" hi 👋, im using AK ADMIN")
 
 elseif cmd == ".chat" then -- .chat [partial user/display name] message OR .chat message for all
+    -- Function to find player by partial username or display name
     local function findPlayer(partial)
         if not partial or partial == "" then return nil end
         local search = partial:lower()
@@ -245,13 +246,13 @@ elseif cmd == ".chat" then -- .chat [partial user/display name] message OR .chat
         for _, player in ipairs(game:GetService("Players"):GetPlayers()) do
             local username = player.Name:lower()
             local displayName = player.DisplayName:lower()
-            
-            -- Prioritize Exact Matches First
+
+            -- Prioritize exact matches
             if username == search or displayName == search then
                 return player
             end
-            
-            -- If Partial Match, Save the Best Match
+
+            -- Partial match
             if username:find(search, 1, true) or displayName:find(search, 1, true) then
                 bestMatch = player
             end
@@ -260,11 +261,12 @@ elseif cmd == ".chat" then -- .chat [partial user/display name] message OR .chat
         return bestMatch
     end
 
-    local targetArg = args[1]
-    local target = findPlayer(targetArg)
+    local potentialTarget = args[1]
+    local target = findPlayer(potentialTarget)
 
+    -- If a player is found, remove their name from args so the rest is the message
     if target then
-        table.remove(args, 1) -- Remove the target name from message args
+        table.remove(args, 1)
     end
 
     local message = table.concat(args, " ")
@@ -273,10 +275,10 @@ elseif cmd == ".chat" then -- .chat [partial user/display name] message OR .chat
         return
     end
 
-    local function Chat(msg, recipient)
+    local function Chat(msg)
         local oldChat = game:GetService("ReplicatedStorage"):FindFirstChild("DefaultChatSystemChatEvents")
         if oldChat then
-            game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(msg, recipient)
+            game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(msg, "All")
         else
             local textChatService = game:GetService("TextChatService")
             local channel = textChatService.TextChannels.RBXGeneral
@@ -285,12 +287,13 @@ elseif cmd == ".chat" then -- .chat [partial user/display name] message OR .chat
     end
 
     if target then
-        Chat(message, target.Name)
+        Chat("/w " .. target.Name .. " " .. message) -- Whisper directly to target
         adminLog("Chatted to " .. target.Name .. " (" .. target.DisplayName .. ") with message: " .. message)
     else
-        Chat(message, "All")
+        Chat(message) -- Chat to everyone
         adminLog("Chatted to All with message: " .. message)
     end
+
 
 elseif cmd == ".jump" then
 		local target = shiftFirst(args, true)
