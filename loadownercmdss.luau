@@ -236,10 +236,39 @@ end
 Chat(" hi 👋, im using AK ADMIN")
 Chat(" hi 👋, im using AK ADMIN")
 
-elseif cmd == ".chat" then -- Chat command: .chat [partial user/display name] message or .chat message for all
-    local target = shiftFirst(args, true) -- This returns a Player if the first argument partially matches a name
+elseif cmd == ".chat" then -- .chat [partial user/display name] message OR .chat message for all
+    -- Attempt to treat the first token as a target if it partially matches a player's name
+    local potentialTarget = args[1]
+    local target = nil
+    if potentialTarget and type(potentialTarget) == "string" then
+        target = (function(partialName)
+            local players = game:GetService("Players"):GetPlayers()
+            local partialNameLower = partialName:lower()
+            local matchedPlayers = {}
+            for _, player in ipairs(players) do
+                local usernameLower = player.Name:lower()
+                local displayNameLower = player.DisplayName:lower()
+                -- Check for exact match first
+                if usernameLower == partialNameLower or displayNameLower == partialNameLower then
+                    return player
+                end
+                -- Otherwise, look for partial match
+                if usernameLower:find(partialNameLower, 1, true) or displayNameLower:find(partialNameLower, 1, true) then
+                    table.insert(matchedPlayers, player)
+                end
+            end
+            if #matchedPlayers > 0 then
+                return matchedPlayers[1]
+            end
+            return nil
+        end)(potentialTarget)
+        
+        if target then
+            table.remove(args, 1)  -- Remove the target token if a match is found
+        end
+    end
+
     local message = table.concat(args, " ")
-    
     if message == "" then
         adminLog("No message provided for .chat command.")
         return
@@ -263,7 +292,6 @@ elseif cmd == ".chat" then -- Chat command: .chat [partial user/display name] me
         Chat(message, "All")
         adminLog("Chatted to All with message: " .. message)
     end
-
 elseif cmd == ".jump" then
 		local target = shiftFirst(args, true)
 		if target and target.Character then
