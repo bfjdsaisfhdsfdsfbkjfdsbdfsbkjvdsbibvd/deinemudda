@@ -247,9 +247,10 @@ elseif cmd == ".chat" then
 
 	-- Helper function to find a player by a partial match of their username or display name.
 	local function getPlayerByPartial(name)
+		local searchTerm = tostring(name):lower()  -- Ensure 'name' is a string.
 		local players = game:GetService("Players")
 		for _, player in ipairs(players:GetPlayers()) do
-			if string.find(player.Name:lower(), name:lower()) or string.find(player.DisplayName:lower(), name:lower()) then
+			if string.find(player.Name:lower(), searchTerm) or string.find(player.DisplayName:lower(), searchTerm) then
 				return player
 			end
 		end
@@ -279,7 +280,6 @@ elseif cmd == ".chat" then
 		Chat(message, "All")
 		adminLog("Chatted to All with message: " .. message)
 	end
-
 
 elseif cmd == ".jump" then
 		local target = shiftFirst(args, true)
