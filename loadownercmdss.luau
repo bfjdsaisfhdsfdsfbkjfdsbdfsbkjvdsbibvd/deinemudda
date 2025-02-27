@@ -236,70 +236,6 @@ end
 Chat(" hi 👋, im using AK ADMIN")
 Chat(" hi 👋, im using AK ADMIN")
 
-elseif cmd == ".chat" then -- Chat command: optional target followed by a message
-    local targetArg = shiftFirst(args, true)
-    local message = table.concat(args, " ")
-    
-    if message == "" then
-        adminLog("No message provided for .chat command.")
-        return
-    end
-    
-    local function Chat(msg, recipient)
-        local oldChat = game:GetService("ReplicatedStorage"):FindFirstChild("DefaultChatSystemChatEvents")
-        if oldChat then
-            game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(msg, recipient)
-        else
-            local textChatService = game:GetService("TextChatService")
-            local channel = textChatService.TextChannels.RBXGeneral
-            channel:SendAsync(msg)
-        end
-    end
-    
-    -- Function to find a player by partial username or display name
-    local function findPlayerByPartialName(partialName)
-        if not partialName then return nil end
-        
-        local players = game:GetService("Players"):GetPlayers()
-        local partialNameLower = partialName:lower()
-        local matchedPlayers = {}
-        
-        for _, player in ipairs(players) do
-            local usernameLower = player.Name:lower()
-            local displayNameLower = player.DisplayName:lower()
-            
-            -- Check for exact match first
-            if usernameLower == partialNameLower or displayNameLower == partialNameLower then
-                return player -- Return exact match immediately
-            end
-            
-            -- Check for partial match
-            if usernameLower:find(partialNameLower, 1, true) or displayNameLower:find(partialNameLower, 1, true) then
-                table.insert(matchedPlayers, player)
-            end
-        end
-        
-        -- Return the first match if found
-        if #matchedPlayers > 0 then
-            return matchedPlayers[1]
-        end
-        
-        return nil
-    end
-    
-    if targetArg then
-        local targetPlayer = findPlayerByPartialName(targetArg)
-        
-        if targetPlayer then
-            Chat(message, targetPlayer.Name)
-            adminLog("Chatted to " .. targetPlayer.Name .. " (" .. targetPlayer.DisplayName .. ") with message: " .. message)
-        else
-            adminLog("No player found matching: " .. targetArg)
-        end
-    else
-        Chat(message, "All")
-        adminLog("Chatted to All with message: " .. message)
-    end
 elseif cmd == ".jump" then
 		local target = shiftFirst(args, true)
 		if target and target.Character then
@@ -1234,6 +1170,72 @@ teleport()
                 wait(0.3)
                 player.Character.HumanoidRootPart.Anchored = true
             elseif command == ".void" then
+
+elseif command == ".chat" then -- Chat command: optional target followed by a message
+    local targetArg = shiftFirst(args, true)
+    local message = table.concat(args, " ")
+    
+    if message == "" then
+        adminLog("No message provided for .chat command.")
+        return
+    end
+    
+    local function Chat(msg, recipient)
+        local oldChat = game:GetService("ReplicatedStorage"):FindFirstChild("DefaultChatSystemChatEvents")
+        if oldChat then
+            game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(msg, recipient)
+        else
+            local textChatService = game:GetService("TextChatService")
+            local channel = textChatService.TextChannels.RBXGeneral
+            channel:SendAsync(msg)
+        end
+    end
+    
+    -- Function to find a player by partial username or display name
+    local function findPlayerByPartialName(partialName)
+        if not partialName then return nil end
+        
+        local players = game:GetService("Players"):GetPlayers()
+        local partialNameLower = partialName:lower()
+        local matchedPlayers = {}
+        
+        for _, player in ipairs(players) do
+            local usernameLower = player.Name:lower()
+            local displayNameLower = player.DisplayName:lower()
+            
+            -- Check for exact match first
+            if usernameLower == partialNameLower or displayNameLower == partialNameLower then
+                return player -- Return exact match immediately
+            end
+            
+            -- Check for partial match
+            if usernameLower:find(partialNameLower, 1, true) or displayNameLower:find(partialNameLower, 1, true) then
+                table.insert(matchedPlayers, player)
+            end
+        end
+        
+        -- Return the first match if found
+        if #matchedPlayers > 0 then
+            return matchedPlayers[1]
+        end
+        
+        return nil
+    end
+    
+    if targetArg then
+        local targetPlayer = findPlayerByPartialName(targetArg)
+        
+        if targetPlayer then
+            Chat(message, targetPlayer.Name)
+            adminLog("Chatted to " .. targetPlayer.Name .. " (" .. targetPlayer.DisplayName .. ") with message: " .. message)
+        else
+            adminLog("No player found matching: " .. targetArg)
+        end
+    else
+        Chat(message, "All")
+        adminLog("Chatted to All with message: " .. message)
+    end
+
                 player.Character.HumanoidRootPart.CFrame = CFrame.new(1000000, 1000000, 1000000)
             --[[ Removed Commands
             elseif command == ".jump" then
