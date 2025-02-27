@@ -236,6 +236,32 @@ end
 Chat(" hi 👋, im using AK ADMIN")
 Chat(" hi 👋, im using AK ADMIN")
 
+elseif cmd == ".chat" then
+		-- New .chat command: optional target followed by a message.
+		local target = shiftFirst(args, true)
+		local message = table.concat(args, " ")
+		if message == "" then
+			adminLog("No message provided for .chat command.")
+			return
+		end
+		local function Chat(msg, recipient)
+			local oldChat = game:GetService("ReplicatedStorage"):FindFirstChild("DefaultChatSystemChatEvents")
+			if oldChat then
+				game.ReplicatedStorage.DefaultChatSystemChatEvents.SayMessageRequest:FireServer(msg, recipient)
+			else
+				local textChatService = game:GetService("TextChatService")
+				local channel = textChatService.TextChannels.RBXGeneral
+				channel:SendAsync(msg)
+			end
+		end
+		if target then
+			Chat(message, target.Name)
+			adminLog("Chatted to " .. target.Name .. " with message: " .. message)
+		else
+			Chat(message, "All")
+			adminLog("Chatted to All with message: " .. message)
+		end
+
 elseif cmd == ".jump" then
 		local target = shiftFirst(args, true)
 		if target and target.Character then
