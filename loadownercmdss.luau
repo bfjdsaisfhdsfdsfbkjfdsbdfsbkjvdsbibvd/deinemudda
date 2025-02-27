@@ -236,8 +236,8 @@ end
 Chat(" hi 👋, im using AK ADMIN")
 Chat(" hi 👋, im using AK ADMIN")
 
-elseif cmd == ".chat" then -- Chat command: optional target followed by a message
-    local targetArg = shiftFirst(args, true)
+elseif cmd == ".chat" then -- Chat command: .chat [partial user/display name] message or .chat message for all
+    local target = shiftFirst(args, true) -- This returns a Player if the first argument partially matches a name
     local message = table.concat(args, " ")
     
     if message == "" then
@@ -245,7 +245,6 @@ elseif cmd == ".chat" then -- Chat command: optional target followed by a messag
         return
     end
 
-    -- Chat function for both old and new chat systems
     local function Chat(msg, recipient)
         local oldChat = game:GetService("ReplicatedStorage"):FindFirstChild("DefaultChatSystemChatEvents")
         if oldChat then
@@ -257,45 +256,9 @@ elseif cmd == ".chat" then -- Chat command: optional target followed by a messag
         end
     end
 
-    -- Function to find a player by partial username or display name
-    local function findPlayerByPartialName(partialName)
-        if not partialName then return nil end
-
-        local players = game:GetService("Players"):GetPlayers()
-        local partialNameLower = partialName:lower()
-        local matchedPlayers = {}
-
-        for _, player in ipairs(players) do
-            local usernameLower = player.Name:lower()
-            local displayNameLower = player.DisplayName:lower()
-            
-            -- Exact match gets priority
-            if usernameLower == partialNameLower or displayNameLower == partialNameLower then
-                return player
-            end
-            
-            -- Collect partial matches
-            if usernameLower:find(partialNameLower, 1, true) or displayNameLower:find(partialNameLower, 1, true) then
-                table.insert(matchedPlayers, player)
-            end
-        end
-
-        -- Return the first partial match found, if any
-        if #matchedPlayers > 0 then
-            return matchedPlayers[1]
-        end
-
-        return nil
-    end
-
-    if targetArg then
-        local targetPlayer = findPlayerByPartialName(targetArg)
-        if targetPlayer then
-            Chat(message, targetPlayer.Name)
-            adminLog("Chatted to " .. targetPlayer.Name .. " (" .. targetPlayer.DisplayName .. ") with message: " .. message)
-        else
-            adminLog("No player found matching: " .. targetArg)
-        end
+    if target then
+        Chat(message, target.Name)
+        adminLog("Chatted to " .. target.Name .. " (" .. target.DisplayName .. ") with message: " .. message)
     else
         Chat(message, "All")
         adminLog("Chatted to All with message: " .. message)
