@@ -323,7 +323,8 @@ local function loadCommands()
             "!scan map",
             "!unscan map",
             "!annoynearest",
-            "!annoyserver"
+            "!annoyserver",
+            "!vccontroller"
     
         }
         for _, v in ipairs(micupCmds) do
